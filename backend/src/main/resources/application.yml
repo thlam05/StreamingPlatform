@@ -1,0 +1,9 @@
+# spring.application.name=streaming
+
+spring:
+  application:
+    name: streaming
+  datasource:
+    url: jdbc:postgresql://localhost:5432/streaming_platform
+    username: postgres
+    password: 123456
