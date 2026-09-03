@@ -2,6 +2,8 @@ package com.thlam.streaming.common.exception;
 
 import com.thlam.streaming.common.dtos.ApiErrorResponse;
 import com.thlam.streaming.common.dtos.ErrorMeta;
+import com.thlam.streaming.common.enums.ApiErrorCode;
+
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -20,74 +22,74 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    ResponseEntity<ApiErrorResponse<Void>> handleNotFound(
-            ResourceNotFoundException exception,
-            HttpServletRequest request) {
-        return response(ApiErrorCode.RESOURCE_NOT_FOUND.getCode(), HttpStatus.NOT_FOUND,
-                exception.getMessage(), request, Map.of());
-    }
+	@ExceptionHandler(ResourceNotFoundException.class)
+	ResponseEntity<ApiErrorResponse<Void>> handleNotFound(
+			ResourceNotFoundException exception,
+			HttpServletRequest request) {
+		return response(ApiErrorCode.RESOURCE_NOT_FOUND.getCode(), HttpStatus.NOT_FOUND,
+				exception.getMessage(), request, Map.of());
+	}
 
-    @ExceptionHandler(ConflictException.class)
-    ResponseEntity<ApiErrorResponse<Void>> handleConflict(
-            ConflictException exception,
-            HttpServletRequest request) {
-        return response(ApiErrorCode.CONFLICT.getCode(), HttpStatus.CONFLICT,
-                exception.getMessage(), request, Map.of());
-    }
+	@ExceptionHandler(ConflictException.class)
+	ResponseEntity<ApiErrorResponse<Void>> handleConflict(
+			ConflictException exception,
+			HttpServletRequest request) {
+		return response(ApiErrorCode.CONFLICT.getCode(), HttpStatus.CONFLICT,
+				exception.getMessage(), request, Map.of());
+	}
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<ApiErrorResponse<Void>> handleValidation(
-            MethodArgumentNotValidException exception,
-            HttpServletRequest request) {
-        Map<String, String> fieldErrors = new LinkedHashMap<>();
-        exception.getBindingResult().getFieldErrors()
-                .forEach(error -> fieldErrors.putIfAbsent(error.getField(), error.getDefaultMessage()));
-        return response(ApiErrorCode.VALIDATION_ERROR.getCode(), HttpStatus.BAD_REQUEST,
-                "Request validation failed", request, fieldErrors);
-    }
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	ResponseEntity<ApiErrorResponse<Void>> handleValidation(
+			MethodArgumentNotValidException exception,
+			HttpServletRequest request) {
+		Map<String, String> fieldErrors = new LinkedHashMap<>();
+		exception.getBindingResult().getFieldErrors()
+				.forEach(error -> fieldErrors.putIfAbsent(error.getField(), error.getDefaultMessage()));
+		return response(ApiErrorCode.VALIDATION_ERROR.getCode(), HttpStatus.BAD_REQUEST,
+				"Request validation failed", request, fieldErrors);
+	}
 
-    @ExceptionHandler({
-            HttpMessageNotReadableException.class,
-            MethodArgumentTypeMismatchException.class
-    })
-    ResponseEntity<ApiErrorResponse<Void>> handleBadRequest(
-            Exception exception,
-            HttpServletRequest request) {
-        return response(ApiErrorCode.INVALID_REQUEST.getCode(), HttpStatus.BAD_REQUEST,
-                "Request is invalid", request, Map.of());
-    }
+	@ExceptionHandler({
+			HttpMessageNotReadableException.class,
+			MethodArgumentTypeMismatchException.class
+	})
+	ResponseEntity<ApiErrorResponse<Void>> handleBadRequest(
+			Exception exception,
+			HttpServletRequest request) {
+		return response(ApiErrorCode.INVALID_REQUEST.getCode(), HttpStatus.BAD_REQUEST,
+				"Request is invalid", request, Map.of());
+	}
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    ResponseEntity<ApiErrorResponse<Void>> handleDataIntegrityViolation(
-            DataIntegrityViolationException exception,
-            HttpServletRequest request) {
-        return response(ApiErrorCode.DATA_INTEGRITY_VIOLATION.getCode(), HttpStatus.CONFLICT,
-                "The request conflicts with existing data", request, Map.of());
-    }
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	ResponseEntity<ApiErrorResponse<Void>> handleDataIntegrityViolation(
+			DataIntegrityViolationException exception,
+			HttpServletRequest request) {
+		return response(ApiErrorCode.DATA_INTEGRITY_VIOLATION.getCode(), HttpStatus.CONFLICT,
+				"The request conflicts with existing data", request, Map.of());
+	}
 
-    @ExceptionHandler(Exception.class)
-    ResponseEntity<ApiErrorResponse<Void>> handleUnexpected(
-            Exception exception,
-            HttpServletRequest request) {
-        LOGGER.error("Unhandled exception while processing {} {}",
-                request.getMethod(), request.getRequestURI(), exception);
-        return response(ApiErrorCode.INTERNAL_SERVER_ERROR.getCode(), HttpStatus.INTERNAL_SERVER_ERROR,
-                "An unexpected error occurred", request, Map.of());
-    }
+	@ExceptionHandler(Exception.class)
+	ResponseEntity<ApiErrorResponse<Void>> handleUnexpected(
+			Exception exception,
+			HttpServletRequest request) {
+		LOGGER.error("Unhandled exception while processing {} {}",
+				request.getMethod(), request.getRequestURI(), exception);
+		return response(ApiErrorCode.INTERNAL_SERVER_ERROR.getCode(), HttpStatus.INTERNAL_SERVER_ERROR,
+				"An unexpected error occurred", request, Map.of());
+	}
 
-    private ResponseEntity<ApiErrorResponse<Void>> response(
-            String code,
-            HttpStatus status,
-            String message,
-            HttpServletRequest request,
-            Map<String, String> fieldErrors) {
-        ApiErrorResponse<Void> body = new ApiErrorResponse<>(
-                code,
-                message,
-                new ErrorMeta(Instant.now(), status.value(), request.getRequestURI(), fieldErrors));
-        return ResponseEntity.status(status).body(body);
-    }
+	private ResponseEntity<ApiErrorResponse<Void>> response(
+			String code,
+			HttpStatus status,
+			String message,
+			HttpServletRequest request,
+			Map<String, String> fieldErrors) {
+		ApiErrorResponse<Void> body = new ApiErrorResponse<>(
+				code,
+				message,
+				new ErrorMeta(Instant.now(), status.value(), request.getRequestURI(), fieldErrors));
+		return ResponseEntity.status(status).body(body);
+	}
 }

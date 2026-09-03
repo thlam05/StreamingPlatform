@@ -1,4 +1,4 @@
-package com.thlam.streaming.common.exception;
+package com.thlam.streaming.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
