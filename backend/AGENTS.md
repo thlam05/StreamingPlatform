@@ -46,6 +46,11 @@ src/test/java/com/thlam/streaming/
 
 `common/` holds only genuinely shared code: base entity classes, the API response wrapper, global exception-handling infrastructure, security config, generic utilities. No module-specific logic there.
 
+Current modules include:
+
+- `auth/`: registration, login, and JWT token issuance.
+- `user/`: user persistence, profile retrieval/update, and password updates.
+
 ## Gotchas
 
 ### Database & JPA

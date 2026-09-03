@@ -40,6 +40,22 @@ public class GlobalExceptionHandler {
 				exception.getMessage(), request, Map.of());
 	}
 
+	@ExceptionHandler(InvalidCredentialsException.class)
+	ResponseEntity<ApiErrorResponse<Void>> handleInvalidCredentials(
+			InvalidCredentialsException exception,
+			HttpServletRequest request) {
+		return response(ApiErrorCode.INVALID_REQUEST.getCode(), HttpStatus.BAD_REQUEST,
+				exception.getMessage(), request, Map.of());
+	}
+
+	@ExceptionHandler(UnauthorizedException.class)
+	ResponseEntity<ApiErrorResponse<Void>> handleUnauthorized(
+			UnauthorizedException exception,
+			HttpServletRequest request) {
+		return response(ApiErrorCode.AUTHENTICATION_REQUIRED.getCode(), HttpStatus.UNAUTHORIZED,
+				exception.getMessage(), request, Map.of());
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	ResponseEntity<ApiErrorResponse<Void>> handleValidation(
 			MethodArgumentNotValidException exception,
