@@ -1,2 +1,6 @@
 # Local VS Code workspace settings
 .vscode/
+docs/
+
+# Local environment variables
+.env
