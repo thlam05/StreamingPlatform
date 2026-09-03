@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -54,6 +55,14 @@ public class GlobalExceptionHandler {
 			HttpServletRequest request) {
 		return response(ApiErrorCode.AUTHENTICATION_REQUIRED.getCode(), HttpStatus.UNAUTHORIZED,
 				exception.getMessage(), request, Map.of());
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	ResponseEntity<ApiErrorResponse<Void>> handleAccessDenied(
+			AccessDeniedException exception,
+			HttpServletRequest request) {
+		return response(ApiErrorCode.FORBIDDEN.getCode(), HttpStatus.FORBIDDEN,
+				"You do not have permission to access this resource", request, Map.of());
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)

@@ -53,6 +53,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean isActive(UUID userId) {
+        return userRepository.findById(userId)
+                .map(user -> user.getStatus() == UserStatus.ACTIVE)
+                .orElse(false);
+    }
+
+    @Override
     public UserResponse getProfile(UUID userId) {
         return userMapper.toResponse(getActiveUser(userId));
     }

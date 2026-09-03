@@ -50,6 +50,7 @@ Current modules include:
 
 - `auth/`: registration, login, and JWT token issuance.
 - `user/`: user persistence, profile retrieval/update, and password updates.
+- `rbac/`: roles, permissions, user-role assignment, and database-backed authorities.
 
 ## Gotchas
 

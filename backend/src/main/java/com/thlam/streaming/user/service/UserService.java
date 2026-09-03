@@ -17,6 +17,8 @@ public interface UserService {
 
     Optional<UserCredentials> findCredentialsByEmail(String email);
 
+    boolean isActive(UUID userId);
+
     UserResponse getProfile(UUID userId);
 
     UserResponse updateProfile(UUID userId, UpdateProfileRequest request);
