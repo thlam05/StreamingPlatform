@@ -10,12 +10,14 @@ import com.thlam.streaming.common.exception.ConflictException;
 import com.thlam.streaming.common.exception.ResourceNotFoundException;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private static final String USER_NOT_FOUND_MESSAGE = "User not found: ";
@@ -23,15 +25,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-
-    public UserServiceImpl(
-            UserRepository userRepository,
-            UserMapper userMapper,
-            PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     @Transactional

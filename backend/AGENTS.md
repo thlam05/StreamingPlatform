@@ -61,7 +61,11 @@ src/test/java/com/thlam/streaming/
 
 ### Spring conventions
 
-- Constructor injection only (`private final XService service;` + constructor) — never field injection with `@Autowired` on a field.
+- Lombok is enabled for boilerplate reduction. Use `@Getter` and `@Setter` for mutable DTOs where appropriate, and use `@RequiredArgsConstructor` for classes whose dependencies are `final`.
+- Use Lombok constructor annotations such as `@NoArgsConstructor` and `@AllArgsConstructor` when their generated visibility and parameters are correct. Keep explicit constructors when they enforce domain invariants or special JPA visibility requirements.
+- Records already provide their accessors and constructors; do not add Lombok annotations to record-based DTOs.
+- Do not use `@Data` on JPA entities or security-sensitive classes. Avoid generated setters when they would bypass domain methods or expose protected fields.
+- Constructor injection only (`private final XService service;` + constructor, usually generated with `@RequiredArgsConstructor`) — never field injection with `@Autowired` on a field.
 - Read config via `@ConfigurationProperties` or `@Value`, never `System.getenv()` / hardcoded values in business code.
 - Apply request validation with `@Valid` + Bean Validation annotations (`@NotNull`, `@Size`, etc.) on request DTOs — don't hand-roll validation checks in the controller.
 - Controllers are declared inside their own module's `controller/` package, not registered ad hoc elsewhere.
