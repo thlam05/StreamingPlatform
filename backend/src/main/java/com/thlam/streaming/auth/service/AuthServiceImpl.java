@@ -11,6 +11,7 @@ import com.thlam.streaming.user.service.UserCredentials;
 import com.thlam.streaming.user.service.UserService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class AuthServiceImpl implements AuthService {
     private static final String INVALID_CREDENTIALS_MESSAGE = "Invalid email or password";
 
     private final UserService userService;
-    private final AuthorizationPort authorizationPort;
+    private final ObjectProvider<AuthorizationPort> authorizationPortProvider;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenService jwtTokenService;
 
@@ -37,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
                 request.password(),
                 request.displayName(),
                 request.avatarUrl());
-        authorizationPort.assignDefaultRole(user.id());
+        authorizationPortProvider.getObject().assignDefaultRole(user.id());
         return createAuthResponse(user);
     }
 

@@ -3,6 +3,7 @@ package com.thlam.streaming.common.security;
 import java.util.Collections;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class DatabaseJwtAuthenticationConverter
         implements Converter<Jwt, AbstractAuthenticationToken> {
 
-    private final AuthorizationPort authorizationPort;
+    private final ObjectProvider<AuthorizationPort> authorizationPortProvider;
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
@@ -23,7 +24,9 @@ public class DatabaseJwtAuthenticationConverter
             return new JwtAuthenticationToken(jwt, Collections.emptyList());
         }
 
-        return new JwtAuthenticationToken(jwt, authorizationPort.getAuthorities(userId));
+        return new JwtAuthenticationToken(
+                jwt,
+                authorizationPortProvider.getObject().getAuthorities(userId));
     }
 
     private UUID parseUserId(String subject) {
