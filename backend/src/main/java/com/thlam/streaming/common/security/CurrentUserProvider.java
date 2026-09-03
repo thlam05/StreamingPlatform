@@ -22,4 +22,8 @@ public class CurrentUserProvider {
             throw new UnauthorizedException("Authentication is invalid");
         }
     }
+
+    public boolean isCurrentUser(UUID userId) {
+        return userId != null && userId.equals(getRequiredUserId());
+    }
 }

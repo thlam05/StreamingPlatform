@@ -11,6 +11,7 @@ import com.thlam.streaming.user.service.UserCredentials;
 import com.thlam.streaming.user.service.UserService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenService jwtTokenService;
 
     @Override
+    @PreAuthorize("permitAll()")
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         UserResponse user = userService.register(
@@ -40,6 +42,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @PreAuthorize("permitAll()")
     public AuthResponse login(LoginRequest request) {
         Optional<UserCredentials> credentials = userService.findCredentialsByEmail(request.email());
         UserCredentials userCredentials = credentials

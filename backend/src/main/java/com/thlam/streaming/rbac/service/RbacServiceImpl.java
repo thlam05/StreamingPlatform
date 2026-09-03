@@ -80,7 +80,7 @@ public class RbacServiceImpl implements RbacService {
 
     @Override
     public List<RoleResponse> getUserRoles(UUID userId) {
-        userService.getProfile(userId);
+        ensureActiveUser(userId);
         return userRoleRepository.findRolesByUserId(userId).stream()
                 .map(rbacMapper::toRoleResponse)
                 .toList();
@@ -89,7 +89,7 @@ public class RbacServiceImpl implements RbacService {
     @Override
     @Transactional
     public void assignRole(UUID userId, String roleName) {
-        userService.getProfile(userId);
+        ensureActiveUser(userId);
         Role role = findRole(roleName);
         UserRoleId userRoleId = new UserRoleId(userId, role.getId());
         if (userRoleRepository.existsById(userRoleId)) {
@@ -101,7 +101,7 @@ public class RbacServiceImpl implements RbacService {
     @Override
     @Transactional
     public void removeRole(UUID userId, String roleName) {
-        userService.getProfile(userId);
+        ensureActiveUser(userId);
         Role role = findRole(roleName);
         UserRoleId userRoleId = new UserRoleId(userId, role.getId());
         if (!userRoleRepository.existsById(userRoleId)) {
@@ -113,5 +113,11 @@ public class RbacServiceImpl implements RbacService {
     private Role findRole(String roleName) {
         return roleRepository.findByNameIgnoreCase(roleName)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+    }
+
+    private void ensureActiveUser(UUID userId) {
+        if (!userService.isActive(userId)) {
+            throw new ResourceNotFoundException("User not found");
+        }
     }
 }

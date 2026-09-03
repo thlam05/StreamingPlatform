@@ -13,6 +13,7 @@ import com.thlam.streaming.user.repository.UserRepository;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @PreAuthorize("permitAll()")
     @Transactional
     public UserResponse register(
             String username,
@@ -47,6 +49,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("permitAll()")
     public Optional<UserCredentials> findCredentialsByEmail(String email) {
         return userRepository.findByEmailIgnoreCase(email)
                 .map(user -> new UserCredentials(user.getPasswordHash(), userMapper.toResponse(user)));
@@ -60,11 +63,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('PERM_user:read')")
     public UserResponse getProfile(UUID userId) {
         return userMapper.toResponse(getActiveUser(userId));
     }
 
     @Override
+    @PreAuthorize("hasAuthority('PERM_user:update') or @currentUserProvider.isCurrentUser(#p0)")
     @Transactional
     public UserResponse updateProfile(UUID userId, UpdateProfileRequest request) {
         User user = getActiveUser(userId);
@@ -74,6 +79,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('PERM_user:update') or @currentUserProvider.isCurrentUser(#p0)")
     @Transactional
     public void updatePassword(UUID userId, UpdatePasswordRequest request) {
         User user = getActiveUser(userId);
