@@ -76,17 +76,20 @@ class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"not-an-email\",\"password\":\"short\"}"))
                 .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
                 .andExpect(jsonPath("$.message").value("Request validation failed"))
-                .andExpect(jsonPath("$.fieldErrors.email").exists())
-                .andExpect(jsonPath("$.fieldErrors.password").exists())
-                .andExpect(jsonPath("$.fieldErrors.username").exists())
-                .andExpect(jsonPath("$.fieldErrors.role").exists());
+                .andExpect(jsonPath("$.meta.status").value(400))
+                .andExpect(jsonPath("$.meta.fieldErrors.email").exists())
+                .andExpect(jsonPath("$.meta.fieldErrors.password").exists())
+                .andExpect(jsonPath("$.meta.fieldErrors.username").exists())
+                .andExpect(jsonPath("$.meta.fieldErrors.role").exists());
     }
 
     @Test
     void returnsNotFoundForUnknownUser() throws Exception {
         mockMvc.perform(get("/users/{id}", UUID.randomUUID()))
                 .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("RESOURCE_NOT_FOUND"))
                 .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.startsWith("User not found:")));
     }
 

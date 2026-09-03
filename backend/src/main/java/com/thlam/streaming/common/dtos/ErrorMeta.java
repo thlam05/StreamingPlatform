@@ -1,7 +1,7 @@
 package com.thlam.streaming.common.dtos;
 
-import java.util.Map;
 import java.time.Instant;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

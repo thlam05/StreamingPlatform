@@ -1,5 +1,7 @@
 package com.thlam.streaming.common.exception;
 
+import com.thlam.streaming.common.dtos.ApiErrorResponse;
+import com.thlam.streaming.common.dtos.ErrorMeta;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -21,65 +23,71 @@ public class GlobalExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    ResponseEntity<ApiErrorResponse> handleNotFound(
+    ResponseEntity<ApiErrorResponse<Void>> handleNotFound(
             ResourceNotFoundException exception,
             HttpServletRequest request) {
-        return response(HttpStatus.NOT_FOUND, exception.getMessage(), request, Map.of());
+        return response(ApiErrorCode.RESOURCE_NOT_FOUND.getCode(), HttpStatus.NOT_FOUND,
+                exception.getMessage(), request, Map.of());
     }
 
     @ExceptionHandler(ConflictException.class)
-    ResponseEntity<ApiErrorResponse> handleConflict(
+    ResponseEntity<ApiErrorResponse<Void>> handleConflict(
             ConflictException exception,
             HttpServletRequest request) {
-        return response(HttpStatus.CONFLICT, exception.getMessage(), request, Map.of());
+        return response(ApiErrorCode.CONFLICT.getCode(), HttpStatus.CONFLICT,
+                exception.getMessage(), request, Map.of());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<ApiErrorResponse> handleValidation(
+    ResponseEntity<ApiErrorResponse<Void>> handleValidation(
             MethodArgumentNotValidException exception,
             HttpServletRequest request) {
         Map<String, String> fieldErrors = new LinkedHashMap<>();
         exception.getBindingResult().getFieldErrors()
                 .forEach(error -> fieldErrors.putIfAbsent(error.getField(), error.getDefaultMessage()));
-        return response(HttpStatus.BAD_REQUEST, "Request validation failed", request, fieldErrors);
+        return response(ApiErrorCode.VALIDATION_ERROR.getCode(), HttpStatus.BAD_REQUEST,
+                "Request validation failed", request, fieldErrors);
     }
 
     @ExceptionHandler({
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class
     })
-    ResponseEntity<ApiErrorResponse> handleBadRequest(
+    ResponseEntity<ApiErrorResponse<Void>> handleBadRequest(
             Exception exception,
             HttpServletRequest request) {
-        return response(HttpStatus.BAD_REQUEST, "Request is invalid", request, Map.of());
+        return response(ApiErrorCode.INVALID_REQUEST.getCode(), HttpStatus.BAD_REQUEST,
+                "Request is invalid", request, Map.of());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(
+    ResponseEntity<ApiErrorResponse<Void>> handleDataIntegrityViolation(
             DataIntegrityViolationException exception,
             HttpServletRequest request) {
-        return response(HttpStatus.CONFLICT, "The request conflicts with existing data", request, Map.of());
+        return response(ApiErrorCode.DATA_INTEGRITY_VIOLATION.getCode(), HttpStatus.CONFLICT,
+                "The request conflicts with existing data", request, Map.of());
     }
 
     @ExceptionHandler(Exception.class)
-    ResponseEntity<ApiErrorResponse> handleUnexpected(
+    ResponseEntity<ApiErrorResponse<Void>> handleUnexpected(
             Exception exception,
             HttpServletRequest request) {
-        LOGGER.error("Unhandled exception while processing {} {}", request.getMethod(), request.getRequestURI(), exception);
-        return response(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", request, Map.of());
+        LOGGER.error("Unhandled exception while processing {} {}",
+                request.getMethod(), request.getRequestURI(), exception);
+        return response(ApiErrorCode.INTERNAL_SERVER_ERROR.getCode(), HttpStatus.INTERNAL_SERVER_ERROR,
+                "An unexpected error occurred", request, Map.of());
     }
 
-    private ResponseEntity<ApiErrorResponse> response(
+    private ResponseEntity<ApiErrorResponse<Void>> response(
+            String code,
             HttpStatus status,
             String message,
             HttpServletRequest request,
             Map<String, String> fieldErrors) {
-        ApiErrorResponse body = new ApiErrorResponse(
-                Instant.now(),
-                status.value(),
+        ApiErrorResponse<Void> body = new ApiErrorResponse<>(
+                code,
                 message,
-                request.getRequestURI(),
-                fieldErrors);
+                new ErrorMeta(Instant.now(), status.value(), request.getRequestURI(), fieldErrors));
         return ResponseEntity.status(status).body(body);
     }
 }
