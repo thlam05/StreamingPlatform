@@ -5,6 +5,7 @@ import com.thlam.streaming.auth.dto.request.RegisterRequest;
 import com.thlam.streaming.auth.dto.response.AuthResponse;
 import com.thlam.streaming.auth.service.AuthService;
 import com.thlam.streaming.common.dtos.ApiResponse;
+import com.thlam.streaming.common.enums.ApiResponseCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,9 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private static final String REGISTER_CODE = "USER_REGISTERED";
-    private static final String LOGIN_CODE = "LOGIN_SUCCESS";
-
     private final AuthService authService;
 
     @PostMapping("/register")
@@ -29,13 +27,15 @@ public class AuthController {
             @Valid @RequestBody RegisterRequest request) {
         AuthResponse response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(response, REGISTER_CODE, "User registered successfully"));
+                .body(new ApiResponse<>(response, ApiResponseCode.USER_REGISTERED.getCode(),
+                        "User registered successfully"));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(
             @Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
-        return ResponseEntity.ok(new ApiResponse<>(response, LOGIN_CODE, "Login successful"));
+        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.LOGIN_SUCCESS.getCode(),
+                "Login successful"));
     }
 }

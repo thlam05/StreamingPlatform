@@ -3,6 +3,7 @@ package com.thlam.streaming.auth.service;
 import com.thlam.streaming.auth.dto.request.LoginRequest;
 import com.thlam.streaming.auth.dto.request.RegisterRequest;
 import com.thlam.streaming.auth.dto.response.AuthResponse;
+import com.thlam.streaming.common.enums.UserStatus;
 import com.thlam.streaming.common.exception.InvalidCredentialsException;
 import com.thlam.streaming.user.dto.response.UserResponse;
 import com.thlam.streaming.user.service.UserCredentials;
@@ -43,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private boolean hasValidPasswordAndStatus(UserCredentials credentials, String rawPassword) {
-        return "active".equals(credentials.profile().status())
+        return UserStatus.ACTIVE.getCode().equals(credentials.profile().status())
                 && passwordEncoder.matches(rawPassword, credentials.passwordHash());
     }
 

@@ -2,7 +2,6 @@ package com.thlam.streaming.user.mapper;
 
 import com.thlam.streaming.user.dto.response.UserResponse;
 import com.thlam.streaming.user.entity.User;
-import java.util.Locale;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,7 +14,7 @@ public class UserMapper {
                 user.getEmail(),
                 user.getDisplayName(),
                 user.getAvatarUrl(),
-                user.getStatus().name().toLowerCase(Locale.ROOT),
+                user.getStatus().getCode(),
                 user.getCreatedAt(),
                 user.getUpdatedAt());
     }
