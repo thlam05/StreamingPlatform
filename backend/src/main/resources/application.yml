@@ -19,6 +19,11 @@ app:
   jwt:
     secret: ${JWT_SECRET}
     expiration: ${JWT_EXPIRATION:PT1H}
+  stream:
+    credential-encryption-key: ${STREAM_CREDENTIAL_ENCRYPTION_KEY:}
+  ingest:
+    rtmp-url: ${INGEST_RTMP_URL:}
+    callback-secret: ${INGEST_CALLBACK_SECRET:}
 
 server:
   port: ${SERVER_PORT:8080}

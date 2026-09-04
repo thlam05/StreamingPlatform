@@ -49,6 +49,14 @@ public class GlobalExceptionHandler {
 				exception.getMessage(), request, Map.of());
 	}
 
+	@ExceptionHandler(InvalidRequestException.class)
+	ResponseEntity<ApiErrorResponse<Void>> handleInvalidRequest(
+			InvalidRequestException exception,
+			HttpServletRequest request) {
+		return response(ApiErrorCode.INVALID_REQUEST.getCode(), HttpStatus.BAD_REQUEST,
+				exception.getMessage(), request, Map.of());
+	}
+
 	@ExceptionHandler(UnauthorizedException.class)
 	ResponseEntity<ApiErrorResponse<Void>> handleUnauthorized(
 			UnauthorizedException exception,
