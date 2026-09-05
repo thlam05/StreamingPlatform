@@ -1,15 +1,160 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-selection: var(--selection);
+
+  --color-success: var(--success);
+  --color-success-light: var(--success-light);
+  --color-danger: var(--danger);
+  --color-danger-light: var(--danger-light);
+  --color-warning: var(--warning);
+  --color-warning-light: var(--warning-light);
+  --color-info: var(--info);
+  --color-info-light: var(--info-light);
+
+  --color-live: var(--live);
+  --color-live-light: var(--live-light);
 }
 
-html,
-body {
-  @apply bg-white dark:bg-gray-950;
+:root {
+  --background: #fcfcfd;
+  --foreground: #1f2937;
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
+  --primary: #ff7aac;
+  --primary-light: #fdf2f8;
+  --primary-foreground: #ffffff;
+
+  --secondary: #64748b;
+  --secondary-foreground: #ffffff;
+
+  --accent: #ffffff;
+  --accent-foreground: #1f2937;
+
+  --border: #e5e7eb;
+  --selection: #fbcfe8;
+
+  --success: #22c55e;
+  --success-light: #dcfce7;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --warning: #f59e0b;
+  --warning-light: #fef3c7;
+  --info: #0ea5e9;
+  --info-light: #e0f2fe;
+  --live: #ff3b60;
+  --live-light: #fee2e2;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+
+  --primary: #f472b6;
+  --primary-light: #4a044e;
+  --primary-foreground: #ffffff;
+
+  --secondary: #94a3b8;
+  --secondary-foreground: #09090b;
+
+  --accent: #18181b;
+  --accent-foreground: #fafafa;
+
+  --border: #27272a;
+  --selection: #831843;
+
+  --success: #4ade80;
+  --success-light: #14532d;
+  --danger: #f87171;
+  --danger-light: #7f1d1d;
+  --warning: #fbbf24;
+  --warning-light: #78350f;
+  --info: #38bdf8;
+  --info-light: #0c4a6e;
+  --live: #ef4444;
+  --live-light: #7f1d1d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: #09090b;
+    --foreground: #fafafa;
+
+    --primary: #f472b6;
+    --primary-light: #4a044e;
+    --primary-foreground: #ffffff;
+
+    --secondary: #94a3b8;
+    --secondary-foreground: #09090b;
+
+    --accent: #18181b;
+    --accent-foreground: #fafafa;
+
+    --border: #27272a;
+    --selection: #831843;
+
+    --success: #4ade80;
+    --success-light: #14532d;
+    --danger: #f87171;
+    --danger-light: #7f1d1d;
+    --warning: #fbbf24;
+    --warning-light: #78350f;
+    --info: #38bdf8;
+    --info-light: #0c4a6e;
+    --live: #ef4444;
+    --live-light: #7f1d1d;
   }
+}
+
+::selection {
+  background-color: var(--selection);
+  color: var(--foreground);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    background: var(--background);
+  }
+
+  body {
+    min-width: 320px;
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+html {
+  color-scheme: light dark;
 }
