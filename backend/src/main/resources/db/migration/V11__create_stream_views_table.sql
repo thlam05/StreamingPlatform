@@ -18,3 +18,6 @@ CREATE INDEX idx_stream_views_stream_started
 
 CREATE INDEX idx_stream_views_viewer
     ON stream_views (viewer_id, started_at DESC);
+
+CREATE UNIQUE INDEX uq_stream_views_stream_session
+    ON stream_views (stream_id, session_id);

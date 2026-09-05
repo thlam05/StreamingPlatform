@@ -51,10 +51,13 @@ Current modules include:
 - `auth/`: registration, login, and JWT token issuance.
 - `user/`: user persistence, profile retrieval/update, and password updates.
 - `rbac/`: roles, permissions, user-role assignment, and database-backed authorities.
+- `livestream/`: stream lifecycle, ingest credentials, playback metadata, view sessions, follows, likes, and statistics.
 
 ## Gotchas
 
 ### Database & JPA
+
+- Livestream runtime configuration requires `STREAM_CREDENTIAL_ENCRYPTION_KEY`, `INGEST_RTMP_URL`, and `INGEST_CALLBACK_SECRET`; keep them outside source control and configure them per environment.
 
 - Database connection (host, port, user, database name) must be read from environment variables or profile-specific config — never hardcoded.
 - `ddl-auto` stays `validate` — Hibernate must never auto-generate or alter the schema; all schema changes go through Flyway.

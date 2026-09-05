@@ -5,6 +5,7 @@ CREATE TABLE streams (
     title VARCHAR(200) NOT NULL,
     description TEXT,
     thumbnail_url TEXT,
+    playback_url TEXT,
     status VARCHAR(20) NOT NULL,
     started_at TIMESTAMPTZ,
     ended_at TIMESTAMPTZ,

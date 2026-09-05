@@ -1,6 +1,7 @@
 package com.thlam.streaming.user.mapper;
 
 import com.thlam.streaming.user.dto.response.UserResponse;
+import com.thlam.streaming.user.dto.response.UserSummary;
 import com.thlam.streaming.user.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -17,5 +18,9 @@ public class UserMapper {
                 user.getStatus().getCode(),
                 user.getCreatedAt(),
                 user.getUpdatedAt());
+    }
+
+    public UserSummary toSummary(User user) {
+        return new UserSummary(user.getId(), user.getUsername(), user.getDisplayName(), user.getAvatarUrl());
     }
 }

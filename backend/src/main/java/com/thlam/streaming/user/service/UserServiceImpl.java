@@ -7,11 +7,16 @@ import com.thlam.streaming.common.enums.UserStatus;
 import com.thlam.streaming.user.dto.request.UpdatePasswordRequest;
 import com.thlam.streaming.user.dto.request.UpdateProfileRequest;
 import com.thlam.streaming.user.dto.response.UserResponse;
+import com.thlam.streaming.user.dto.response.UserSummary;
 import com.thlam.streaming.user.entity.User;
 import com.thlam.streaming.user.mapper.UserMapper;
 import com.thlam.streaming.user.repository.UserRepository;
 import java.util.Optional;
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -66,6 +71,17 @@ public class UserServiceImpl implements UserService {
     @PreAuthorize("hasAuthority('PERM_user:read')")
     public UserResponse getProfile(UUID userId) {
         return userMapper.toResponse(getActiveUser(userId));
+    }
+
+    @Override
+    public Map<UUID, UserSummary> getPublicProfiles(Collection<UUID> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return Map.of();
+        }
+        return userRepository.findAllById(userIds).stream()
+                .filter(user -> user.getStatus() == UserStatus.ACTIVE)
+                .map(userMapper::toSummary)
+                .collect(Collectors.toUnmodifiableMap(UserSummary::id, Function.identity()));
     }
 
     @Override
