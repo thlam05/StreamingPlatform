@@ -1,165 +1,138 @@
 # Frontend implementation guide
 
-## Project overview
+## Project purpose
 
-This directory contains the StreamingPlatform frontend. It is a React 19 application using:
+This directory contains the StreamingPlatform client. Use the SterioX client as the reference implementation for project structure, styling, routing, API integration, and frontend quality checks.
 
-- React Router v8 with server-side rendering enabled (Framework Mode).
-- TypeScript in strict mode.
-- Vite for development and builds.
-- Tailwind CSS v4 through `@tailwindcss/vite`.
-- The `~/*` TypeScript alias for imports from `app/*`.
+The application is a Vite-powered React SPA using:
 
-Keep frontend changes inside this project unless the task explicitly requires a backend or infrastructure change.
+- React 19 and TypeScript in strict mode.
+- React Router browser routing with `createBrowserRouter`.
+- Vite and `@vitejs/plugin-react` for development and production builds.
+- Tailwind CSS v4 with semantic design tokens in `src/index.css`.
+- Axios through the shared client in `src/services/apiClient.ts`.
+- ESLint, Prettier, Husky, and lint-staged.
 
-## Directory structure
+Do not reintroduce React Router Framework Mode, server-rendered `app/` routes, `react-router.config.ts`, or generated `.react-router/` files unless the architecture is intentionally redesigned and this document is updated in the same change.
 
-This project uses React Router's `app/` file convention (Framework Mode), **not** the generic `src/` SPA layout. Treat the table below as authoritative — it maps the ownership rules to the folders that actually exist in this repo, so there is one structure to follow, not two.
+## Authoritative directory structure
 
 ```text
-{project-name}/
+frontend-client/
 ├── .husky/
-│   └── pre-commit
-├── public/                     # Files served as-is at a stable URL
-├── app/
-│   ├── root.tsx                # App shell, document metadata, global Links, Outlet, ErrorBoundary
-│   ├── routes.ts                # Route configuration (React Router route helpers)
-│   ├── routes/                  # Route modules: loaders, actions, route-specific UI
-│   ├── features/                 # Feature modules, grouped by domain
-│   │   └── <feature-name>/
-│   │       ├── components/       # Feature-owned UI
-│   │       ├── hooks/            # Feature-owned hooks
-│   │       ├── services/         # Feature-owned API calls
-│   │       └── types/            # Feature-owned types
-│   ├── components/               # Cross-feature reusable UI (Button, Modal, Input, Table)
-│   ├── hooks/                     # Shared custom hooks (useDebounce, useLocalStorage)
-│   ├── layouts/                    # Page shells and layout wrappers
-│   ├── services/                    # Shared API client, fetch helpers, interceptors
-│   ├── store/                        # Global client state (e.g. Zustand stores)
-│   ├── types/                         # Shared TypeScript and API types
-│   ├── utils/                          # Pure shared helpers (formatting, errors, `cn`)
-│   ├── config/                          # Typed environment access and app constants
-│   ├── styles/ (or app.css directly)      # Global CSS, Tailwind directives, theme tokens
-│   └── app.css
-├── .gitignore
-├── tsconfig.json
+│   └── pre-commit                 # Staged-file quality checks
+├── public/                        # Public static files and icons
+├── src/
+│   ├── assets/                    # Imported images, fonts, and asset modules
+│   ├── components/
+│   │   ├── ui/                    # Reusable primitives (Button, Input, Modal)
+│   │   ├── layout/                # Header, Sidebar, navigation components
+│   │   └── features/              # Feature-owned presentation components
+│   ├── config/                    # Typed environment access and app constants
+│   ├── features/                  # Domain modules and feature-specific logic
+│   ├── hooks/
+│   │   ├── common/                # Shared hooks
+│   │   └── features/              # Feature-specific hooks
+│   ├── layouts/                   # Page shells containing Outlet/layout composition
+│   ├── pages/                     # Route-level page components
+│   ├── routes/                    # Router definition and centralized paths
+│   ├── services/                  # Axios client and API service modules
+│   ├── store/                     # Cross-feature client state, only when needed
+│   ├── styles/                    # Extra global style modules when needed
+│   ├── types/                     # Shared API and domain types
+│   ├── utils/                     # Pure helpers and error/formatting utilities
+│   ├── App.tsx                    # Root RouterProvider component
+│   ├── index.css                  # Tailwind import and semantic theme tokens
+│   └── main.tsx                   # Browser entrypoint
+├── .env.example                   # Documented environment variables
 ├── eslint.config.js
-├── .prettierrc
-├── vite.config.ts
-├── react-router.config.ts
-└── package.json
+├── index.html
+├── package.json
+├── tsconfig.json
+├── tsconfig.app.json
+├── tsconfig.node.json
+└── vite.config.ts
 ```
 
-Notes on the scaffold:
+Do not create a second source tree. Feature code belongs under `src/features/<feature-name>/`; cross-feature UI belongs under `src/components/`; route-level composition belongs under `src/pages/`.
 
-- `app/welcome/` is starter/template content; replace or remove it when implementing product UI.
-- Until an explicit migration is requested, do not introduce a parallel `src/` tree alongside `app/`. If a task genuinely requires switching to SPA mode, migrate the structure completely (routes, config, and this document) in the same change rather than letting both conventions coexist.
+## Architecture and ownership
 
-Directory ownership rules (apply within `app/`, as mapped above):
+- `src/main.tsx` mounts `App`; it must not contain feature logic.
+- `src/App.tsx` owns the `RouterProvider` boundary.
+- `src/routes/index.tsx` owns `createBrowserRouter`; `src/routes/paths.ts` is the source of truth for URLs.
+- `src/pages/` contains thin route-level components. Pages compose layouts and features instead of owning API details.
+- `src/layouts/` contains shared page shells and `Outlet` composition.
+- `src/components/ui/` contains reusable, domain-neutral controls. Keep feature-specific UI out of this folder.
+- `src/features/<feature>/` contains feature components, hooks, services, and types that are not broadly reusable.
+- `src/services/` contains transport and cross-feature API modules. Feature services should call the shared Axios client.
+- `src/config/` is the only place where `import.meta.env` should be read.
+- `src/store/` is for state shared across unrelated routes. Keep transient form and view state local.
+- `src/utils/` should remain pure and framework-independent where possible.
+- Use the `@/*` alias for imports from `src/*`. Use relative imports only for files that are immediately adjacent.
 
-- Put feature-specific code under `app/features/<feature-name>/`, grouped by domain rather than by file type. A feature may contain its own components, hooks, services, and types.
-- Put a component in `app/components/` only when it is genuinely reusable across features. Do not place feature-specific UI there.
-- Keep `app/routes/` focused on route definitions, loaders/actions, guards, and navigation concerns; route modules should compose feature components rather than contain business logic themselves.
-- Keep `app/services/` focused on transport and API integration for cross-feature use. Feature-specific API calls live in the feature's own `services/` folder instead.
-- Use `app/config/` for typed environment access and application constants. Never commit secrets or expose private credentials to the browser (see "Environment variables" below).
-- Use `app/store/` only for state needed across unrelated routes/features. Keep local UI state local to the component or feature.
-- Keep shared helpers in `app/utils/` pure and framework-independent whenever possible.
-- Use `app/assets/` (if present) for imported assets and `public/` for files that must be served by a stable public URL.
+## Routing
 
-## Implementation conventions
+- Use `createBrowserRouter`, `RouterProvider`, `Link`, `NavLink`, `Navigate`, and `Outlet` from `react-router`.
+- Register paths in `src/routes/paths.ts` before using them in components.
+- Keep public auth paths under `/auth/*`; current auth routes are `/auth/login` and `/auth/register`.
+- Add protected routes through an explicit route guard/layout once authentication state is available. Do not hide protected pages only with client-side styling.
+- Add a route-level fallback for unknown paths and preserve accessible navigation states.
 
-1. Use TypeScript and keep `strict` type checking clean. Do not use `any` to bypass a type problem; define a type, narrow the value, or handle the error explicitly.
-2. Prefer route modules for page-level data loading and mutations. Use React Router loaders/actions and generated route types where appropriate instead of fetching everything in `useEffect`.
-3. Keep reusable presentation and interaction components close to the feature that owns them. Create shared components only when they are genuinely reused.
-4. Use the `~/*` alias for imports that cross feature boundaries; use relative imports for nearby files when that is clearer.
-5. Keep server-only code out of browser components. Treat secrets, tokens, database access, and private API credentials as server-only values; never expose them in client bundles.
-6. Use semantic HTML, keyboard-accessible controls, visible focus states, labels for form fields, useful alt text, and accessible names for icon-only buttons.
-7. Design responsive states deliberately for mobile, tablet, and desktop. Handle loading, empty, error, disabled, and long-content states rather than styling only the happy path.
-8. Reuse Tailwind utilities and the theme in `app/app.css`. Avoid adding a new styling library or global CSS pattern without a clear reason.
-9. Use stable keys for lists, avoid unnecessary effects, and keep rendering pure. Memoization should solve a measured problem, not be added by default.
-10. Preserve existing behavior outside the requested scope. Do not rewrite generated files under `.react-router/` or commit build output.
+## Styling and design system
 
-## Routing and SSR
+- `src/index.css` is the source of truth for the SterioX-inspired palette and semantic Tailwind tokens.
+- Prefer classes such as `bg-primary`, `bg-primary-light`, `text-foreground`, `text-secondary`, `border-border`, `bg-success-light`, and `text-danger` over hard-coded hex values in components.
+- Preserve light and dark token values. Add a new token only when the existing semantic palette cannot express the requirement.
+- Reuse UI primitives from `src/components/ui/` before creating one-off controls.
+- Use responsive layouts deliberately for mobile, tablet, and desktop. Include loading, empty, error, disabled, and long-content states.
+- Use semantic HTML, visible focus states, keyboard-accessible controls, associated labels, useful alt text, and accessible names for icon-only controls.
+- Use Lucide icons or existing project assets when an icon is needed; do not introduce ad-hoc SVG variants without a reason.
 
-- Register every new route in `app/routes.ts` and add its route module under `app/routes/`.
-- Route `meta` functions should provide an accurate page title and description.
-- Assume route code can participate in SSR. Do not read browser-only globals such as `window`, `document`, or `localStorage` during server rendering; guard browser-only work or move it to an appropriate client-side lifecycle (e.g. `useEffect`, or a `clientLoader`/`clientAction` where the route needs browser-only data).
-- Use `Link`/`NavLink` for internal navigation instead of raw anchors when navigation should stay inside the app.
-- Add pending and error UI for navigations or mutations that can take noticeable time.
-- Keep the root `ErrorBoundary` useful, and add route-specific error handling only when the route can provide better recovery guidance.
+## API and authentication
 
-## Styling and assets
-
-- Prefer Tailwind classes for component styles and keep repeated values consistent with the design system.
-- Put global resets, fonts, theme tokens, and truly global rules in `app/app.css`.
-- Treat the color tokens in `app/app.css` as the source of truth, based on the SterioX palette. Prefer semantic classes such as `bg-primary`, `text-foreground`, `border-border`, `bg-success-light`, and `text-danger` over hard-coded hex values in components.
-- Preserve both light and dark palette values. Add a new color token only when the existing semantic palette cannot express the requirement, and document the reason in `app/app.css`.
-- Put static images, favicons, and other immutable public files in `public/`; import component-owned assets when bundling them is preferable.
-- Optimize large media assets and provide responsive sizing.
-- Before adding a remote font, image host, or third-party script, confirm it's from an intentional, production-appropriate source (not a placeholder/demo URL) and check its licensing and performance cost (e.g. self-host fonts where practical instead of a render-blocking remote request).
-
-## API and state
-
-- Centralize API request details and response types instead of duplicating URLs and parsing logic across components.
-- Use `app/services/api-client.ts` as the shared Axios instance. Feature services should import `apiClient`; do not call Axios or construct backend URLs directly inside components.
-- Read the backend base URL from `VITE_API_BASE_URL` through `app/config/env.ts`. The local development default is `http://localhost:8080`.
-- Handle Axios failures explicitly, validate untrusted response data, and surface actionable errors to users.
-- Keep server state in route data when possible. Use local component state for transient UI state such as dialogs, filters, and form controls.
-- Do not put sensitive data in URL parameters, browser storage, logs, or rendered HTML.
-- Follow the backend contract that exists in the workspace; if a contract is unclear, document the assumption in the change rather than silently inventing incompatible fields.
+- Use `src/services/apiClient.ts` for all Axios requests; do not construct Axios instances or backend URLs inside components.
+- Read `VITE_API_BASE_URL` through `src/config/globalConfig.ts`. Local development defaults to `http://localhost:8080`.
+- Backend auth endpoints are `POST /auth/login` and `POST /auth/register`.
+- Keep request/response types in `src/types/` or the owning feature's `types.ts`. Validate untrusted response data before using it.
+- Handle Axios errors through the shared error helper and show actionable messages to users.
+- The access token is stored only by the auth/API layer and sent as a Bearer token by the shared client. Never log tokens or render them into the UI.
+- Never expose private credentials in `VITE_*` variables; Vite exposes those values to the browser bundle.
 
 ## Environment variables
 
-- Vite only exposes variables prefixed with `VITE_` to client-side code; anything without that prefix stays server-only and is unavailable in the browser bundle. Choose the prefix deliberately — don't add `VITE_` to a value just to make it "work" if that value shouldn't reach the browser.
-- Access environment variables only through `app/config/` (typed accessors), not `import.meta.env` scattered across components, so a missing or misnamed variable fails in one place with a clear error.
-- Document required environment variables (name, purpose, client vs. server) in a `.env.example` file; never commit a real `.env`.
+- Document client variables in `.env.example` and keep local values in the ignored `.env` file.
+- `VITE_API_BASE_URL` is a public backend base URL, not a secret.
+- Keep all environment access in `src/config/`; do not scatter `import.meta.env` through pages or components.
 
-## Testing
+## Code quality and commands
 
-- Use Vitest with React Testing Library for component and hook tests; colocate test files next to the code they cover (e.g. `DescriptionEditor.test.tsx` beside `DescriptionEditor.tsx`).
-- Test behavior (what the user sees and can do) rather than implementation details; avoid asserting on internal state or component structure.
-- Add a `test` script (and `test:watch` if useful) to `package.json`, and run it in `.husky/pre-commit` or CI once introduced. Do not let a missing test suite block small, low-risk changes, but add coverage for new business logic (validators, formatters, non-trivial hooks) as it's introduced.
-
-## Commands and validation
-
-Run commands from this directory:
+Run commands from `frontend-client/`:
 
 ```bash
-npm install       # only when dependencies or the lockfile require it
-npm run dev       # local development with HMR
-npm run lint      # ESLint validation
-npm run lint:fix  # ESLint autofix for safe fixes
-npm run format    # Prettier check
-npm run format:fix # Prettier autofix
-npm run typecheck # generate React Router types and run TypeScript
-npm run build     # production build
-npm run start     # serve the production build
-npm run test      # run the test suite, once introduced
+npm install
+npm run dev
+npm run lint
+npm run lint:fix
+npm run format
+npm run format:fix
+npm run typecheck
+npm run build
+npm run preview
 ```
 
-## ESLint and Prettier
+Before handoff:
 
-- Use ESLint for code-quality and correctness checks, and Prettier for consistent formatting. Both are required for frontend code.
-- Keep the ESLint configuration in `eslint.config.js` and the Prettier configuration in `.prettierrc`. Do not add competing formatter or linter configurations.
-- Configure ESLint for TypeScript, React, React Hooks, React Router, and accessibility rules where supported by the installed packages.
-- Do not disable a lint rule inline unless the exception is necessary, narrowly scoped, and documented beside the disable comment.
-- Add a `.prettierignore` when generated output, build artifacts, or vendored files need to be excluded.
-- Configure `.husky/pre-commit` to run staged-file checks (ESLint, Prettier, and — once introduced — affected tests) before a commit is created. Do not make the hook silently ignore failures.
-
-Before handing off a change:
-
-1. Run `npm run lint` and `npm run format`.
-2. Run `npm run typecheck`.
-3. Run `npm run test` if a test suite exists.
+1. Run `npm run lint`.
+2. Run `npm run format`.
+3. Run `npm run typecheck`.
 4. Run `npm run build` for route, configuration, dependency, or production-facing changes.
-5. Manually verify the affected flow at mobile and desktop widths, including keyboard navigation and error/empty states.
-6. Review the diff for accidental generated files, secrets, debug output, or unrelated formatting changes.
+5. Manually verify affected flows at mobile and desktop widths, including keyboard navigation and API error states.
 
-If ESLint, Prettier, or pre-commit tooling is not yet installed, add the required dev dependencies and scripts as part of the setup change.
+Keep `.husky/pre-commit` running lint-staged. Staged TypeScript/JavaScript files must pass ESLint and Prettier before commit. Do not silently ignore hook failures.
 
-## Dependency and change discipline
+## Dependency discipline
 
-- Prefer the existing React Router, React, TypeScript, Vite, and Tailwind stack.
-- Add a dependency only when it materially reduces complexity or provides required functionality. Update `package-lock.json` together with `package.json`.
-- Do not change SSR mode, build configuration, Docker behavior, or environment-variable conventions without explaining the impact.
-- Keep commits and patches focused; avoid replacing the starter architecture wholesale unless the task calls for it.
+- Prefer the existing Vite, React, React Router, Tailwind, Axios, and UI patterns from the SterioX reference.
+- Add a dependency only when it materially reduces complexity or is required by a feature. Update `package-lock.json` with `package.json`.
+- Keep commits focused and do not commit `dist/`, `build/`, `.react-router/`, real `.env` files, tokens, or debug output.

@@ -1,87 +1,59 @@
-# Welcome to React Router! aaa
+# StreamingPlatform frontend
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Vite + React + TypeScript SPA for the StreamingPlatform product. The project follows the frontend structure and UI conventions established in the SterioX client.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+## Stack
 
-## Features
+- React 19 and React Router
+- Vite with Tailwind CSS v4
+- Axios for backend requests
+- ESLint, Prettier, Husky, and lint-staged
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+## Getting started
 
-## Getting Started
-
-### Installation
-
-Install the dependencies:
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-### Development
+Create a local environment file if one does not exist:
 
-Start the development server with HMR:
+```bash
+copy .env.example .env
+```
+
+The default backend URL is `http://localhost:8080` through `VITE_API_BASE_URL`.
+
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+The app is available at `http://localhost:5173`.
 
-## Building for Production
+## Routes
 
-Create a production build:
+- `/`: public landing page
+- `/auth/login`: login page connected to `POST /auth/login`
+- `/auth/register`: registration page connected to `POST /auth/register`
+
+## Validation and production
 
 ```bash
+npm run lint
+npm run format
+npm run typecheck
 npm run build
+npm run preview
 ```
 
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
+The production output is written to `dist/`. Docker serves the SPA through Nginx:
 
 ```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
+docker build -t streamingplatform-frontend .
+docker run --rm -p 3000:80 streamingplatform-frontend
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+See `AGENTS.md` for directory ownership, API, styling, routing, and quality rules.

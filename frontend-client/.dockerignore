@@ -1,4 +1,7 @@
-.react-router
-build
 node_modules
-README.md
+dist
+.git
+.husky/_
+.env
+.env.*
+!.env.example

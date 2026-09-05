@@ -4,6 +4,6 @@
 !.env.example
 /node_modules/
 
-# React Router
-/.react-router/
-/build/
+/dist/
+/coverage/
+/.vite/
