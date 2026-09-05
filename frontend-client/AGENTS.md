@@ -101,7 +101,9 @@ Directory ownership rules (apply within `app/`, as mapped above):
 ## API and state
 
 - Centralize API request details and response types instead of duplicating URLs and parsing logic across components.
-- Check `response.ok`, validate untrusted response data, and surface actionable errors to users.
+- Use `app/services/api-client.ts` as the shared Axios instance. Feature services should import `apiClient`; do not call Axios or construct backend URLs directly inside components.
+- Read the backend base URL from `VITE_API_BASE_URL` through `app/config/env.ts`. The local development default is `http://localhost:8080`.
+- Handle Axios failures explicitly, validate untrusted response data, and surface actionable errors to users.
 - Keep server state in route data when possible. Use local component state for transient UI state such as dialogs, filters, and form controls.
 - Do not put sensitive data in URL parameters, browser storage, logs, or rendered HTML.
 - Follow the backend contract that exists in the workspace; if a contract is unclear, document the assumption in the change rather than silently inventing incompatible fields.
