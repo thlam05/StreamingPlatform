@@ -1,59 +1,63 @@
 /* Light palette from SterioX, with the dark theme enabled by default in index.html. */
 :root {
-  --background: #fcfcfd;
-  --foreground: #1f2937;
+  --background: #f8fafc;
+  --foreground: #0f172a;
 
   --primary: #ff7aac;
   --primary-light: #fdf2f8;
+  --primary-strong: #ff5f9e;
   --primary-foreground: #ffffff;
 
   --secondary: #64748b;
-  --secondary-foreground: #ffffff;
+  --secondary-foreground: #f8fafc;
 
   --accent: #ffffff;
-  --accent-foreground: #1f2937;
-  --border: #e5e7eb;
-  --selection: #fbcfe8;
+  --accent-foreground: #0f172a;
+  --surface-muted: #f1f5f9;
+  --border: #e2e8f0;
+  --selection: #ddd6fe;
 
-  --success: #22c55e;
+  --success: #16a34a;
   --success-light: #dcfce7;
-  --danger: #ef4444;
+  --danger: #dc2626;
   --danger-light: #fee2e2;
-  --warning: #f59e0b;
+  --warning: #d97706;
   --warning-light: #fef3c7;
-  --info: #0ea5e9;
+  --info: #0284c7;
   --info-light: #e0f2fe;
-  --live: #ff3b60;
+  --live: #e11d48;
   --live-light: #fee2e2;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .dark {
-  --background: #09090b;
-  --foreground: #fafafa;
+  --background: #0b1020;
+  --foreground: #f8fafc;
 
   --primary: #f472b6;
-  --primary-light: #4a044e;
+  --primary-light: #500724;
+  --primary-strong: #f9a8d4;
   --primary-foreground: #ffffff;
 
   --secondary: #94a3b8;
-  --secondary-foreground: #09090b;
+  --secondary-foreground: #0b1020;
 
-  --accent: #18181b;
-  --accent-foreground: #fafafa;
-  --border: #27272a;
-  --selection: #831843;
+  --accent: #151b2e;
+  --accent-foreground: #f8fafc;
+  --surface-muted: #202a40;
+  --border: #27324a;
+  --selection: #4c1d95;
 
-  --success: #4ade80;
+  --success: #34d399;
   --success-light: #14532d;
-  --danger: #f87171;
+  --danger: #fb7185;
   --danger-light: #7f1d1d;
   --warning: #fbbf24;
   --warning-light: #78350f;
   --info: #38bdf8;
   --info-light: #0c4a6e;
-  --live: #ef4444;
+  --live: #fb7185;
   --live-light: #7f1d1d;
 }
 
@@ -62,11 +66,11 @@
   --color-ink-950: var(--background);
   --color-ink-900: var(--accent);
   --color-surface: var(--accent);
-  --color-surface-muted: var(--border);
+  --color-surface-muted: var(--surface-muted);
   --color-copy: var(--foreground);
   --color-copy-muted: var(--secondary);
   --color-brand: var(--primary);
-  --color-brand-strong: #f9a8d4;
+  --color-brand-strong: var(--primary-strong);
 }
 
 @theme inline {
@@ -74,6 +78,7 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-primary-light: var(--primary-light);
+  --color-primary-strong: var(--primary-strong);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
