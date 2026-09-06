@@ -1,0 +1,22 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: var(--color-ink-950);
+  color: var(--color-copy);
+  font-family: var(--font-sans);
+}
+
+button,
+input {
+  font: inherit;
+}

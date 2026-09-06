@@ -17,11 +17,14 @@ frontend-client/
 │   ├── assets/                     # Images, icons, and fonts only; no application code
 │   │
 │   ├── components/                 # Reusable UI across the whole app; no business logic
+│   │   ├── layout/                 # Shared layout components such as Header and Sidebar
+│   │   │   ├── Header.tsx
+│   │   │   └── Sidebar.tsx
 │   │   └── ui/
-│   │       ├── Button/
-│   │       ├── Input/
-│   │       ├── Modal/
-│   │       └── Spinner/
+│   │       ├── Button.tsx
+│   │       ├── Input.tsx
+│   │       ├── Modal.tsx
+│   │       └── Spinner.tsx
 │   │
 │   ├── config/
 │   │   ├── env.ts                  # Read and validate import.meta.env variables
@@ -118,6 +121,17 @@ frontend-client/
 13. Keep app-wide constants in `src/config/constants.ts`. Route paths must be defined in `src/routes/paths.ts`.
 14. Keep the `auth` domain responsible for authentication concerns. Reuse the global auth state from `src/store/authStore.ts` where both routing and layouts need it.
 15. Keep stream listing, stream setup, and stream detail code under the single `src/features/stream/` domain to avoid duplicated services and types.
+
+## Layout component rules
+
+1. Put application-wide layout components such as `Header`, `Sidebar`, `Footer`, and navigation shells under `src/components/layout/`.
+2. Keep shared UI and layout components as direct files inside their category folder, for example `src/components/ui/Button.tsx` and `src/components/layout/Header.tsx`. Do not create an extra folder for each component unless it needs multiple closely related files.
+3. Keep files in `src/layouts/` focused on composition: combine layout components, render `Outlet`, and define page regions. Do not duplicate header or sidebar markup inside individual layouts.
+4. Layout components must not contain route-specific business logic. Keep feature actions and domain data in `src/features/` and pass only the required display data or callbacks into layout components.
+5. Sidebar and header navigation must use `NavLink`, `Link`, and centralized paths from `src/routes/paths.ts`. Do not hardcode route strings in layout components.
+6. Reuse the same layout component across pages that share the same shell. Create a new layout only when the page structure or access boundary is materially different.
+7. Layout components must be responsive and accessible. Use semantic landmarks, keyboard-accessible controls, visible focus states, and accessible labels for icon-only actions.
+8. Keep layout-specific styling in the component through Tailwind utilities or shared layout styles. Do not place layout markup or styles inside feature components.
 
 ## Code quality
 
