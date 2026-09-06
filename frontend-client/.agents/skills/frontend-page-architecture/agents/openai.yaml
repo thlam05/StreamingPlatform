@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Page Architecture"
+  short_description: "Structure pages into focused reusable modules"
+  default_prompt: "Use $frontend-page-architecture to build this frontend page with reusable components and focused hooks."

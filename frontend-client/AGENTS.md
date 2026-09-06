@@ -19,6 +19,8 @@ Do not reintroduce React Router Framework Mode, server-rendered `app/` routes, `
 
 ```text
 frontend-client/
+├── .agents/skills/frontend-page-architecture/
+│   └── SKILL.md                   # Page/component/hook decomposition workflow
 ├── .husky/
 │   └── pre-commit                 # Staged-file quality checks
 ├── public/                        # Public static files and icons
@@ -55,6 +57,8 @@ frontend-client/
 ```
 
 Do not create a second source tree. Feature code belongs under `src/features/<feature-name>/`; cross-feature UI belongs under `src/components/`; route-level composition belongs under `src/pages/`.
+
+For new pages or page refactors, use the project-local skill at `.agents/skills/frontend-page-architecture/SKILL.md`. It is the source of truth for deciding component, hook, service, and page boundaries.
 
 ## Architecture and ownership
 

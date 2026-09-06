@@ -1,3 +1,13 @@
+export type AuthMode = "login" | "register";
+
+export interface AuthFormValues {
+  username: string;
+  displayName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export interface AuthResponse {
   accessToken: string;
   tokenType: string;

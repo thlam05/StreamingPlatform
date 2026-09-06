@@ -29,27 +29,25 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
-        <div className="rounded-[2rem] border border-border bg-accent p-4 shadow-2xl shadow-foreground/10">
-          <div className="rounded-[1.5rem] bg-foreground p-6 text-primary-foreground sm:p-8">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.18em] text-primary-foreground/60">
+        <div className="rounded-[2rem] border border-primary/15 bg-accent p-4 shadow-2xl shadow-primary/10">
+          <div className="rounded-[1.5rem] bg-primary-light p-6 text-foreground sm:p-8">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.18em] text-primary">
               <span>Live now</span>
-              <span className="flex items-center gap-2 text-live-light">
+              <span className="flex items-center gap-2 text-live">
                 <span className="h-2 w-2 rounded-full bg-live" /> 2.8k viewers
               </span>
             </div>
-            <div className="mt-16 flex aspect-video items-end rounded-2xl bg-gradient-to-br from-primary/80 via-primary/30 to-info/30 p-5">
+            <div className="mt-16 flex aspect-video items-end rounded-2xl bg-gradient-to-br from-primary/45 via-primary/15 to-info-light p-5">
               <div>
-                <p className="text-xs font-semibold text-primary-foreground/70">
-                  Late night stories
-                </p>
+                <p className="text-xs font-semibold text-secondary">Late night stories</p>
                 <p className="mt-1 text-2xl font-black">No script, just real conversations.</p>
               </div>
             </div>
             <div className="mt-5 flex items-center gap-3">
-              <span className="h-10 w-10 rounded-full bg-primary-light" />
+              <span className="h-10 w-10 rounded-full bg-primary/25" />
               <div>
                 <p className="text-sm font-bold">Minh Anh Live</p>
-                <p className="text-xs text-primary-foreground/60">Talk · Live room</p>
+                <p className="text-xs text-secondary">Talk · Live room</p>
               </div>
             </div>
           </div>
