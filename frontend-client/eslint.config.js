@@ -18,5 +18,46 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          fixStyle: 'separate-type-imports',
+          prefer: 'type-imports',
+        },
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          caughtErrors: 'none',
+          varsIgnorePattern: '^_',
+        },
+      ],
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-duplicate-imports': 'error',
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'axios',
+              message:
+                'Use the shared Axios instance from src/services/apiClient.ts.',
+            },
+          ],
+        },
+      ],
+      'no-var': 'error',
+      eqeqeq: 'error',
+      'prefer-const': 'error',
+    },
+  },
+  {
+    files: ['src/services/apiClient.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
+    },
   },
 ])
