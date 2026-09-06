@@ -108,7 +108,7 @@ frontend-client/
 3. Put UI used across the entire application in `src/components/`. Put UI used by only one domain in that feature's `components/` folder.
 4. Keep `src/layouts/` focused on shared structure such as headers, sidebars, footers, and `Outlet`. Layouts must not own feature-specific business logic.
 5. Keep `src/routes/` focused on route configuration and guards. Do not put complex UI or domain services there.
-6. Put shared API infrastructure in `src/services/`; domain-specific API calls belong in the relevant feature's `services/` folder.
+6. Put shared API infrastructure in `src/services/`; domain-specific API calls belong in the relevant feature's `services/` folder. Use exactly one shared Axios instance for the entire application, defined in `src/services/apiClient.ts`. Do not create additional Axios instances or call Axios directly from features.
 7. Put state shared by multiple features in `src/store/`. Keep state used by only one domain in that feature's `stores/` folder.
 8. Put reusable hooks in `src/hooks/`. Keep feature-specific hooks inside the relevant feature.
 9. Put app-wide types in `src/types/`; keep domain types inside the relevant feature's `types/` folder.
@@ -118,6 +118,38 @@ frontend-client/
 13. Keep app-wide constants in `src/config/constants.ts`. Route paths must be defined in `src/routes/paths.ts`.
 14. Keep the `auth` domain responsible for authentication concerns. Reuse the global auth state from `src/store/authStore.ts` where both routing and layouts need it.
 15. Keep stream listing, stream setup, and stream detail code under the single `src/features/stream/` domain to avoid duplicated services and types.
+
+## Code quality
+
+1. Use TypeScript types or interfaces for component props, API responses, and shared data structures. Avoid `any` unless there is a documented reason.
+2. Keep components focused on one responsibility. Extract complex logic into hooks, services, or utility functions.
+3. Use named exports by default. Use default exports only when required by a framework or an existing project convention.
+4. Use consistent naming:
+   - Components: `PascalCase`
+   - Hooks: `useCamelCase`
+   - Functions and variables: `camelCase`
+   - Constants: `UPPER_SNAKE_CASE`
+   - Types and interfaces: `PascalCase`
+5. Use path aliases instead of long relative imports when the project supports them.
+6. Define the application color palette centrally in `src/styles/theme.css` using CSS variables or design tokens. Do not hardcode hex, RGB, or HSL color values directly in components or feature styles.
+7. Prefer semantic color tokens such as `--color-primary`, `--color-background`, `--color-text`, and `--color-error` over context-specific names. Keep color usage consistent across the application.
+
+## Styling and icon rules
+
+1. Use Tailwind CSS utility classes for component styling. Avoid adding separate CSS files or inline styles when the same result can be expressed with existing Tailwind utilities.
+2. Use the shared design tokens from `src/styles/theme.css` for colors, spacing, typography, and other visual values. Avoid arbitrary Tailwind values when an existing project token is available.
+3. Keep complex or repeated Tailwind class combinations readable. Extract them into reusable components or a shared class utility instead of creating excessively long class strings.
+4. Use Lucide icons through the project's Lucide icon package. Do not manually draw replacement SVG icons, use emoji as UI icons, or add another icon library without an explicit reason.
+5. Use consistent Lucide icon sizes and stroke widths according to the surrounding component and design system.
+6. Decorative Lucide icons must be hidden from assistive technology with the appropriate accessibility attribute. Icons that convey meaning must have an accessible label or accompanying text.
+
+## Loading and asynchronous state rules
+
+1. Every asynchronous operation must provide clear loading, success, empty, and error states where applicable.
+2. Use an appropriate loading indicator such as a spinner, skeleton, or progress state. The indicator must match the expected loading duration and UI context.
+3. Disable submit buttons and other actions that must not be repeated while their operation is in progress. Prevent duplicate API requests.
+4. Preserve already loaded content during background refreshes when possible. Avoid replacing the entire screen with a loading state for small or independent updates.
+5. Loading indicators must be accessible and must not rely on animation or color alone to communicate status.
 
 ## React Router rules
 
