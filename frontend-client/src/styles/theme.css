@@ -1,22 +1,101 @@
+/* Light palette from SterioX, with the dark theme enabled by default in index.html. */
 :root {
-  --color-ink-950: #090b12;
-  --color-ink-900: #10131c;
-  --color-surface: #171c28;
-  --color-surface-muted: #20283a;
-  --color-border: #2a3448;
-  --color-copy: #f4f6fb;
-  --color-copy-muted: #9aa6bd;
-  --color-brand: #a99bff;
-  --color-brand-strong: #c0b7ff;
-  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --background: #fcfcfd;
+  --foreground: #1f2937;
+
+  --primary: #ff7aac;
+  --primary-light: #fdf2f8;
+  --primary-foreground: #ffffff;
+
+  --secondary: #64748b;
+  --secondary-foreground: #ffffff;
+
+  --accent: #ffffff;
+  --accent-foreground: #1f2937;
+  --border: #e5e7eb;
+  --selection: #fbcfe8;
+
+  --success: #22c55e;
+  --success-light: #dcfce7;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --warning: #f59e0b;
+  --warning-light: #fef3c7;
+  --info: #0ea5e9;
+  --info-light: #e0f2fe;
+  --live: #ff3b60;
+  --live-light: #fee2e2;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+
+  --primary: #f472b6;
+  --primary-light: #4a044e;
+  --primary-foreground: #ffffff;
+
+  --secondary: #94a3b8;
+  --secondary-foreground: #09090b;
+
+  --accent: #18181b;
+  --accent-foreground: #fafafa;
+  --border: #27272a;
+  --selection: #831843;
+
+  --success: #4ade80;
+  --success-light: #14532d;
+  --danger: #f87171;
+  --danger-light: #7f1d1d;
+  --warning: #fbbf24;
+  --warning-light: #78350f;
+  --info: #38bdf8;
+  --info-light: #0c4a6e;
+  --live: #ef4444;
+  --live-light: #7f1d1d;
+}
+
+/* Aliases retained for the existing sample components. */
+:root {
+  --color-ink-950: var(--background);
+  --color-ink-900: var(--accent);
+  --color-surface: var(--accent);
+  --color-surface-muted: var(--border);
+  --color-copy: var(--foreground);
+  --color-copy-muted: var(--secondary);
+  --color-brand: var(--primary);
+  --color-brand-strong: #f9a8d4;
 }
 
 @theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-selection: var(--selection);
+  --color-success: var(--success);
+  --color-success-light: var(--success-light);
+  --color-danger: var(--danger);
+  --color-danger-light: var(--danger-light);
+  --color-warning: var(--warning);
+  --color-warning-light: var(--warning-light);
+  --color-info: var(--info);
+  --color-info-light: var(--info-light);
+  --color-live: var(--live);
+  --color-live-light: var(--live-light);
+
   --color-ink-950: var(--color-ink-950);
   --color-ink-900: var(--color-ink-900);
   --color-surface: var(--color-surface);
   --color-surface-muted: var(--color-surface-muted);
-  --color-border: var(--color-border);
   --color-copy: var(--color-copy);
   --color-copy-muted: var(--color-copy-muted);
   --color-brand: var(--color-brand);

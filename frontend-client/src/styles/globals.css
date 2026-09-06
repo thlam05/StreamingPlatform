@@ -8,15 +8,33 @@ body,
   min-height: 100%;
 }
 
+html {
+  background: var(--background);
+}
+
 body {
   min-width: 320px;
   margin: 0;
-  background: var(--color-ink-950);
-  color: var(--color-copy);
+  background: var(--background);
+  color: var(--foreground);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: var(--selection);
+  color: var(--foreground);
+}
+
+* {
+  border-color: var(--border);
 }
 
 button,
-input {
+input,
+select,
+textarea,
+a {
   font: inherit;
+  -webkit-tap-highlight-color: transparent;
 }

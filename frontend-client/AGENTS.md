@@ -146,7 +146,7 @@ frontend-client/
    - Types and interfaces: `PascalCase`
 5. Use path aliases instead of long relative imports when the project supports them.
 6. Define the application color palette centrally in `src/styles/theme.css` using CSS variables or design tokens. Do not hardcode hex, RGB, or HSL color values directly in components or feature styles.
-7. Prefer semantic color tokens such as `--color-primary`, `--color-background`, `--color-text`, and `--color-error` over context-specific names. Keep color usage consistent across the application.
+7. Use semantic tokens such as `--background`, `--foreground`, `--primary`, `--secondary`, `--accent`, `--border`, `--success`, `--danger`, `--warning`, `--info`, and `--live` for color decisions. Keep light and dark theme values in the theme file rather than inside components.
 
 ## Styling and icon rules
 
