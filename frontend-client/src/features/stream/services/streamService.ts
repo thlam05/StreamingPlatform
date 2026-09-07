@@ -10,7 +10,7 @@ const sampleStreams: Stream[] = [
     viewers: 1240,
     duration: '02:18:42',
     description: 'Building a calm creator dashboard with a live design review.',
-    gradientClass: 'from-rose-400 via-pink-500 to-rose-700',
+    gradientClass: 'from-zinc-300 via-zinc-600 to-zinc-950',
   },
   {
     id: 'ranked-arena',
@@ -21,7 +21,7 @@ const sampleStreams: Stream[] = [
     viewers: 894,
     duration: '01:04:18',
     description: 'High-energy ranked matches, strategy breakdowns, and community play.',
-    gradientClass: 'from-pink-300 via-fuchsia-500 to-rose-700',
+    gradientClass: 'from-zinc-200 via-zinc-700 to-zinc-950',
   },
   {
     id: 'lofi-studio',
@@ -32,7 +32,7 @@ const sampleStreams: Stream[] = [
     viewers: 672,
     duration: '03:36:09',
     description: 'Live beat-making sessions from a warm analog-inspired studio.',
-    gradientClass: 'from-pink-200 via-rose-500 to-red-700',
+    gradientClass: 'from-zinc-400 via-zinc-800 to-zinc-950',
   },
   {
     id: 'pixel-workshop',
@@ -43,7 +43,7 @@ const sampleStreams: Stream[] = [
     viewers: 418,
     duration: '00:48:35',
     description: 'A practical workshop on building expressive pixel art environments.',
-    gradientClass: 'from-rose-300 via-pink-400 to-fuchsia-800',
+    gradientClass: 'from-zinc-300 via-zinc-700 to-zinc-900',
   },
 ]
 

@@ -15,7 +15,7 @@ export function HomePage() {
     <div className="space-y-10">
       <section className="relative overflow-hidden rounded-3xl border border-border bg-surface px-6 py-8 sm:px-10 sm:py-12">
         <div className="pointer-events-none absolute -right-20 -top-32 size-80 rounded-full bg-brand/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-40 left-1/3 size-80 rounded-full bg-pink-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-40 left-1/3 size-80 rounded-full bg-brand/10 blur-3xl" />
         <div className="relative max-w-2xl">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/10 px-3 py-1.5 text-xs font-semibold text-brand">
             <Sparkles className="size-3.5" aria-hidden="true" />

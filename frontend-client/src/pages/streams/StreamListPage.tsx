@@ -34,7 +34,7 @@ export function StreamListPage() {
       <div className="flex flex-wrap gap-2" aria-label="Stream categories">
         {categories.map((category) => (
           <button
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${selectedCategory === category ? 'bg-brand text-ink-950' : 'bg-surface text-copy-muted hover:bg-surface-muted hover:text-copy'}`}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${selectedCategory === category ? 'bg-brand text-primary-foreground' : 'bg-surface text-copy-muted hover:bg-surface-muted hover:text-copy'}`}
             key={category}
             onClick={() => setSelectedCategory(category)}
             type="button"

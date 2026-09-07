@@ -15,7 +15,7 @@ export function Sidebar() {
     <aside className="border-b border-border bg-ink-900 lg:min-h-screen lg:w-64 lg:border-b-0 lg:border-r">
       <div className="flex items-center justify-between px-5 py-5 lg:block lg:px-6">
         <Link className="inline-flex items-center gap-2.5 text-lg font-bold tracking-tight" to={paths.home}>
-          <span className="grid size-9 place-items-center rounded-xl bg-brand text-ink-950">
+          <span className="grid size-9 place-items-center rounded-xl bg-brand text-primary-foreground">
             <Radio className="size-5" aria-hidden="true" />
           </span>
           {APP_NAME}

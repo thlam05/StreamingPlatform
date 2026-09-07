@@ -21,33 +21,33 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Auth keeps a light, focused surface while the rest of the app can stay dark. */
+/* Auth keeps a light, focused surface while using the same monochrome palette. */
 .auth-light {
-  --background: #fff9fc;
-  --foreground: #26131d;
-  --primary: #ff7aac;
-  --primary-light: #fff0f5;
-  --primary-strong: #f05f96;
-  --primary-foreground: #26131d;
-  --secondary: #77616d;
+  --background: #f5f5f5;
+  --foreground: #171717;
+  --primary: #171717;
+  --primary-light: #e5e5e5;
+  --primary-strong: #262626;
+  --primary-foreground: #f5f5f5;
+  --secondary: #666666;
   --accent: #ffffff;
-  --surface-muted: #fff0f6;
-  --border: #f0dbe5;
+  --surface-muted: #ededed;
+  --border: #d4d4d4;
 
-  --color-background: #fff9fc;
-  --color-foreground: #26131d;
-  --color-ink-950: #fff9fc;
+  --color-background: #f5f5f5;
+  --color-foreground: #171717;
+  --color-ink-950: #f5f5f5;
   --color-ink-900: #ffffff;
   --color-surface: #ffffff;
-  --color-surface-muted: #fff0f6;
-  --color-copy: #26131d;
-  --color-copy-muted: #77616d;
-  --color-brand: #ff7aac;
-  --color-brand-light: #fff0f5;
-  --color-brand-readable: #b51e62;
-  --color-brand-strong: #f05f96;
-  --color-primary-foreground: #26131d;
-  --color-border: #f0dbe5;
+  --color-surface-muted: #ededed;
+  --color-copy: #171717;
+  --color-copy-muted: #666666;
+  --color-brand: #171717;
+  --color-brand-light: #e5e5e5;
+  --color-brand-readable: #171717;
+  --color-brand-strong: #262626;
+  --color-primary-foreground: #f5f5f5;
+  --color-border: #d4d4d4;
 }
 
 ::selection {
