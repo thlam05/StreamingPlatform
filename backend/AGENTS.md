@@ -52,6 +52,7 @@ Current modules include:
 - `user/`: user persistence, profile retrieval/update, and password updates.
 - `rbac/`: roles, permissions, user-role assignment, and database-backed authorities.
 - `livestream/`: stream lifecycle, ingest credentials, playback metadata, view sessions, follows, likes, and statistics.
+- `storage/`: Supabase Storage S3 client configuration and object uploads for shared media buckets.
 
 ## Gotchas
 

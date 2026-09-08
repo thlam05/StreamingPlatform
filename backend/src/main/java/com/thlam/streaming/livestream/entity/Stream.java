@@ -76,6 +76,10 @@ public class Stream {
         this.thumbnailUrl = thumbnailUrl;
     }
 
+    public void updateThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
     public void markLive(String playbackUrl, Instant startedAt) {
         this.status = StreamStatus.LIVE;
         if (this.startedAt == null) {

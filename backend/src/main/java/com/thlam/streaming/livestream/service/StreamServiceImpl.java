@@ -17,6 +17,8 @@ import com.thlam.streaming.livestream.mapper.StreamMapper;
 import com.thlam.streaming.livestream.repository.CategoryLookupRepository;
 import com.thlam.streaming.livestream.repository.StreamIngestConfigRepository;
 import com.thlam.streaming.livestream.repository.StreamRepository;
+import com.thlam.streaming.storage.service.ObjectStorageService;
+import com.thlam.streaming.storage.service.StorageBucket;
 import com.thlam.streaming.user.dto.response.UserSummary;
 import com.thlam.streaming.user.service.UserService;
 import java.time.Instant;
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +50,7 @@ public class StreamServiceImpl implements StreamService {
     private final StreamViewService streamViewService;
     private final StreamEngagementService streamEngagementService;
     private final StreamAuthorizationService authorizationService;
+    private final ObjectStorageService objectStorageService;
 
     @Override
     @PreAuthorize("hasAuthority('PERM_stream:create')")
@@ -105,6 +109,40 @@ public class StreamServiceImpl implements StreamService {
                 request.description(),
                 request.thumbnailUrl());
         return toResponse(stream, actorId);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('PERM_stream:update') or hasAuthority('PERM_stream:moderate')")
+    @Transactional
+    public StreamResponse uploadThumbnail(UUID streamId, UUID actorId, MultipartFile file) {
+        Stream stream = findStreamForUpdate(streamId);
+        authorizationService.ensureOwnerOrPrivileged(stream, actorId, STREAM_UPDATE, STREAM_MODERATE);
+        if (stream.getStatus() != StreamStatus.SCHEDULED) {
+            throw new ConflictException("Only scheduled streams can be updated");
+        }
+
+        String extension = thumbnailExtension(file);
+        String objectKey = "streams/" + streamId + "/thumbnail-" + UUID.randomUUID() + "." + extension;
+        String thumbnailUrl = objectStorageService.upload(StorageBucket.THUMBNAILS, objectKey, file);
+        stream.updateThumbnailUrl(thumbnailUrl);
+        return toResponse(stream, actorId);
+    }
+
+    private String thumbnailExtension(MultipartFile file) {
+        if (file == null) {
+            return "bin";
+        }
+        String contentType = file.getContentType();
+        if (contentType == null) {
+            return "bin";
+        }
+        return switch (contentType) {
+            case "image/jpeg" -> "jpg";
+            case "image/png" -> "png";
+            case "image/webp" -> "webp";
+            case "image/gif" -> "gif";
+            default -> "bin";
+        };
     }
 
     @Override

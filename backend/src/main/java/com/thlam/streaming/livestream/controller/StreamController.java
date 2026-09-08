@@ -23,6 +23,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/streams")
@@ -76,6 +79,16 @@ public class StreamController {
                 streamId, currentUserProvider.getRequiredUserId(), request);
         return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_UPDATED.getCode(),
                 "Stream updated successfully"));
+    }
+
+    @PostMapping(value = "/{streamId}/thumbnail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<StreamResponse>> uploadThumbnail(
+            @PathVariable UUID streamId,
+            @RequestPart("file") MultipartFile file) {
+        StreamResponse response = streamService.uploadThumbnail(
+                streamId, currentUserProvider.getRequiredUserId(), file);
+        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_UPDATED.getCode(),
+                "Stream thumbnail uploaded successfully"));
     }
 
     @PostMapping("/{streamId}/cancel")

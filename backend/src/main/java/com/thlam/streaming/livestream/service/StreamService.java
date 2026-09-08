@@ -8,6 +8,7 @@ import com.thlam.streaming.livestream.dto.response.StreamProvisionResponse;
 import com.thlam.streaming.livestream.dto.response.StreamResponse;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface StreamService {
 
@@ -18,6 +19,8 @@ public interface StreamService {
     StreamResponse get(UUID streamId, UUID viewerId);
 
     StreamResponse update(UUID streamId, UUID actorId, UpdateStreamRequest request);
+
+    StreamResponse uploadThumbnail(UUID streamId, UUID actorId, MultipartFile file);
 
     StreamResponse cancel(UUID streamId, UUID actorId);
 

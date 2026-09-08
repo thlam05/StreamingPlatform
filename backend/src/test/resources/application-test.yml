@@ -7,6 +7,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
   flyway:
     enabled: false
 
@@ -14,6 +18,15 @@ app:
   cors:
     allowed-origins:
       - http://localhost:5173
+  storage:
+    supabase:
+      endpoint: https://storage.test/storage/v1/s3
+      region: test-region
+      access-key-id: test-access-key
+      secret-access-key: test-secret-key
+      avatars-bucket: avatars
+      thumbnails-bucket: thumbnails
+      recordings-bucket: recordings
   jwt:
     secret: test-only-secret-that-is-at-least-32-characters
     expiration: PT1H

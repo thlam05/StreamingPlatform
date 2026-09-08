@@ -57,6 +57,16 @@ public class GlobalExceptionHandler {
 				exception.getMessage(), request, Map.of());
 	}
 
+	@ExceptionHandler(StorageOperationException.class)
+	ResponseEntity<ApiErrorResponse<Void>> handleStorageFailure(
+			StorageOperationException exception,
+			HttpServletRequest request) {
+		LOGGER.error("Storage operation failed while processing {} {}",
+				request.getMethod(), request.getRequestURI(), exception);
+		return response(ApiErrorCode.INTERNAL_SERVER_ERROR.getCode(), HttpStatus.INTERNAL_SERVER_ERROR,
+				"Unable to store uploaded file", request, Map.of());
+	}
+
 	@ExceptionHandler(UnauthorizedException.class)
 	ResponseEntity<ApiErrorResponse<Void>> handleUnauthorized(
 			UnauthorizedException exception,
