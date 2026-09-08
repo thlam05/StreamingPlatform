@@ -14,7 +14,6 @@ import com.thlam.streaming.livestream.entity.Stream;
 import com.thlam.streaming.livestream.entity.StreamIngestConfig;
 import com.thlam.streaming.livestream.entity.StreamStatus;
 import com.thlam.streaming.livestream.mapper.StreamMapper;
-import com.thlam.streaming.livestream.repository.CategoryLookupRepository;
 import com.thlam.streaming.livestream.repository.StreamIngestConfigRepository;
 import com.thlam.streaming.livestream.repository.StreamRepository;
 import com.thlam.streaming.storage.service.ObjectStorageService;
@@ -42,7 +41,7 @@ public class StreamServiceImpl implements StreamService {
 
     private final StreamRepository streamRepository;
     private final StreamIngestConfigRepository ingestConfigRepository;
-    private final CategoryLookupRepository categoryLookupRepository;
+    private final CategoryService categoryService;
     private final StreamCredentialService credentialService;
     private final StreamStateMachine stateMachine;
     private final StreamMapper streamMapper;
@@ -315,7 +314,7 @@ public class StreamServiceImpl implements StreamService {
     }
 
     private void requireActiveCategory(UUID categoryId) {
-        if (!categoryLookupRepository.existsActiveLevelTwo(categoryId)) {
+        if (!categoryService.existsActiveLevelTwo(categoryId)) {
             throw new ResourceNotFoundException("Active level 2 category not found");
         }
     }
