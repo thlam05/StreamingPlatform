@@ -1,6 +1,7 @@
 package com.thlam.streaming.livestream.service;
 
 import com.thlam.streaming.common.exception.InvalidRequestException;
+import com.thlam.streaming.common.utils.ConfigurationUtils;
 import com.thlam.streaming.livestream.entity.StreamIngestConfig;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -29,7 +30,8 @@ public class StreamCredentialService {
     private final IngestProperties ingestProperties;
 
     public GeneratedCredentials generate(UUID streamId) {
-        String rtmpUrl = requireProperty(ingestProperties.getRtmpUrl(), "INGEST_RTMP_URL");
+        String rtmpUrl = ConfigurationUtils.requireProperty(
+                ingestProperties.getRtmpUrl(), "INGEST_RTMP_URL");
         byte[] keyBytes = new byte[KEY_SIZE_BYTES];
         SECURE_RANDOM.nextBytes(keyBytes);
         String plaintextKey = Base64.getUrlEncoder().withoutPadding().encodeToString(keyBytes);
@@ -68,7 +70,7 @@ public class StreamCredentialService {
     }
 
     private SecretKeySpec encryptionKey() {
-        String encodedKey = requireProperty(
+        String encodedKey = ConfigurationUtils.requireProperty(
                 properties.getCredentialEncryptionKey(), "STREAM_CREDENTIAL_ENCRYPTION_KEY");
         final byte[] key;
         try {
@@ -90,13 +92,6 @@ public class StreamCredentialService {
         } catch (NoSuchAlgorithmException exception) {
             throw new IllegalStateException("SHA-256 is unavailable", exception);
         }
-    }
-
-    private String requireProperty(String value, String name) {
-        if (value == null || value.isBlank()) {
-            throw new InvalidRequestException(name + " is not configured");
-        }
-        return value;
     }
 
     public record GeneratedCredentials(

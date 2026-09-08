@@ -1,5 +1,6 @@
 package com.thlam.streaming.storage.config;
 
+import com.thlam.streaming.common.utils.ConfigurationUtils;
 import java.net.URI;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -26,16 +27,10 @@ public class SupabaseStorageConfiguration {
     }
 
     private void requireConfigured(SupabaseStorageProperties properties) {
-        requireValue(properties.getEndpoint(), "SUPABASE_STORAGE_ENDPOINT");
-        requireValue(properties.getRegion(), "SUPABASE_STORAGE_REGION");
-        requireValue(properties.getAccessKeyId(), "SUPABASE_STORAGE_ACCESS_KEY_ID");
-        requireValue(properties.getSecretAccessKey(), "SUPABASE_STORAGE_SECRET_ACCESS_KEY");
-        requireValue(properties.getThumbnailsBucket(), "SUPABASE_STORAGE_THUMBNAILS_BUCKET");
-    }
-
-    private void requireValue(String value, String environmentVariable) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalStateException(environmentVariable + " must be configured");
-        }
+        ConfigurationUtils.requireProperty(properties.getEndpoint(), "SUPABASE_STORAGE_ENDPOINT");
+        ConfigurationUtils.requireProperty(properties.getRegion(), "SUPABASE_STORAGE_REGION");
+        ConfigurationUtils.requireProperty(properties.getAccessKeyId(), "SUPABASE_STORAGE_ACCESS_KEY_ID");
+        ConfigurationUtils.requireProperty(properties.getSecretAccessKey(), "SUPABASE_STORAGE_SECRET_ACCESS_KEY");
+        ConfigurationUtils.requireProperty(properties.getThumbnailsBucket(), "SUPABASE_STORAGE_THUMBNAILS_BUCKET");
     }
 }
