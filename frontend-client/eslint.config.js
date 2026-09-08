@@ -55,7 +55,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/services/apiClient.ts'],
+    files: ['src/services/apiClient.ts', 'src/services/interceptors.ts'],
     rules: {
       'no-restricted-imports': 'off',
     },

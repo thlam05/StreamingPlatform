@@ -1,7 +1,7 @@
 import { Home, Radio, Settings, type LucideIcon } from 'lucide-react'
-import { Link, NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
-import { APP_NAME } from '../../config/constants'
+import { AppLogo } from './AppLogo'
 import { paths } from '../../routes/paths'
 import { cn } from '../../utils/cn'
 
@@ -14,12 +14,7 @@ export function Sidebar() {
   return (
     <aside className="border-b border-border bg-ink-900 lg:min-h-screen lg:w-64 lg:border-b-0 lg:border-r">
       <div className="flex items-center justify-between px-5 py-5 lg:block lg:px-6">
-        <Link className="inline-flex items-center gap-2.5 text-lg font-bold tracking-tight" to={paths.home}>
-          <span className="grid size-9 place-items-center rounded-xl bg-brand text-primary-foreground">
-            <Radio className="size-5" aria-hidden="true" />
-          </span>
-          {APP_NAME}
-        </Link>
+        <AppLogo />
       </div>
       <nav className="flex gap-2 overflow-x-auto px-4 pb-4 lg:grid lg:gap-1 lg:px-3" aria-label="Main navigation">
         {navigation.map(({ icon: Icon, label, to }) => (

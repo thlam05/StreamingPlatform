@@ -1,20 +1,14 @@
 import { Headphones, Radio, Users } from 'lucide-react'
-import { Link, Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 
-import { APP_NAME } from '../config/constants'
-import { paths } from '../routes/paths'
+import { AppLogo } from '../components/layout/AppLogo'
 
 export function AuthLayout() {
   return (
     <div className="auth-light min-h-[100dvh] bg-background text-copy">
       <div className="grid min-h-[100dvh] grid-cols-1 lg:grid-cols-2">
         <aside className="relative flex min-h-[18rem] flex-col overflow-hidden bg-surface-muted px-6 py-7 sm:px-10 lg:min-h-[100dvh] lg:px-14 lg:py-10">
-          <Link className="absolute left-6 top-7 flex items-center gap-2.5 text-lg font-bold tracking-tight sm:left-10 lg:left-14 lg:top-10" to={paths.home}>
-            <span className="grid size-9 place-items-center rounded-xl bg-brand text-primary-foreground">
-              <Radio className="size-4" aria-hidden="true" />
-            </span>
-            {APP_NAME}
-          </Link>
+          <AppLogo className="absolute left-6 top-7 sm:left-10 lg:left-14 lg:top-10" iconClassName="size-4" />
 
           <div className="relative mt-auto max-w-md pt-20 lg:mb-10 lg:mt-auto">
             <p className="mb-4 text-sm font-semibold text-brand-readable">Your live space</p>
