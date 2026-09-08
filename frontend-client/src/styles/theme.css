@@ -1,0 +1,114 @@
+/* Monochrome product palette: off-white, graphite, and layered grays. */
+:root {
+  --background: #f5f5f5;
+  --foreground: #171717;
+
+  --primary: #171717;
+  --primary-light: #e5e5e5;
+  --primary-strong: #262626;
+  --primary-foreground: #f5f5f5;
+  --primary-readable: #171717;
+
+  --secondary: #666666;
+  --secondary-foreground: #f5f5f5;
+
+  --accent: #ffffff;
+  --accent-foreground: #171717;
+  --surface-muted: #ededed;
+  --border: #d4d4d4;
+  --selection: #d4d4d4;
+
+  --success: #15803d;
+  --success-light: #dcfce7;
+  --danger: #be123c;
+  --danger-light: #fee2e2;
+  --warning: #b45309;
+  --warning-light: #fef3c7;
+  --info: #0369a1;
+  --info-light: #e0f2fe;
+  --live: #e11d48;
+  --live-light: #fee2e2;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.dark {
+  --background: #0f0f10;
+  --foreground: #f5f5f5;
+
+  --primary: #f5f5f5;
+  --primary-light: #2a2a2d;
+  --primary-strong: #e5e5e5;
+  --primary-foreground: #111113;
+  --primary-readable: #f5f5f5;
+
+  --secondary: #a3a3a3;
+  --secondary-foreground: #111113;
+
+  --accent: #19191b;
+  --accent-foreground: #f5f5f5;
+  --surface-muted: #232326;
+  --border: #343438;
+  --selection: #404044;
+
+  --success: #6ee7b7;
+  --success-light: #14532d;
+  --danger: #fb7185;
+  --danger-light: #7f1d1d;
+  --warning: #fbbf24;
+  --warning-light: #78350f;
+  --info: #7dd3fc;
+  --info-light: #0c4a6e;
+  --live: #fb7185;
+  --live-light: #7f1d1d;
+}
+
+/* Aliases retained for the existing sample components. */
+:root {
+  --color-ink-950: var(--background);
+  --color-ink-900: var(--accent);
+  --color-surface: var(--accent);
+  --color-surface-muted: var(--surface-muted);
+  --color-copy: var(--foreground);
+  --color-copy-muted: var(--secondary);
+  --color-brand: var(--primary);
+  --color-brand-readable: var(--primary-readable);
+  --color-brand-strong: var(--primary-strong);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-selection: var(--selection);
+  --color-success: var(--success);
+  --color-success-light: var(--success-light);
+  --color-danger: var(--danger);
+  --color-danger-light: var(--danger-light);
+  --color-warning: var(--warning);
+  --color-warning-light: var(--warning-light);
+  --color-info: var(--info);
+  --color-info-light: var(--info-light);
+  --color-live: var(--live);
+  --color-live-light: var(--live-light);
+
+  --color-ink-950: var(--background);
+  --color-ink-900: var(--accent);
+  --color-surface: var(--accent);
+  --color-surface-muted: var(--surface-muted);
+  --color-copy: var(--foreground);
+  --color-copy-muted: var(--secondary);
+  --color-brand: var(--primary);
+  --color-brand-light: var(--primary-light);
+  --color-brand-readable: var(--primary-readable);
+  --color-brand-strong: var(--primary-strong);
+  --font-sans: var(--font-sans);
+}
