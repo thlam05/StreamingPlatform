@@ -3,6 +3,7 @@ const routeSegments = {
   login: 'login',
   register: 'register',
   settings: 'settings',
+  streamCreate: 'streams/new',
   streams: 'streams',
 } as const
 
@@ -12,6 +13,7 @@ export const paths = {
   login: `/${routeSegments.login}`,
   register: `/${routeSegments.register}`,
   settings: `/${routeSegments.settings}`,
+  streamCreate: `/${routeSegments.streamCreate}`,
   streamDetail: (streamId: string) => `/${routeSegments.streams}/${streamId}`,
   streams: `/${routeSegments.streams}`,
   streamsPattern: `${routeSegments.streams}/:streamId`,
