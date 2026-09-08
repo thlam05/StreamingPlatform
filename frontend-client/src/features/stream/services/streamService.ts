@@ -63,10 +63,10 @@ export async function getCategories(): Promise<StreamCategoryOption[]> {
   return response.data.data
 }
 
-export async function uploadThumbnail(file: File): Promise<ThumbnailUploadResponse> {
+export async function uploadThumbnail(streamId: string, file: File): Promise<ThumbnailUploadResponse> {
   const formData = new FormData()
   formData.append('file', file)
-  const response = await apiClient.post<ApiResponse<ThumbnailUploadResponse>>('/uploads/thumbnails', formData, {
+  const response = await apiClient.post<ApiResponse<ThumbnailUploadResponse>>(`/streams/${streamId}/thumbnail`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
   return response.data.data

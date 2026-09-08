@@ -205,7 +205,7 @@ export function useCreateStream() {
     setIsUploadingThumbnail(true)
 
     try {
-      const { thumbnailUrl } = await uploadThumbnail(thumbnailFile)
+      const { thumbnailUrl } = await uploadThumbnail(createdStream.stream.id, thumbnailFile)
       await updateStream(createdStream.stream.id, {
         categoryId: values.categoryId.trim(),
         description: values.description.trim() || undefined,
