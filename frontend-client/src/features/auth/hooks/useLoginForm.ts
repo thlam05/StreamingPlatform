@@ -10,6 +10,7 @@ import { useAuthForm } from './useAuthForm'
 const initialValues: LoginFormValues = {
   email: '',
   password: '',
+  rememberMe: false,
 }
 
 export function useLoginForm() {
@@ -24,7 +25,7 @@ export function useLoginForm() {
         password: values.password,
       })
 
-      saveAuthSession(authResponse)
+      saveAuthSession(authResponse, values.rememberMe)
       navigate(paths.home)
     },
   })

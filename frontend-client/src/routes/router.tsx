@@ -10,6 +10,7 @@ import { NotFoundPage } from '../pages/NotFoundPage'
 import { SettingsPage } from '../pages/SettingsPage'
 import { StreamDetailPage } from '../pages/streams/StreamDetailPage'
 import { StreamListPage } from '../pages/streams/StreamListPage'
+import { PublicOnlyRoute } from './PublicOnlyRoute'
 import { paths, routeSegments } from './paths'
 
 export const router = createBrowserRouter([
@@ -24,11 +25,14 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
   },
   {
-    children: [
-      { path: routeSegments.login, element: <LoginPage /> },
-      { path: routeSegments.register, element: <RegisterPage /> },
-    ],
-    element: <AuthLayout />,
+    element: <PublicOnlyRoute />,
+    children: [{
+      children: [
+        { path: routeSegments.login, element: <LoginPage /> },
+        { path: routeSegments.register, element: <RegisterPage /> },
+      ],
+      element: <AuthLayout />,
+    }],
   },
   { element: <ForbiddenPage />, path: routeSegments.forbidden },
 ])

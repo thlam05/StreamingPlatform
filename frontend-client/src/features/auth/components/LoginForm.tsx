@@ -19,8 +19,15 @@ export function LoginForm() {
       <Input autoComplete="email" error={errors.email} id="email" label="Email address" name="email" onBlur={handleBlur} onChange={handleChange} placeholder="you@example.com" required type="email" value={values.email} />
       <Input autoComplete="current-password" error={errors.password} id="password" label="Password" name="password" onBlur={handleBlur} onChange={handleChange} placeholder="Enter your password" required type="password" value={values.password} />
 
-      <label className="mt-1 flex cursor-pointer items-center gap-2 text-xs text-copy-muted">
-        <input className="size-4 rounded border-border bg-surface-muted accent-brand" type="checkbox" />
+      <label className="mt-1 flex cursor-pointer items-center gap-2 text-xs text-copy-muted" htmlFor="remember-me">
+        <input
+          checked={values.rememberMe}
+          className="size-4 rounded border-border bg-surface-muted accent-brand"
+          id="remember-me"
+          name="rememberMe"
+          onChange={handleChange}
+          type="checkbox"
+        />
         Keep me signed in
       </label>
 

@@ -29,7 +29,7 @@ export function useRegisterForm() {
         username: values.username.trim(),
       })
 
-      saveAuthSession(authResponse)
+      saveAuthSession(authResponse, true)
       navigate(paths.home)
     },
   })

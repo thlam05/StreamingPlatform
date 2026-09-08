@@ -18,7 +18,8 @@ export function useAuthForm<T extends object>({ initialValues, onSubmit, validat
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const field = event.currentTarget.name as keyof T
-    const nextValues = { ...values, [field]: event.currentTarget.value } as T
+    const nextValue = event.currentTarget.type === 'checkbox' ? event.currentTarget.checked : event.currentTarget.value
+    const nextValues = { ...values, [field]: nextValue } as T
 
     setValues(nextValues)
     setFormError(null)
