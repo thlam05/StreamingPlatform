@@ -121,6 +121,8 @@ frontend-client/
 13. Keep app-wide constants in `src/config/constants.ts`. Route paths must be defined in `src/routes/paths.ts`.
 14. Keep the `auth` domain responsible for authentication concerns. Reuse the global auth state from `src/store/authStore.ts` where both routing and layouts need it.
 15. Keep stream listing, stream setup, and stream detail code under the single `src/features/stream/` domain to avoid duplicated services and types.
+16. For multi-step feature flows, the parent setup component may own only the shared flow state and transitions, such as `phase` and `stream`. Each step component must call the hooks required by its own step and expose typed success or completion callbacks to the parent. Do not aggregate all step-specific hooks in one setup hook.
+17. Conditional rendering of separate step components is allowed, but never call hooks conditionally inside the same component. Preserve cross-step data by lifting only the data needed by later steps into the parent and passing it through typed props.
 
 ## Layout component rules
 

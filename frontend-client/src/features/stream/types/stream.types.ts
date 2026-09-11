@@ -1,5 +1,34 @@
 export type StreamCategory = 'Gaming' | 'Music' | 'Creative'
 export type StreamStatus = 'scheduled' | 'live' | 'ended' | 'cancelled'
+export type StreamSetupStep = 'credentials' | 'thumbnail' | 'preview'
+
+export interface StreamSetupPhase {
+  key: StreamSetupStep
+  title: string
+  description: string
+  label: string
+}
+
+export const STREAM_SETUP_PHASES: Record<StreamSetupStep, StreamSetupPhase> = {
+  credentials: {
+    key: 'credentials',
+    label: 'Step 1',
+    title: 'Create credentials',
+    description: 'Add the basic information for your livestream and create its publishing credentials.',
+  },
+  thumbnail: {
+    key: 'thumbnail',
+    label: 'Step 2',
+    title: 'Upload thumbnail',
+    description: 'Choose a clear image that viewers will see before the livestream starts.',
+  },
+  preview: {
+    key: 'preview',
+    label: 'Step 3',
+    title: 'Preview and start',
+    description: 'Configure your encoder, preview the broadcast, and start when the connection is ready.',
+  },
+}
 
 export interface Stream {
   id: string
@@ -11,6 +40,8 @@ export interface Stream {
   duration: string
   description: string
   gradientClass: string
+  thumbnailUrl?: string | null
+  playbackUrl?: string | null
 }
 
 export interface CreateStreamFormValues {
@@ -51,6 +82,8 @@ export interface StreamProvisionResponse {
     id: string
     title: string
     status: StreamStatus
+    thumbnailUrl?: string | null
+    playbackUrl?: string | null
   }
   rtmpUrl: string
   streamKey: string
@@ -60,4 +93,6 @@ export interface StreamStatusResponse {
   id: string
   title: string
   status: StreamStatus
+  thumbnailUrl?: string | null
+  playbackUrl?: string | null
 }

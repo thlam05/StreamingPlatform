@@ -2,6 +2,7 @@ import { ArrowLeft, Clock3, Users } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 
 import { Spinner } from '../../components/ui/Spinner'
+import { HlsPlayer } from '../../features/stream/components/player/HlsPlayer'
 import { useStreams } from '../../features/stream/hooks/useStreams'
 import { paths } from '../../routes/paths'
 
@@ -27,12 +28,16 @@ export function StreamDetailPage() {
       <Link className="inline-flex items-center gap-2 text-sm font-semibold text-copy-muted hover:text-copy" to={paths.streams}>
         <ArrowLeft className="size-4" aria-hidden="true" /> Back to streams
       </Link>
-      <section className={`relative aspect-video overflow-hidden rounded-3xl bg-gradient-to-br ${stream.gradientClass}`}>
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="absolute inset-0 grid place-items-center">
-          <div className="rounded-full bg-white/20 px-5 py-3 text-sm font-semibold text-white backdrop-blur">Live preview</div>
-        </div>
-      </section>
+      {stream.playbackUrl ? (
+        <HlsPlayer poster={stream.thumbnailUrl} src={stream.playbackUrl} title={`${stream.title} livestream`} />
+      ) : (
+        <section className={`relative aspect-video overflow-hidden rounded-3xl bg-gradient-to-br ${stream.gradientClass}`}>
+          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 grid place-items-center">
+            <div className="rounded-full bg-white/20 px-5 py-3 text-sm font-semibold text-white backdrop-blur">Live preview</div>
+          </div>
+        </section>
+      )}
       <section className="grid gap-6 lg:grid-cols-[1fr_280px]">
         <div>
           <p className="text-sm font-semibold text-brand">{stream.category}</p>

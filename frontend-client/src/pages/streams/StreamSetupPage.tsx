@@ -1,5 +1,5 @@
-import { CreateStreamForm } from '../../features/stream/components/setup/CreateStreamForm'
+import { StreamSetup } from '../../features/stream/components/setup/StreamSetup'
 
 export function StreamSetupPage() {
-  return <CreateStreamForm />
+  return <StreamSetup />
 }
