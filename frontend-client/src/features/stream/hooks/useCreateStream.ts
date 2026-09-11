@@ -309,3 +309,5 @@ export function useCreateStream() {
     values,
   }
 }
+
+export type CreateStreamController = ReturnType<typeof useCreateStream>
