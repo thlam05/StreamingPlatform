@@ -23,8 +23,14 @@ export function StreamCard({ stream }: StreamCardProps) {
           </div>
         </div>
         <div className="absolute inset-x-5 bottom-5 flex items-center justify-between text-xs font-medium text-white/85">
-          <span className="inline-flex items-center gap-1.5"><Users className="size-3.5" aria-hidden="true" />{stream.viewers.toLocaleString()}</span>
-          <span className="inline-flex items-center gap-1.5"><Clock3 className="size-3.5" aria-hidden="true" />{stream.duration}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <Users className="size-3.5" aria-hidden="true" />
+            {stream.viewers.toLocaleString()}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Clock3 className="size-3.5" aria-hidden="true" />
+            {stream.duration}
+          </span>
         </div>
       </div>
       <div className="space-y-4 p-4">

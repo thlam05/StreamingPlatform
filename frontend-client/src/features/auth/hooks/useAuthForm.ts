@@ -50,10 +50,12 @@ export function useAuthForm<T extends object>({ initialValues, onSubmit, validat
 
     const validationErrors = validate(values)
     setErrors(validationErrors)
-    setTouched(Object.keys(values).reduce<Partial<Record<keyof T, boolean>>>((result, field) => {
-      result[field as keyof T] = true
-      return result
-    }, {}))
+    setTouched(
+      Object.keys(values).reduce<Partial<Record<keyof T, boolean>>>((result, field) => {
+        result[field as keyof T] = true
+        return result
+      }, {}),
+    )
 
     if (Object.keys(validationErrors).length > 0) return
 

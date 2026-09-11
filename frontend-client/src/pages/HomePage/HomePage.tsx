@@ -25,13 +25,17 @@ export function HomePage() {
             Make space for your best live work.
           </h1>
           <p className="mt-5 max-w-lg text-base leading-7 text-copy-muted sm:text-lg">
-            Discover independent creators, follow the conversations you care about, and keep every stream in one focused workspace.
+            Discover independent creators, follow the conversations you care about, and keep every stream in one focused
+            workspace.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Button onClick={() => navigate(paths.streams)}>
               Explore streams <ArrowRight className="size-4" aria-hidden="true" />
             </Button>
-            <Link className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-copy-muted transition-colors hover:text-copy" to={paths.login}>
+            <Link
+              className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-copy-muted transition-colors hover:text-copy"
+              to={paths.login}
+            >
               <Play className="size-4" aria-hidden="true" />
               Start creating
             </Link>
@@ -59,13 +63,19 @@ export function HomePage() {
             <p className="text-sm font-semibold text-brand">Live now</p>
             <h2 className="mt-1 text-2xl font-semibold tracking-tight text-copy">Find your next watch</h2>
           </div>
-          <Link className="hidden text-sm font-semibold text-copy-muted hover:text-copy sm:block" to={paths.streams}>View all</Link>
+          <Link className="hidden text-sm font-semibold text-copy-muted hover:text-copy sm:block" to={paths.streams}>
+            View all
+          </Link>
         </div>
         {isLoading ? <Spinner label="Loading live streams" /> : null}
-        {error ? <p className="rounded-xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-200">{error}</p> : null}
+        {error ? (
+          <p className="rounded-xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-200">{error}</p>
+        ) : null}
         {!isLoading && !error ? (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {streams.slice(0, 3).map((stream) => <StreamCard key={stream.id} stream={stream} />)}
+            {streams.slice(0, 3).map((stream) => (
+              <StreamCard key={stream.id} stream={stream} />
+            ))}
           </div>
         ) : null}
       </section>

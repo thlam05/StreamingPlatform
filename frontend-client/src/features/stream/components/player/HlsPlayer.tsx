@@ -63,43 +63,45 @@ export function HlsPlayer({
       playableVideo.src = src
       playableVideo.load()
     } else {
-      void import('hls.js').then(({ default: HlsLibrary }) => {
-        if (isCancelled) return
+      void import('hls.js')
+        .then(({ default: HlsLibrary }) => {
+          if (isCancelled) return
 
-        if (!HlsLibrary.isSupported()) {
-          unsupportedTimer = window.setTimeout(() => {
-            if (isCancelled) return
-            setPlaybackState('error')
-            setErrorMessage('This browser does not support HLS playback.')
-          }, 0)
-          return
-        }
-
-        hls = new HlsLibrary({
-          backBufferLength: 90,
-          enableWorker: true,
-          lowLatencyMode: true,
-        })
-        hls.loadSource(src)
-        hls.attachMedia(playableVideo)
-        hls.on(HlsLibrary.Events.MANIFEST_PARSED, handleReady)
-        hls.on(HlsLibrary.Events.ERROR, (_event, data) => {
-          if (isCancelled || !data.fatal) return
-
-          if (data.type === HlsLibrary.ErrorTypes.MEDIA_ERROR && !recoveredMediaError) {
-            recoveredMediaError = true
-            hls?.recoverMediaError()
+          if (!HlsLibrary.isSupported()) {
+            unsupportedTimer = window.setTimeout(() => {
+              if (isCancelled) return
+              setPlaybackState('error')
+              setErrorMessage('This browser does not support HLS playback.')
+            }, 0)
             return
           }
 
-          setPlaybackState('error')
-          setErrorMessage('The livestream is unavailable right now. Check the stream and try again.')
+          hls = new HlsLibrary({
+            backBufferLength: 90,
+            enableWorker: true,
+            lowLatencyMode: true,
+          })
+          hls.loadSource(src)
+          hls.attachMedia(playableVideo)
+          hls.on(HlsLibrary.Events.MANIFEST_PARSED, handleReady)
+          hls.on(HlsLibrary.Events.ERROR, (_event, data) => {
+            if (isCancelled || !data.fatal) return
+
+            if (data.type === HlsLibrary.ErrorTypes.MEDIA_ERROR && !recoveredMediaError) {
+              recoveredMediaError = true
+              hls?.recoverMediaError()
+              return
+            }
+
+            setPlaybackState('error')
+            setErrorMessage('The livestream is unavailable right now. Check the stream and try again.')
+          })
         })
-      }).catch(() => {
-        if (isCancelled) return
-        setPlaybackState('error')
-        setErrorMessage('The HLS player could not be loaded. Try again.')
-      })
+        .catch(() => {
+          if (isCancelled) return
+          setPlaybackState('error')
+          setErrorMessage('The HLS player could not be loaded. Try again.')
+        })
     }
 
     return () => {
@@ -148,9 +150,15 @@ export function HlsPlayer({
       {isUnavailable || hasError ? (
         <div className="absolute inset-0 grid place-items-center bg-ink-900/90 p-6 text-center">
           <div className="grid max-w-sm justify-items-center gap-3">
-            {isUnavailable ? <Play className="size-7 text-copy-muted" aria-hidden="true" /> : <CircleAlert className="size-7 text-warning" aria-hidden="true" />}
+            {isUnavailable ? (
+              <Play className="size-7 text-copy-muted" aria-hidden="true" />
+            ) : (
+              <CircleAlert className="size-7 text-warning" aria-hidden="true" />
+            )}
             <p className="font-semibold text-copy">{isUnavailable ? 'Playback is not available' : 'Playback failed'}</p>
-            <p className="text-sm leading-6 text-copy-muted">{isUnavailable ? 'This stream does not have an active HLS playback URL yet.' : errorMessage}</p>
+            <p className="text-sm leading-6 text-copy-muted">
+              {isUnavailable ? 'This stream does not have an active HLS playback URL yet.' : errorMessage}
+            </p>
             {hasError ? (
               <button
                 className="mt-1 inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm font-semibold text-copy transition-colors hover:border-brand/60 hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:scale-[0.98]"

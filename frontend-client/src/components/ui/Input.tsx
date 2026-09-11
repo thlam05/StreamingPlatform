@@ -22,7 +22,11 @@ export function Input({ className, error, id, label, ...props }: InputProps) {
           className,
         )}
       />
-      {error ? <span className="text-xs font-normal text-danger" id={id ? `${id}-error` : undefined}>{error}</span> : null}
+      {error ? (
+        <span className="text-xs font-normal text-danger" id={id ? `${id}-error` : undefined}>
+          {error}
+        </span>
+      ) : null}
     </label>
   )
 }

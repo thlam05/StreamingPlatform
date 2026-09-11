@@ -33,14 +33,22 @@ export function AuthLayout() {
             </div>
           </div>
 
-          <div className="pointer-events-none absolute -bottom-24 -right-20 size-72 rounded-full border border-brand/25" aria-hidden="true" />
-          <div className="pointer-events-none absolute bottom-[-4.5rem] right-[-0.5rem] size-40 rounded-full border border-brand/20" aria-hidden="true" />
+          <div
+            className="pointer-events-none absolute -bottom-24 -right-20 size-72 rounded-full border border-brand/25"
+            aria-hidden="true"
+          />
+          <div
+            className="pointer-events-none absolute bottom-[-4.5rem] right-[-0.5rem] size-40 rounded-full border border-brand/20"
+            aria-hidden="true"
+          />
         </aside>
 
         <main className="flex min-h-[calc(100dvh-18rem)] items-center justify-center bg-background px-5 py-10 sm:px-8 lg:min-h-[100dvh] lg:px-12 xl:px-20">
           <div className="w-full max-w-[28rem]">
             <Outlet />
-            <p className="mt-8 text-center text-xs text-copy-muted lg:hidden">A focused place for the streams you choose.</p>
+            <p className="mt-8 text-center text-xs text-copy-muted lg:hidden">
+              A focused place for the streams you choose.
+            </p>
           </div>
         </main>
       </div>

@@ -43,8 +43,7 @@ export default defineConfig([
           paths: [
             {
               name: 'axios',
-              message:
-                'Use the shared Axios instance from src/services/apiClient.ts.',
+              message: 'Use the shared Axios instance from src/services/apiClient.ts.',
             },
           ],
         },

@@ -1,6 +1,14 @@
 import { apiClient } from '../../../services/apiClient'
 import type { ApiResponse } from '../../../types/api.types'
-import type { CreateStreamRequest, Stream, StreamCategoryOption, StreamProvisionResponse, StreamStatusResponse, ThumbnailUploadResponse, UpdateStreamRequest } from '../types/stream.types'
+import type {
+  CreateStreamRequest,
+  Stream,
+  StreamCategoryOption,
+  StreamProvisionResponse,
+  StreamStatusResponse,
+  ThumbnailUploadResponse,
+  UpdateStreamRequest,
+} from '../types/stream.types'
 
 const sampleStreams: Stream[] = [
   {
@@ -66,9 +74,13 @@ export async function getCategories(): Promise<StreamCategoryOption[]> {
 export async function uploadThumbnail(streamId: string, file: File): Promise<ThumbnailUploadResponse> {
   const formData = new FormData()
   formData.append('file', file)
-  const response = await apiClient.post<ApiResponse<ThumbnailUploadResponse>>(`/streams/${streamId}/thumbnail`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const response = await apiClient.post<ApiResponse<ThumbnailUploadResponse>>(
+    `/streams/${streamId}/thumbnail`,
+    formData,
+    {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    },
+  )
   return response.data.data
 }
 

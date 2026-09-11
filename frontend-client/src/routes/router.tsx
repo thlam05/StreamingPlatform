@@ -20,7 +20,14 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: routeSegments.streams, element: <StreamListPage /> },
-      { path: routeSegments.streamCreate, element: <ProtectedRoute><StreamSetupPage /></ProtectedRoute> },
+      {
+        path: routeSegments.streamCreate,
+        element: (
+          <ProtectedRoute>
+            <StreamSetupPage />
+          </ProtectedRoute>
+        ),
+      },
       { path: paths.streamsPattern, element: <StreamDetailPage /> },
       { path: routeSegments.settings, element: <SettingsPage /> },
       { path: '*', element: <NotFoundPage /> },
@@ -29,13 +36,15 @@ export const router = createBrowserRouter([
   },
   {
     element: <PublicOnlyRoute />,
-    children: [{
-      children: [
-        { path: routeSegments.login, element: <LoginPage /> },
-        { path: routeSegments.register, element: <RegisterPage /> },
-      ],
-      element: <AuthLayout />,
-    }],
+    children: [
+      {
+        children: [
+          { path: routeSegments.login, element: <LoginPage /> },
+          { path: routeSegments.register, element: <RegisterPage /> },
+        ],
+        element: <AuthLayout />,
+      },
+    ],
   },
   { element: <ForbiddenPage />, path: routeSegments.forbidden },
 ])

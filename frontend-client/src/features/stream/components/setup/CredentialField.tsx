@@ -11,7 +11,14 @@ interface CredentialFieldProps {
   visible?: boolean
 }
 
-export function CredentialField({ copied, name, onCopy, onToggleVisibility, value, visible = true }: CredentialFieldProps) {
+export function CredentialField({
+  copied,
+  name,
+  onCopy,
+  onToggleVisibility,
+  value,
+  visible = true,
+}: CredentialFieldProps) {
   const label = name === 'rtmpUrl' ? 'Stream URL' : 'Stream key'
   const displayedValue = visible ? value : '••••••••••••••••••••••••'
   const inputId = `stream-credential-${name}`
@@ -20,7 +27,11 @@ export function CredentialField({ copied, name, onCopy, onToggleVisibility, valu
     <div className="grid min-w-0 gap-2">
       <div className="flex items-center justify-between gap-3">
         <label className="flex items-center gap-2 text-sm font-semibold text-copy" htmlFor={inputId}>
-          {name === 'rtmpUrl' ? <Server className="size-3.5 text-brand" aria-hidden="true" /> : <KeyRound className="size-3.5 text-warning" aria-hidden="true" />}
+          {name === 'rtmpUrl' ? (
+            <Server className="size-3.5 text-brand" aria-hidden="true" />
+          ) : (
+            <KeyRound className="size-3.5 text-warning" aria-hidden="true" />
+          )}
           {label}
         </label>
         <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-copy-muted">Read only</span>
@@ -42,7 +53,11 @@ export function CredentialField({ copied, name, onCopy, onToggleVisibility, valu
               onClick={onToggleVisibility}
               type="button"
             >
-              {visible ? <EyeOff className="size-4" aria-hidden="true" /> : <Eye className="size-4" aria-hidden="true" />}
+              {visible ? (
+                <EyeOff className="size-4" aria-hidden="true" />
+              ) : (
+                <Eye className="size-4" aria-hidden="true" />
+              )}
             </button>
           ) : null}
           <button
@@ -51,7 +66,11 @@ export function CredentialField({ copied, name, onCopy, onToggleVisibility, valu
             onClick={() => void onCopy(name, value)}
             type="button"
           >
-            {copied ? <Check className="size-3.5 text-success" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
+            {copied ? (
+              <Check className="size-3.5 text-success" aria-hidden="true" />
+            ) : (
+              <Copy className="size-3.5" aria-hidden="true" />
+            )}
             {copied ? 'Copied' : 'Copy'}
           </button>
         </div>

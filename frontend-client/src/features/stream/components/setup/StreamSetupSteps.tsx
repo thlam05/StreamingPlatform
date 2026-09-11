@@ -18,14 +18,22 @@ export function StreamSetupSteps({ phase }: StreamSetupStepsProps) {
 
         return (
           <li className="flex items-center gap-3" key={step.key}>
-            <span className={`grid size-8 shrink-0 place-items-center rounded-full border text-xs font-semibold ${isActive ? 'border-brand bg-brand text-primary-foreground' : isComplete ? 'border-success/50 bg-success/10 text-success' : 'border-border bg-surface text-copy-muted'}`}>
+            <span
+              className={`grid size-8 shrink-0 place-items-center rounded-full border text-xs font-semibold ${isActive ? 'border-brand bg-brand text-primary-foreground' : isComplete ? 'border-success/50 bg-success/10 text-success' : 'border-border bg-surface text-copy-muted'}`}
+            >
               {isComplete ? <Check aria-hidden="true" className="size-4" /> : index + 1}
             </span>
             <span className="min-w-0">
-              <span className={`block text-xs font-semibold uppercase tracking-[0.12em] ${isActive ? 'text-brand' : isComplete ? 'text-success' : 'text-copy-muted'}`}>{step.label}</span>
+              <span
+                className={`block text-xs font-semibold uppercase tracking-[0.12em] ${isActive ? 'text-brand' : isComplete ? 'text-success' : 'text-copy-muted'}`}
+              >
+                {step.label}
+              </span>
               <span className="block truncate text-sm font-medium text-copy">{step.title}</span>
             </span>
-            {index < steps.length - 1 ? <span aria-hidden="true" className="hidden h-px flex-1 bg-border sm:block" /> : null}
+            {index < steps.length - 1 ? (
+              <span aria-hidden="true" className="hidden h-px flex-1 bg-border sm:block" />
+            ) : null}
           </li>
         )
       })}

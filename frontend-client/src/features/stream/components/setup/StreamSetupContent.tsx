@@ -12,13 +12,26 @@ interface StreamSetupContentProps {
   stream: StreamProvisionResponse | null
 }
 
-export function StreamSetupContent({ onCredentialsCreated, onReset, onThumbnailSkipped, onThumbnailUploaded, phase, stream }: StreamSetupContentProps) {
+export function StreamSetupContent({
+  onCredentialsCreated,
+  onReset,
+  onThumbnailSkipped,
+  onThumbnailUploaded,
+  phase,
+  stream,
+}: StreamSetupContentProps) {
   if (phase.key === 'credentials') {
     return <CreateCredentialsStep onCreated={onCredentialsCreated} />
   }
 
   if (phase.key === 'thumbnail' && stream) {
-    return <UploadThumbnailStep onSkipped={onThumbnailSkipped} onUploaded={onThumbnailUploaded} streamId={stream.stream.id} />
+    return (
+      <UploadThumbnailStep
+        onSkipped={onThumbnailSkipped}
+        onUploaded={onThumbnailUploaded}
+        streamId={stream.stream.id}
+      />
+    )
   }
 
   if (phase.key === 'preview' && stream) {

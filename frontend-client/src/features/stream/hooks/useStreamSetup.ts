@@ -1,6 +1,11 @@
 import { useState } from 'react'
 
-import { STREAM_SETUP_PHASES, type StreamProvisionResponse, type StreamSetupPhase, type StreamSetupStep } from '../types/stream.types'
+import {
+  STREAM_SETUP_PHASES,
+  type StreamProvisionResponse,
+  type StreamSetupPhase,
+  type StreamSetupStep,
+} from '../types/stream.types'
 
 export function useStreamSetup() {
   const [phaseKey, setPhaseKey] = useState<StreamSetupStep>('credentials')

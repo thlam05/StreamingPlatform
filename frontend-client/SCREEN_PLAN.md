@@ -25,16 +25,16 @@ Các nhóm chức năng chính:
 
 ### Phase 1 — Nền tảng và livestream MVP
 
-| Màn hình | Route đề xuất | Người dùng | Ưu tiên |
-| --- | --- | --- | --- |
-| Landing / Home | `/` | Visitor, Viewer | P0 |
-| Login | `/login` | Visitor | P0 |
-| Register | `/register` | Visitor | P0 |
-| Stream discovery | `/streams` | Visitor, Viewer | P0 |
-| Watch livestream | `/streams/:streamId` | Viewer | P0 |
-| Stream unavailable | Trạng thái trong watch page | Viewer | P0 |
-| Not found | `*` | Tất cả | P0 |
-| Forbidden | `/403` | Tất cả | P0 |
+| Màn hình           | Route đề xuất               | Người dùng      | Ưu tiên |
+| ------------------ | --------------------------- | --------------- | ------- |
+| Landing / Home     | `/`                         | Visitor, Viewer | P0      |
+| Login              | `/login`                    | Visitor         | P0      |
+| Register           | `/register`                 | Visitor         | P0      |
+| Stream discovery   | `/streams`                  | Visitor, Viewer | P0      |
+| Watch livestream   | `/streams/:streamId`        | Viewer          | P0      |
+| Stream unavailable | Trạng thái trong watch page | Viewer          | P0      |
+| Not found          | `*`                         | Tất cả          | P0      |
+| Forbidden          | `/403`                      | Tất cả          | P0      |
 
 Watch livestream là màn hình cốt lõi, cần bao gồm:
 
@@ -48,15 +48,15 @@ Watch livestream là màn hình cốt lõi, cần bao gồm:
 
 ### Phase 2 — Streamer workflow
 
-| Màn hình | Route đề xuất | Người dùng | Ưu tiên |
-| --- | --- | --- | --- |
-| Streamer dashboard | `/studio` | Streamer | P0 |
-| Create stream | `/studio/streams/new` | Streamer | P0 |
-| Stream setup | `/studio/streams/:streamId/setup` | Streamer | P0 |
-| Live control room | `/studio/streams/:streamId/live` | Streamer | P0 |
-| Stream ended summary | `/studio/streams/:streamId/summary` | Streamer | P1 |
-| Stream statistics | `/studio/streams/:streamId/statistics` | Streamer | P1 |
-| Credential management | `/studio/streams/:streamId/credentials` | Streamer | P1 |
+| Màn hình              | Route đề xuất                           | Người dùng | Ưu tiên |
+| --------------------- | --------------------------------------- | ---------- | ------- |
+| Streamer dashboard    | `/studio`                               | Streamer   | P0      |
+| Create stream         | `/studio/streams/new`                   | Streamer   | P0      |
+| Stream setup          | `/studio/streams/:streamId/setup`       | Streamer   | P0      |
+| Live control room     | `/studio/streams/:streamId/live`        | Streamer   | P0      |
+| Stream ended summary  | `/studio/streams/:streamId/summary`     | Streamer   | P1      |
+| Stream statistics     | `/studio/streams/:streamId/statistics`  | Streamer   | P1      |
+| Credential management | `/studio/streams/:streamId/credentials` | Streamer   | P1      |
 
 Stream setup và live control room cần hỗ trợ:
 
@@ -69,15 +69,15 @@ Stream setup và live control room cần hỗ trợ:
 
 ### Phase 3 — Community
 
-| Màn hình | Route đề xuất | Người dùng | Ưu tiên |
-| --- | --- | --- | --- |
-| Public feed | `/feed` | Authenticated user | P1 |
-| Create public post | `/posts/new` hoặc modal | Authenticated user | P1 |
-| Post detail | `/posts/:postId` | Authenticated user | P1 |
-| Groups list | `/groups` | Group member | P1 |
-| Group detail | `/groups/:groupId` | Group member | P1 |
-| Group posts | `/groups/:groupId/posts` | Group member | P1 |
-| Group chat | `/groups/:groupId/chat` | Group member | P1 |
+| Màn hình           | Route đề xuất            | Người dùng         | Ưu tiên |
+| ------------------ | ------------------------ | ------------------ | ------- |
+| Public feed        | `/feed`                  | Authenticated user | P1      |
+| Create public post | `/posts/new` hoặc modal  | Authenticated user | P1      |
+| Post detail        | `/posts/:postId`         | Authenticated user | P1      |
+| Groups list        | `/groups`                | Group member       | P1      |
+| Group detail       | `/groups/:groupId`       | Group member       | P1      |
+| Group posts        | `/groups/:groupId/posts` | Group member       | P1      |
+| Group chat         | `/groups/:groupId/chat`  | Group member       | P1      |
 
 Post detail cần bao gồm:
 
@@ -88,14 +88,14 @@ Post detail cần bao gồm:
 
 ### Phase 4 — Profile và user experience
 
-| Màn hình | Route đề xuất | Người dùng | Ưu tiên |
-| --- | --- | --- | --- |
-| User profile | `/profile/:userId` | Viewer, Streamer | P2 |
-| My profile | `/profile` | Authenticated user | P2 |
-| Following streams | `/following` | Viewer | P2 |
-| Notifications | `/notifications` | Authenticated user | P2 |
-| Settings | `/settings` | Authenticated user | P2 |
-| Account and security | `/settings/security` | Authenticated user | P2 |
+| Màn hình             | Route đề xuất        | Người dùng         | Ưu tiên |
+| -------------------- | -------------------- | ------------------ | ------- |
+| User profile         | `/profile/:userId`   | Viewer, Streamer   | P2      |
+| My profile           | `/profile`           | Authenticated user | P2      |
+| Following streams    | `/following`         | Viewer             | P2      |
+| Notifications        | `/notifications`     | Authenticated user | P2      |
+| Settings             | `/settings`          | Authenticated user | P2      |
+| Account and security | `/settings/security` | Authenticated user | P2      |
 
 Các màn hình này giúp hoàn thiện follow, account và notification experience nhưng chưa thuộc acceptance criteria MVP.
 
