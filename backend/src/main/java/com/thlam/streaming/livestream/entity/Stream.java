@@ -59,7 +59,8 @@ public class Stream {
             UUID categoryId,
             String title,
             String description,
-            String thumbnailUrl) {
+            String thumbnailUrl,
+            String playbackUrl) {
         this.id = id;
         this.streamerId = streamerId;
         this.categoryId = categoryId;
@@ -67,6 +68,7 @@ public class Stream {
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
         this.status = StreamStatus.SCHEDULED;
+        this.playbackUrl = playbackUrl;
     }
 
     public void updateMetadata(UUID categoryId, String title, String description, String thumbnailUrl) {

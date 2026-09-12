@@ -41,7 +41,14 @@ public class StreamCredentialService {
                 encrypt(plaintextKey),
                 fingerprint(plaintextKey),
                 plaintextKey.substring(plaintextKey.length() - 4),
-                plaintextKey);
+                plaintextKey,
+                playbackUrl(plaintextKey));
+    }
+
+    public String playbackUrl(String plaintextKey) {
+        String playbackBaseUrl = ConfigurationUtils.requireProperty(
+                ingestProperties.getPlaybackBaseUrl(), "INGEST_PLAYBACK_BASE_URL");
+        return playbackBaseUrl.replaceAll("/+$", "") + "/" + plaintextKey + ".m3u8";
     }
 
     public boolean matches(String plaintextKey, StreamIngestConfig config) {
@@ -100,6 +107,7 @@ public class StreamCredentialService {
             byte[] encryptedKey,
             String fingerprint,
             String keySuffix,
-            String plaintextKey) {
+            String plaintextKey,
+            String playbackUrl) {
     }
 }

@@ -35,3 +35,4 @@ app:
   ingest:
     rtmp-url: rtmps://localhost/live
     callback-secret: test-callback-secret
+    playback-base-url: http://localhost:8081/hls/live

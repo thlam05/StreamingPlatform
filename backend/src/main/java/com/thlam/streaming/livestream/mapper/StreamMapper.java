@@ -6,17 +6,21 @@ import com.thlam.streaming.livestream.dto.response.ViewSessionResponse;
 import com.thlam.streaming.livestream.entity.Stream;
 import com.thlam.streaming.livestream.entity.StreamStatsDaily;
 import com.thlam.streaming.livestream.entity.StreamView;
+import com.thlam.streaming.livestream.service.PlaybackUrlService;
 import com.thlam.streaming.user.dto.response.UserSummary;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class StreamMapper {
+
+    private final PlaybackUrlService playbackUrlService;
 
     public StreamResponse toResponse(
             Stream stream,
             UserSummary streamer,
-            StreamCounts counts,
-            boolean playbackAllowed) {
+            StreamCounts counts) {
         return new StreamResponse(
                 stream.getId(),
                 streamer,
@@ -24,7 +28,9 @@ public class StreamMapper {
                 stream.getTitle(),
                 stream.getDescription(),
                 stream.getThumbnailUrl(),
-                playbackAllowed ? stream.getPlaybackUrl() : null,
+                stream.getPlaybackUrl(),
+                playbackUrlService.variantUrl(stream.getPlaybackUrl(), PlaybackUrlService.QUALITY_720P),
+                playbackUrlService.variantUrl(stream.getPlaybackUrl(), PlaybackUrlService.QUALITY_360P),
                 stream.getStatus().getCode(),
                 stream.getStartedAt(),
                 stream.getEndedAt(),

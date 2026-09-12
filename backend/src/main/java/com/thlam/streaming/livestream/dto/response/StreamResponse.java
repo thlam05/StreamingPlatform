@@ -12,6 +12,8 @@ public record StreamResponse(
         String description,
         String thumbnailUrl,
         String playbackUrl,
+        String playbackUrl720p,
+        String playbackUrl360p,
         String status,
         Instant startedAt,
         Instant endedAt,

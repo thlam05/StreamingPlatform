@@ -39,6 +39,7 @@ app:
   ingest:
     rtmp-url: ${INGEST_RTMP_URL:}
     callback-secret: ${INGEST_CALLBACK_SECRET:}
+    playback-base-url: ${INGEST_PLAYBACK_BASE_URL:http://localhost:8081/hls/live}
 
 server:
   port: ${SERVER_PORT:8080}

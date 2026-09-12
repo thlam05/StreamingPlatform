@@ -11,4 +11,5 @@ public class IngestProperties {
 
     private String rtmpUrl;
     private String callbackSecret;
+    private String playbackBaseUrl = "http://localhost:8081/hls/live";
 }

@@ -43,6 +43,7 @@ public class StreamServiceImpl implements StreamService {
     private final StreamIngestConfigRepository ingestConfigRepository;
     private final CategoryService categoryService;
     private final StreamCredentialService credentialService;
+    private final PlaybackUrlService playbackUrlService;
     private final StreamStateMachine stateMachine;
     private final StreamMapper streamMapper;
     private final UserService userService;
@@ -63,15 +64,17 @@ public class StreamServiceImpl implements StreamService {
                 request.categoryId(),
                 request.title(),
                 request.description(),
-                request.thumbnailUrl());
+                request.thumbnailUrl(),
+                credentials.playbackUrl());
         streamRepository.save(stream);
-        ingestConfigRepository.save(new StreamIngestConfig(
+        StreamIngestConfig ingestConfig = new StreamIngestConfig(
                 UUID.randomUUID(),
                 stream.getId(),
                 credentials.rtmpUrl(),
                 credentials.encryptedKey(),
                 credentials.fingerprint(),
-                credentials.keySuffix()));
+                credentials.keySuffix());
+        ingestConfigRepository.save(ingestConfig);
         return new StreamProvisionResponse(
                 toResponse(stream, actorId),
                 credentials.rtmpUrl(),
@@ -195,6 +198,7 @@ public class StreamServiceImpl implements StreamService {
                     credentials.encryptedKey(),
                     credentials.fingerprint(),
                     credentials.keySuffix()));
+            stream.setPlaybackUrl(credentials.playbackUrl());
             return new StreamProvisionResponse(toResponse(stream, actorId), credentials.rtmpUrl(),
                     credentials.plaintextKey());
         }
@@ -239,11 +243,12 @@ public class StreamServiceImpl implements StreamService {
             if (!credentialService.matches(request.streamKey(), config)) {
                 throw new InvalidRequestException("Stream key is invalid");
             }
-            if (request.playbackUrl() == null || request.playbackUrl().isBlank()) {
-                throw new InvalidRequestException("Playback URL is required before a stream goes live");
-            }
             config.markUsed(Instant.now());
-            stream.markLive(request.playbackUrl(), Instant.now());
+            String playbackUrl = stream.getPlaybackUrl();
+            if (playbackUrl == null || playbackUrl.isBlank()) {
+                playbackUrl = credentialService.playbackUrl(request.streamKey());
+            }
+            stream.markLive(playbackUrl, Instant.now());
             return;
         }
         revokeActiveConfig(stream.getId(), false);
@@ -261,7 +266,11 @@ public class StreamServiceImpl implements StreamService {
     public PlaybackResponse getPlayback(UUID streamId, UUID viewerId) {
         Stream stream = findStream(streamId);
         ensureLive(stream);
-        return new PlaybackResponse(stream.getId(), stream.getPlaybackUrl());
+        return new PlaybackResponse(
+                stream.getId(),
+                stream.getPlaybackUrl(),
+                playbackUrlService.variantUrl(stream.getPlaybackUrl(), PlaybackUrlService.QUALITY_720P),
+                playbackUrlService.variantUrl(stream.getPlaybackUrl(), PlaybackUrlService.QUALITY_360P));
     }
 
     private StreamResponse toResponse(Stream stream, UUID viewerId) {
@@ -279,7 +288,7 @@ public class StreamServiceImpl implements StreamService {
                 streamEngagementService.countLikes(stream.getId()),
                 viewerId != null && streamEngagementService.isFollowing(viewerId, stream.getStreamerId()),
                 viewerId != null && streamEngagementService.isLiked(viewerId, stream.getId()));
-        return streamMapper.toResponse(stream, streamer, counts, stream.getStatus() == StreamStatus.LIVE);
+        return streamMapper.toResponse(stream, streamer, counts);
     }
 
     private Map<UUID, UserSummary> profilesFor(List<Stream> streams) {
