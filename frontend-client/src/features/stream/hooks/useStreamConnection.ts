@@ -26,14 +26,12 @@ export function useStreamConnection(streamId: string | null, enabled: boolean) {
         setStreamStatus(result)
         setConnectionError(null)
 
-        if (result.status !== 'live') {
-          retryTimer = window.setTimeout(checkStatus, 4000)
-        }
+        retryTimer = window.setTimeout(checkStatus, result.status === 'preview' ? 15000 : 2000)
       } catch (error) {
         if (isCancelled) return
 
         setConnectionError(getApiErrorMessage(error, 'Unable to check the broadcast connection.'))
-        retryTimer = window.setTimeout(checkStatus, 4000)
+        retryTimer = window.setTimeout(checkStatus, 2000)
       } finally {
         if (!isCancelled) setIsCheckingConnection(false)
       }

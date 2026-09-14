@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 
 import { Button } from '../../../../components/ui/Button'
 import { paths } from '../../../../routes/paths'
+import { getApiErrorMessage } from '../../../../utils/error'
+import { requestStreamStart } from '../../services/streamService'
 import { useCredentialClipboard } from '../../hooks/useCredentialClipboard'
 import { useStreamConnection } from '../../hooks/useStreamConnection'
 import { useStreamCredentials } from '../../hooks/useStreamCredentials'
@@ -20,11 +22,22 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
   const credentials = useStreamCredentials(stream)
   const connection = useStreamConnection(stream.stream.id, true)
   const clipboard = useCredentialClipboard()
-  const [isLivestreamStarted, setIsLivestreamStarted] = useState(false)
+  const [isStarting, setIsStarting] = useState(false)
+  const [startError, setStartError] = useState<string | null>(null)
 
-  function startLivestream() {
-    if (connection.isConnected) setIsLivestreamStarted(true)
+  async function startLivestream() {
+    setIsStarting(true)
+    setStartError(null)
+    try {
+      await requestStreamStart(stream.stream.id)
+    } catch (error) {
+      setStartError(getApiErrorMessage(error, 'Unable to start the livestream.'))
+    } finally {
+      setIsStarting(false)
+    }
   }
+
+  const isLivestreamStarted = connection.streamStatus?.status === 'live'
 
   if (!credentials) return null
 
@@ -68,6 +81,11 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
             {connection.connectionError}
           </p>
         ) : null}
+        {startError ? (
+          <p className="rounded-xl border border-danger/30 bg-danger/10 p-3 text-sm text-danger" role="alert">
+            {startError}
+          </p>
+        ) : null}
 
         <div
           className={`flex items-start gap-3 rounded-2xl border p-4 text-sm ${connection.isConnected ? 'border-success/30 bg-success/10 text-success' : 'border-warning/30 bg-warning/10 text-warning'}`}
@@ -82,17 +100,31 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
             />
           )}
           <span>
-            {connection.isConnected
-              ? 'Encoder connected. Your livestream is ready to start.'
-              : connection.isCheckingConnection
-                ? 'Waiting for a connection from your encoder...'
-                : 'Connect your encoder with the credentials above.'}
+            {isLivestreamStarted
+              ? 'Your livestream is live.'
+              : connection.streamStatus?.startRequested && connection.streamStatus.publisherObserved
+                ? 'Start confirmed. Waiting for the player to become ready...'
+                : connection.streamStatus?.startRequested
+                  ? 'Start request sent. Waiting for your encoder to publish...'
+                  : connection.streamStatus?.publisherObserved
+                    ? 'Encoder connected. Press Start livestream to confirm.'
+                    : connection.isCheckingConnection
+                      ? 'Waiting for a connection from your encoder...'
+                      : 'Connect your encoder with the credentials above.'}
           </span>
         </div>
 
         <div className="flex flex-wrap items-center gap-3 border-t border-border pt-5">
-          <Button disabled={!connection.isConnected || isLivestreamStarted} onClick={startLivestream}>
-            {isLivestreamStarted ? 'Livestream started' : 'Start livestream'}{' '}
+          <Button
+            disabled={
+              isStarting ||
+              isLivestreamStarted ||
+              connection.streamStatus?.status === 'ended' ||
+              connection.streamStatus?.status === 'cancelled'
+            }
+            onClick={startLivestream}
+          >
+            {isLivestreamStarted ? 'Livestream started' : isStarting ? 'Starting...' : 'Start livestream'}{' '}
             <Radio aria-hidden="true" className="size-4" />
           </Button>
           {isLivestreamStarted ? (

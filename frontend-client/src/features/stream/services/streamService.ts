@@ -6,6 +6,7 @@ import type {
   StreamCategoryOption,
   StreamProvisionResponse,
   StreamStatusResponse,
+  StreamStartResponse,
   ThumbnailUploadResponse,
   UpdateStreamRequest,
 } from '../types/stream.types'
@@ -90,5 +91,10 @@ export async function updateStream(streamId: string, payload: UpdateStreamReques
 
 export async function getStreamStatus(streamId: string): Promise<StreamStatusResponse> {
   const response = await apiClient.get<ApiResponse<StreamStatusResponse>>(`/streams/${streamId}`)
+  return response.data.data
+}
+
+export async function requestStreamStart(streamId: string): Promise<StreamStartResponse> {
+  const response = await apiClient.post<ApiResponse<StreamStartResponse>>(`/streams/${streamId}/start`)
   return response.data.data
 }

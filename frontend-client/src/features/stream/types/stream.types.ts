@@ -1,5 +1,5 @@
 export type StreamCategory = 'Gaming' | 'Music' | 'Creative'
-export type StreamStatus = 'scheduled' | 'live' | 'ended' | 'cancelled'
+export type StreamStatus = 'scheduled' | 'preview' | 'live' | 'ended' | 'cancelled'
 export type StreamSetupStep = 'credentials' | 'thumbnail' | 'preview'
 
 export interface StreamSetupPhase {
@@ -95,4 +95,13 @@ export interface StreamStatusResponse {
   status: StreamStatus
   thumbnailUrl?: string | null
   playbackUrl?: string | null
+  startRequested: boolean
+  publisherObserved: boolean
+}
+
+export interface StreamStartResponse {
+  stream_id: string
+  status: StreamStatus
+  startRequested: boolean
+  publisherObserved: boolean
 }
