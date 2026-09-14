@@ -11,9 +11,9 @@ class StreamStateMachineTest {
     private final StreamStateMachine stateMachine = new StreamStateMachine();
 
     @Test
-    void startsScheduledStreamOnlyFromBroadcastEvent() {
+    void reconciliationStartsScheduledStream() {
         StreamStateMachine.Transition transition = stateMachine.transition(
-                StreamStatus.SCHEDULED, "broadcast_started");
+                StreamStatus.SCHEDULED, "reconcile_live");
 
         assertThat(transition.nextStatus()).isEqualTo(StreamStatus.LIVE);
         assertThat(transition.duplicate()).isFalse();

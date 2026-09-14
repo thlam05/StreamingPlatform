@@ -1,12 +1,13 @@
+-- Top-level categories.
 INSERT INTO categories (id, parent_id, name, slug, level, status)
 VALUES
     ('00000000-0000-0000-0000-000000001001', NULL, 'Gaming', 'gaming', 1, 'active'),
     ('00000000-0000-0000-0000-000000001002', NULL, 'Music', 'music', 1, 'active'),
     ('00000000-0000-0000-0000-000000001003', NULL, 'Creative', 'creative', 1, 'active'),
     ('00000000-0000-0000-0000-000000001004', NULL, 'Just Chatting', 'just-chatting', 1, 'active'),
-    ('00000000-0000-0000-0000-000000001005', NULL, 'Education', 'education', 1, 'active')
-ON CONFLICT DO NOTHING;
+    ('00000000-0000-0000-0000-000000001005', NULL, 'Education', 'education', 1, 'active');
 
+-- Child categories reference their parent by slug so the relationship is explicit.
 INSERT INTO categories (id, parent_id, name, slug, level, status)
 SELECT child.id, parent.id, child.name, child.slug, 2, 'active'
 FROM (
@@ -32,5 +33,6 @@ FROM (
         ('00000000-0000-0000-0000-000000002019'::UUID, 'Technology', 'education-technology', 'education'),
         ('00000000-0000-0000-0000-000000002020'::UUID, 'Languages', 'education-languages', 'education')
 ) AS child(id, name, slug, parent_slug)
-JOIN categories parent ON parent.slug = child.parent_slug AND parent.level = 1
-ON CONFLICT DO NOTHING;
+JOIN categories parent
+    ON parent.slug = child.parent_slug
+   AND parent.level = 1;

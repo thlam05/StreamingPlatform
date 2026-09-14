@@ -1,9 +1,0 @@
-CREATE TABLE permissions (
-    id UUID PRIMARY KEY,
-    code VARCHAR(100) NOT NULL UNIQUE,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    resource VARCHAR(50) NOT NULL,
-    action VARCHAR(50) NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-);

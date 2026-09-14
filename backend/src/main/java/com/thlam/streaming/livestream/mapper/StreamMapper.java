@@ -5,6 +5,7 @@ import com.thlam.streaming.livestream.dto.response.StreamResponse;
 import com.thlam.streaming.livestream.dto.response.ViewSessionResponse;
 import com.thlam.streaming.livestream.entity.Stream;
 import com.thlam.streaming.livestream.entity.StreamStatsDaily;
+import com.thlam.streaming.livestream.entity.StreamStatus;
 import com.thlam.streaming.livestream.entity.StreamView;
 import com.thlam.streaming.livestream.service.PlaybackUrlService;
 import com.thlam.streaming.user.dto.response.UserSummary;
@@ -39,7 +40,9 @@ public class StreamMapper {
                 counts.viewCount(),
                 counts.likeCount(),
                 counts.following(),
-                counts.liked());
+                counts.liked(),
+                stream.hasActiveStartRequest(java.time.Instant.now()) || stream.getStatus() == StreamStatus.LIVE,
+                stream.hasActivePublisher());
     }
 
     public ViewSessionResponse toViewResponse(StreamView view) {

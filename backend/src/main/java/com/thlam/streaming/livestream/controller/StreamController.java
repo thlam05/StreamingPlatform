@@ -11,6 +11,7 @@ import com.thlam.streaming.livestream.dto.response.PlaybackResponse;
 import com.thlam.streaming.livestream.dto.response.StreamProvisionResponse;
 import com.thlam.streaming.livestream.dto.response.StreamResponse;
 import com.thlam.streaming.livestream.dto.response.StreamStatisticsResponse;
+import com.thlam.streaming.livestream.dto.response.StreamStartResponse;
 import com.thlam.streaming.livestream.dto.response.ViewSessionResponse;
 import com.thlam.streaming.livestream.service.StreamEngagementService;
 import com.thlam.streaming.livestream.service.StreamService;
@@ -79,6 +80,14 @@ public class StreamController {
                 streamId, currentUserProvider.getRequiredUserId(), request);
         return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_UPDATED.getCode(),
                 "Stream updated successfully"));
+    }
+
+    @PostMapping("/{streamId}/start")
+    public ResponseEntity<ApiResponse<StreamStartResponse>> start(@PathVariable UUID streamId) {
+        StreamStartResponse response = streamService.requestStreamStart(
+                streamId, currentUserProvider.getRequiredUserId());
+        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_START_REQUESTED.getCode(),
+                "Stream start request accepted"));
     }
 
     @PostMapping(value = "/{streamId}/thumbnail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

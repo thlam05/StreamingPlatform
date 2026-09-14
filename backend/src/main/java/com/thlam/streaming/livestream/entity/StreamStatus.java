@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 public enum StreamStatus {
 
     SCHEDULED("scheduled"),
+    PREVIEW("preview"),
     LIVE("live"),
     ENDED("ended"),
     CANCELLED("cancelled");

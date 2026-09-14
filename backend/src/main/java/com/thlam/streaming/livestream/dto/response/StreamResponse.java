@@ -22,5 +22,7 @@ public record StreamResponse(
         long viewCount,
         long likeCount,
         boolean following,
-        boolean liked) {
+        boolean liked,
+        boolean startRequested,
+        boolean publisherObserved) {
 }

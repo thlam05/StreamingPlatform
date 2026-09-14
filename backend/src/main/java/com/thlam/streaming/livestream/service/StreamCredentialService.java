@@ -51,6 +51,12 @@ public class StreamCredentialService {
         return playbackBaseUrl.replaceAll("/+$", "") + "/" + plaintextKey + ".m3u8";
     }
 
+    public String playbackUrl(UUID streamId) {
+        String playbackBaseUrl = ConfigurationUtils.requireProperty(
+                ingestProperties.getPlaybackBaseUrl(), "INGEST_PLAYBACK_BASE_URL");
+        return playbackBaseUrl.replaceAll("/+$", "") + "/" + streamId + ".m3u8";
+    }
+
     public boolean matches(String plaintextKey, StreamIngestConfig config) {
         if (plaintextKey == null || plaintextKey.isBlank()) {
             return false;

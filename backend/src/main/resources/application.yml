@@ -40,6 +40,13 @@ app:
     rtmp-url: ${INGEST_RTMP_URL:}
     callback-secret: ${INGEST_CALLBACK_SECRET:}
     playback-base-url: ${INGEST_PLAYBACK_BASE_URL:http://localhost:8081/hls/live}
+    srs-control-url: ${SRS_CONTROL_URL:}
+    srs-control-secret: ${SRS_CONTROL_SECRET:}
+    reconnect-grace-period: ${RECONNECT_GRACE_PERIOD:PT15S}
+    scheduled-stream-ttl: ${SCHEDULED_STREAM_TTL:PT24H}
+    start-request-ttl: ${START_REQUEST_TTL:PT5M}
+    publisher-confirmation-timeout: ${PUBLISHER_CONFIRMATION_TIMEOUT:PT30S}
+    lifecycle-poll-interval-ms: ${STREAM_LIFECYCLE_POLL_INTERVAL_MS:5000}
 
 server:
   port: ${SERVER_PORT:8080}
