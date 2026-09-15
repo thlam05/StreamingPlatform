@@ -25,8 +25,8 @@ export const STREAM_SETUP_PHASES: Record<StreamSetupStep, StreamSetupPhase> = {
   preview: {
     key: 'preview',
     label: 'Step 3',
-    title: 'Preview and start',
-    description: 'Configure your encoder, preview the broadcast, and start when the connection is ready.',
+    title: 'Preview and go live',
+    description: 'Configure your encoder, preview the broadcast, and go live when the connection is ready.',
   },
 }
 
@@ -42,6 +42,8 @@ export interface Stream {
   gradientClass: string
   thumbnailUrl?: string | null
   playbackUrl?: string | null
+  status?: StreamStatus
+  createdAt?: string
 }
 
 export interface CreateStreamFormValues {
@@ -85,16 +87,23 @@ export interface StreamProvisionResponse {
     thumbnailUrl?: string | null
     playbackUrl?: string | null
   }
-  rtmpUrl: string
-  streamKey: string
+  rtmpUrl: string | null
+  streamKey: string | null
 }
 
 export interface StreamStatusResponse {
   id: string
   title: string
+  description?: string | null
+  categoryId?: string
   status: StreamStatus
   thumbnailUrl?: string | null
   playbackUrl?: string | null
+  createdAt?: string
+  startedAt?: string | null
+  endedAt?: string | null
+  viewerCount?: number
+  viewCount?: number
   startRequested: boolean
   publisherObserved: boolean
 }

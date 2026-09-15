@@ -4,7 +4,7 @@ import type { StreamProvisionResponse } from '../types/stream.types'
 
 export function useStreamCredentials(stream: StreamProvisionResponse | null) {
   return useMemo(() => {
-    if (!stream) return null
+    if (!stream?.rtmpUrl || !stream.streamKey) return null
 
     return {
       rtmpUrl: stream.rtmpUrl,

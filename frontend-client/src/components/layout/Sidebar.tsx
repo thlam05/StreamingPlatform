@@ -1,4 +1,4 @@
-import { Home, PlusCircle, Radio, Settings, type LucideIcon } from 'lucide-react'
+import { Home, LayoutDashboard, PlusCircle, Radio, Settings, type LucideIcon } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 import { AppLogo } from './AppLogo'
@@ -7,8 +7,9 @@ import { cn } from '../../utils/cn'
 
 const navigation: ReadonlyArray<{ icon: LucideIcon; label: string; to: string }> = [
   { icon: Home, label: 'Overview', to: paths.home },
+  { icon: LayoutDashboard, label: 'Streamer Studio', to: paths.studio },
   { icon: Radio, label: 'Streams', to: paths.streams },
-  { icon: PlusCircle, label: 'Create stream', to: paths.streamCreate },
+  { icon: PlusCircle, label: 'Create stream', to: paths.studioStreamCreate },
 ]
 
 export function Sidebar() {

@@ -1,6 +1,6 @@
 import { CheckCircle2, CircleAlert, ExternalLink, Radio, Server } from 'lucide-react'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { Button } from '../../../../components/ui/Button'
 import { paths } from '../../../../routes/paths'
@@ -19,6 +19,7 @@ interface StreamPreviewStepProps {
 }
 
 export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
+  const navigate = useNavigate()
   const credentials = useStreamCredentials(stream)
   const connection = useStreamConnection(stream.stream.id, true)
   const clipboard = useCredentialClipboard()
@@ -30,6 +31,7 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
     setStartError(null)
     try {
       await requestStreamStart(stream.stream.id)
+      navigate(paths.studioStreamDashboard(stream.stream.id), { replace: true })
     } catch (error) {
       setStartError(getApiErrorMessage(error, 'Unable to start the livestream.'))
     } finally {
@@ -42,33 +44,33 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
   const isPlaybackAvailable = isPreviewReady || isLivestreamStarted
   const playbackUrl = isPlaybackAvailable ? connection.playbackUrl : null
 
-  if (!credentials) return null
-
   return (
     <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="space-y-6 rounded-3xl border border-border bg-surface p-6 shadow-xl shadow-black/10 sm:p-8">
-        <HlsPlayer
-          poster={stream.stream.thumbnailUrl}
-          src={playbackUrl}
-          title={`${stream.stream.title} preview`}
-        />
+        <HlsPlayer poster={stream.stream.thumbnailUrl} src={playbackUrl} title={`${stream.stream.title} preview`} />
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <CredentialField
-            copied={clipboard.copiedCredential === 'rtmpUrl'}
-            name="rtmpUrl"
-            onCopy={clipboard.handleCopy}
-            value={credentials.rtmpUrl}
-          />
-          <CredentialField
-            copied={clipboard.copiedCredential === 'streamKey'}
-            name="streamKey"
-            onCopy={clipboard.handleCopy}
-            onToggleVisibility={clipboard.toggleStreamKeyVisibility}
-            value={credentials.streamKey}
-            visible={clipboard.streamKeyVisible}
-          />
-        </div>
+        {credentials ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <CredentialField
+              copied={clipboard.copiedCredential === 'rtmpUrl'}
+              name="rtmpUrl"
+              onCopy={clipboard.handleCopy}
+              value={credentials.rtmpUrl}
+            />
+            <CredentialField
+              copied={clipboard.copiedCredential === 'streamKey'}
+              name="streamKey"
+              onCopy={clipboard.handleCopy}
+              onToggleVisibility={clipboard.toggleStreamKeyVisibility}
+              value={credentials.streamKey}
+              visible={clipboard.streamKeyVisible}
+            />
+          </div>
+        ) : (
+          <p className="rounded-xl border border-border bg-surface-muted p-4 text-sm leading-6 text-copy-muted">
+            Encoder credentials are only shown when the stream is created. You can continue monitoring this stream here.
+          </p>
+        )}
 
         {clipboard.copyError ? (
           <p className="rounded-xl border border-warning/30 bg-warning/10 p-3 text-sm text-warning" role="alert">
@@ -110,7 +112,7 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
                 : connection.streamStatus?.startRequested
                   ? 'Start request sent. Waiting for your encoder to publish...'
                   : connection.streamStatus?.publisherObserved && isPreviewReady
-                    ? 'Encoder connected. Press Start livestream to confirm.'
+                    ? 'Encoder connected. You can go live now.'
                     : connection.streamStatus?.publisherObserved
                       ? 'Encoder connected. Waiting for the preview to become ready...'
                       : connection.isCheckingConnection
@@ -135,14 +137,14 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
               : isStarting
                 ? 'Starting...'
                 : isPreviewReady
-                  ? 'Start livestream'
+                  ? 'Go live'
                   : 'Waiting for preview...'}{' '}
             <Radio aria-hidden="true" className="size-4" />
           </Button>
           {isLivestreamStarted ? (
             <Link
               className="inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-copy"
-              to={paths.streams}
+              to={paths.studioStreamDashboard(stream.stream.id)}
             >
               View streams <ExternalLink aria-hidden="true" className="size-4" />
             </Link>

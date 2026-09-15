@@ -6,10 +6,15 @@ import { Spinner } from '../../components/ui/Spinner'
 import { StreamCard } from '../../features/stream/components/list/StreamCard'
 import { useStreams } from '../../features/stream/hooks/useStreams'
 import { paths } from '../../routes/paths'
+import { getAuthSession } from '../../store/authStore'
 
 export function HomePage() {
   const navigate = useNavigate()
   const { error, isLoading, streams } = useStreams()
+
+  function startCreating() {
+    navigate(getAuthSession() ? paths.studio : paths.login)
+  }
 
   return (
     <div className="space-y-10">
@@ -32,13 +37,14 @@ export function HomePage() {
             <Button onClick={() => navigate(paths.streams)}>
               Explore streams <ArrowRight className="size-4" aria-hidden="true" />
             </Button>
-            <Link
+            <button
               className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-copy-muted transition-colors hover:text-copy"
-              to={paths.login}
+              onClick={startCreating}
+              type="button"
             >
               <Play className="size-4" aria-hidden="true" />
               Start creating
-            </Link>
+            </button>
           </div>
         </div>
       </section>

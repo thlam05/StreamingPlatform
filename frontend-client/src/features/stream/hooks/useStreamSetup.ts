@@ -18,6 +18,11 @@ export function useStreamSetup() {
     setPhaseKey('thumbnail')
   }
 
+  function initializeExisting(existingStream: StreamProvisionResponse, phase: StreamSetupStep = 'preview') {
+    setStream(existingStream)
+    setPhaseKey(phase)
+  }
+
   function handleThumbnailUploaded() {
     setPhaseKey('preview')
   }
@@ -35,6 +40,7 @@ export function useStreamSetup() {
     handleCredentialsCreated,
     handleThumbnailSkipped,
     handleThumbnailUploaded,
+    initializeExisting,
     phase,
     resetSetup,
     stream,

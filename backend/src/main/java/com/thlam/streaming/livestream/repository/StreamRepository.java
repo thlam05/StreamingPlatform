@@ -16,6 +16,8 @@ public interface StreamRepository extends JpaRepository<Stream, UUID> {
 
     List<Stream> findAllByStatusOrderByCreatedAtDesc(StreamStatus status);
 
+    List<Stream> findAllByStreamerIdOrderByCreatedAtDesc(UUID streamerId);
+
     Optional<Stream> findByIdAndStreamerId(UUID id, UUID streamerId);
 
     boolean existsByStreamerIdAndStatusInAndIdNot(

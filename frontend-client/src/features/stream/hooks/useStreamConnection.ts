@@ -8,6 +8,7 @@ export function useStreamConnection(streamId: string | null, enabled: boolean) {
   const [streamStatus, setStreamStatus] = useState<StreamStatusResponse | null>(null)
   const [isCheckingConnection, setIsCheckingConnection] = useState(false)
   const [connectionError, setConnectionError] = useState<string | null>(null)
+  const [retryKey, setRetryKey] = useState(0)
 
   useEffect(() => {
     if (!streamId || !enabled) return
@@ -26,7 +27,9 @@ export function useStreamConnection(streamId: string | null, enabled: boolean) {
         setStreamStatus(result)
         setConnectionError(null)
 
-        retryTimer = window.setTimeout(checkStatus, result.status === 'live' ? 5000 : 2000)
+        if (result.status !== 'ended' && result.status !== 'cancelled') {
+          retryTimer = window.setTimeout(checkStatus, result.status === 'live' ? 5000 : 2000)
+        }
       } catch (error) {
         if (isCancelled) return
 
@@ -43,13 +46,14 @@ export function useStreamConnection(streamId: string | null, enabled: boolean) {
       isCancelled = true
       if (retryTimer !== undefined) window.clearTimeout(retryTimer)
     }
-  }, [enabled, streamId])
+  }, [enabled, retryKey, streamId])
 
   return {
     connectionError,
     isConnected: streamStatus?.status === 'live',
     isCheckingConnection,
     playbackUrl: streamStatus?.playbackUrl ?? null,
+    retry: () => setRetryKey((current) => current + 1),
     streamStatus,
   }
 }

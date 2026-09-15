@@ -26,7 +26,7 @@ export function useLoginForm() {
       })
 
       saveAuthSession(authResponse, values.rememberMe)
-      navigate(paths.home)
+      navigate(paths.studio)
     },
   })
 }

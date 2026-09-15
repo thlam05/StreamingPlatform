@@ -18,6 +18,8 @@ public interface StreamService {
 
     List<StreamResponse> findLive(UUID viewerId);
 
+    List<StreamResponse> findOwned(UUID ownerId);
+
     StreamResponse get(UUID streamId, UUID viewerId);
 
     StreamResponse update(UUID streamId, UUID actorId, UpdateStreamRequest request);

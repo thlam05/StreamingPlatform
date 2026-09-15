@@ -146,7 +146,7 @@ export function CreateCredentialsStep({ onCreated }: CreateCredentialsStepProps)
         <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
           <Link
             className="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-copy-muted hover:text-copy"
-            to={paths.streams}
+            to={paths.studio}
           >
             Cancel
           </Link>

@@ -62,6 +62,11 @@ export async function getStreams(): Promise<Stream[]> {
   return sampleStreams
 }
 
+export async function getOwnedStreams(): Promise<StreamStatusResponse[]> {
+  const response = await apiClient.get<ApiResponse<StreamStatusResponse[]>>('/streams/mine')
+  return response.data.data
+}
+
 export async function createStream(payload: CreateStreamRequest): Promise<StreamProvisionResponse> {
   const response = await apiClient.post<ApiResponse<StreamProvisionResponse>>('/streams', payload)
   return response.data.data
@@ -97,4 +102,8 @@ export async function getStreamStatus(streamId: string): Promise<StreamStatusRes
 export async function requestStreamStart(streamId: string): Promise<StreamStartResponse> {
   const response = await apiClient.post<ApiResponse<StreamStartResponse>>(`/streams/${streamId}/start`)
   return response.data.data
+}
+
+export async function cancelStream(streamId: string): Promise<void> {
+  await apiClient.post(`/streams/${streamId}/cancel`)
 }

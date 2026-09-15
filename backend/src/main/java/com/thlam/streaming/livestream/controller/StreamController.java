@@ -65,6 +65,13 @@ public class StreamController {
                 "Live streams retrieved successfully"));
     }
 
+    @GetMapping("/mine")
+    public ResponseEntity<ApiResponse<List<StreamResponse>>> findOwned() {
+        List<StreamResponse> response = streamService.findOwned(currentUserProvider.getRequiredUserId());
+        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAMS_RETRIEVED.getCode(),
+                "Owned streams retrieved successfully"));
+    }
+
     @GetMapping("/{streamId}")
     public ResponseEntity<ApiResponse<StreamResponse>> get(@PathVariable UUID streamId) {
         StreamResponse response = streamService.get(streamId, currentUserProvider.getRequiredUserId());

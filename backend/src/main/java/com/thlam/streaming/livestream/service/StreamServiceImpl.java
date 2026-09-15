@@ -97,6 +97,14 @@ public class StreamServiceImpl implements StreamService {
 
     @Override
     @PreAuthorize("hasAuthority('PERM_stream:read')")
+    public List<StreamResponse> findOwned(UUID ownerId) {
+        List<Stream> streams = streamRepository.findAllByStreamerIdOrderByCreatedAtDesc(ownerId);
+        Map<UUID, UserSummary> profiles = profilesFor(streams);
+        return streams.stream().map(stream -> toResponse(stream, ownerId, profiles)).toList();
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('PERM_stream:read')")
     public StreamResponse get(UUID streamId, UUID viewerId) {
         Stream stream = findStream(streamId);
         if (stream.getStatus() == StreamStatus.PREVIEW

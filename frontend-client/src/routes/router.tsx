@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 
 import { AuthLayout } from '../layouts/AuthLayout'
 import { MainLayout } from '../layouts/MainLayout'
@@ -8,6 +8,9 @@ import { ForbiddenPage } from '../pages/ForbiddenPage'
 import { HomePage } from '../pages/HomePage/HomePage'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { SettingsPage } from '../pages/SettingsPage'
+import { LivestreamDashboardPage } from '../pages/studio/LivestreamDashboardPage'
+import { StreamSummaryPage } from '../pages/studio/StreamSummaryPage'
+import { StudioPage } from '../pages/studio/StudioPage'
 import { StreamDetailPage } from '../pages/streams/StreamDetailPage'
 import { StreamListPage } from '../pages/streams/StreamListPage'
 import { StreamSetupPage } from '../pages/streams/StreamSetupPage'
@@ -19,14 +22,50 @@ export const router = createBrowserRouter([
   {
     children: [
       { index: true, element: <HomePage /> },
-      { path: routeSegments.streams, element: <StreamListPage /> },
       {
-        path: routeSegments.streamCreate,
+        path: routeSegments.studio,
+        element: (
+          <ProtectedRoute>
+            <StudioPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: routeSegments.studioStreamCreate,
         element: (
           <ProtectedRoute>
             <StreamSetupPage />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: paths.studioStreamSetupPattern,
+        element: (
+          <ProtectedRoute>
+            <StreamSetupPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: paths.studioStreamDashboardPattern,
+        element: (
+          <ProtectedRoute>
+            <LivestreamDashboardPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: paths.studioStreamSummaryPattern,
+        element: (
+          <ProtectedRoute>
+            <StreamSummaryPage />
+          </ProtectedRoute>
+        ),
+      },
+      { path: routeSegments.streams, element: <StreamListPage /> },
+      {
+        path: routeSegments.streamCreate,
+        element: <Navigate replace to={paths.studioStreamCreate} />,
       },
       { path: paths.streamsPattern, element: <StreamDetailPage /> },
       { path: routeSegments.settings, element: <SettingsPage /> },
