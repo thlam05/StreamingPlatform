@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.lenient;
 
 import com.thlam.streaming.common.exception.ConflictException;
+import com.thlam.streaming.common.exception.InvalidRequestException;
 import com.thlam.streaming.livestream.dto.request.SrsHookRequest;
 import com.thlam.streaming.livestream.entity.IngestConfigStatus;
 import com.thlam.streaming.livestream.entity.Stream;
@@ -18,6 +19,7 @@ import com.thlam.streaming.storage.service.ObjectStorageService;
 import com.thlam.streaming.user.service.UserService;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -158,6 +160,34 @@ class StreamLifecycleServiceTest {
 
         streamService.handleSrsPublish(publish("secret"));
 
+        assertThat(stream.getStatus()).isEqualTo(StreamStatus.PREVIEW);
+    }
+
+    @Test
+    void rejectsPublisherWhenStreamerAlreadyHasAnActiveStream() {
+        when(streamRepository.existsByStreamerIdAndStatusInAndIdNot(
+                OWNER_ID,
+                List.of(StreamStatus.PREVIEW, StreamStatus.LIVE),
+                STREAM_ID)).thenReturn(true);
+
+        assertThatThrownBy(() -> streamService.handleSrsPublish(publish("secret")))
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessage("A streamer can only have one active livestream");
+        assertThat(stream.getStatus()).isEqualTo(StreamStatus.SCHEDULED);
+        assertThat(stream.hasPublisher()).isFalse();
+    }
+
+    @Test
+    void rejectsStartWhenAnotherActiveStreamAppears() {
+        streamService.handleSrsPublish(publish("secret"));
+        when(streamRepository.existsByStreamerIdAndStatusInAndIdNot(
+                OWNER_ID,
+                List.of(StreamStatus.PREVIEW, StreamStatus.LIVE),
+                STREAM_ID)).thenReturn(true);
+
+        assertThatThrownBy(() -> streamService.requestStreamStart(STREAM_ID, OWNER_ID))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("A streamer can only have one active livestream");
         assertThat(stream.getStatus()).isEqualTo(StreamStatus.PREVIEW);
     }
 

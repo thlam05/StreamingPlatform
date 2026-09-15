@@ -2,11 +2,13 @@ package com.thlam.streaming.livestream.controller;
 
 import com.thlam.streaming.common.exception.InvalidRequestException;
 import com.thlam.streaming.common.exception.ResourceNotFoundException;
+import com.thlam.streaming.common.exception.ConflictException;
 import com.thlam.streaming.livestream.dto.request.SrsHookRequest;
 import com.thlam.streaming.livestream.dto.response.SrsHookResponse;
 import com.thlam.streaming.livestream.service.IngestProperties;
 import com.thlam.streaming.livestream.service.StreamService;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Locale;
@@ -42,7 +44,8 @@ public class SrsHookController {
                 default -> throw new InvalidRequestException("Unsupported SRS callback action");
             }
             return ResponseEntity.ok(SrsHookResponse.accepted());
-        } catch (InvalidRequestException | ResourceNotFoundException exception) {
+        } catch (InvalidRequestException | ResourceNotFoundException | ConflictException
+                | DataIntegrityViolationException exception) {
             return ResponseEntity.ok(SrsHookResponse.rejected());
         }
     }

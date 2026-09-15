@@ -271,6 +271,9 @@ public class StreamServiceImpl implements StreamService {
         if (stream.getStatus() != StreamStatus.PREVIEW) {
             throw new ConflictException("Only preview streams can be started");
         }
+        if (hasAnotherActiveStream(stream)) {
+            throw new ConflictException("A streamer can only have one active livestream");
+        }
         if (stream.getScheduledExpiresAt() != null && !stream.getScheduledExpiresAt().isAfter(now)) {
             expireScheduled(stream, now);
             throw new ConflictException("Stream start window has expired");
@@ -307,6 +310,9 @@ public class StreamServiceImpl implements StreamService {
         String streamKey = tokenFromParam(request.param());
         if (!credentialService.matches(streamKey, config)) {
             throw new InvalidRequestException("Stream key is invalid");
+        }
+        if (hasAnotherActiveStream(stream)) {
+            throw new InvalidRequestException("A streamer can only have one active livestream");
         }
         if (stream.hasPublisher() && !stream.isCurrentPublisher(request.clientId())) {
             throw new InvalidRequestException("Another publisher is already active");
@@ -469,6 +475,13 @@ public class StreamServiceImpl implements StreamService {
         StreamIngestConfig config = activeConfig(stream.getId());
         config.markUsed(now);
         stream.markLive(credentialService.playbackUrl(stream.getId()), now);
+    }
+
+    private boolean hasAnotherActiveStream(Stream stream) {
+        return streamRepository.existsByStreamerIdAndStatusInAndIdNot(
+                stream.getStreamerId(),
+                List.of(StreamStatus.PREVIEW, StreamStatus.LIVE),
+                stream.getId());
     }
 
     private StreamStartResponse startResponse(Stream stream, Instant now) {
