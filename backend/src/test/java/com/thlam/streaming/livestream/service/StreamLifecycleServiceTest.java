@@ -1,9 +1,11 @@
 package com.thlam.streaming.livestream.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.lenient;
 
+import com.thlam.streaming.common.exception.ConflictException;
 import com.thlam.streaming.livestream.dto.request.SrsHookRequest;
 import com.thlam.streaming.livestream.entity.IngestConfigStatus;
 import com.thlam.streaming.livestream.entity.Stream;
@@ -91,6 +93,8 @@ class StreamLifecycleServiceTest {
         when(ingestConfigRepository.findByStreamIdAndStatus(STREAM_ID, IngestConfigStatus.ACTIVE))
                 .thenReturn(Optional.of(config));
         lenient().when(credentialService.matches("secret", config)).thenReturn(true);
+        lenient().when(credentialService.playbackUrl(STREAM_ID))
+                .thenReturn("http://localhost:8081/hls/live/" + STREAM_ID + ".m3u8");
     }
 
     @Test
@@ -99,6 +103,8 @@ class StreamLifecycleServiceTest {
 
         assertThat(stream.getStatus()).isEqualTo(StreamStatus.PREVIEW);
         assertThat(stream.hasActivePublisher()).isTrue();
+        assertThat(stream.getPlaybackUrl())
+                .isEqualTo("http://localhost:8081/hls/live/" + STREAM_ID + ".m3u8");
 
         streamService.requestStreamStart(STREAM_ID, OWNER_ID);
 
@@ -119,8 +125,8 @@ class StreamLifecycleServiceTest {
 
     @Test
     void reconnectDuringGraceKeepsLiveAndClearsPendingDisconnect() {
-        streamService.requestStreamStart(STREAM_ID, OWNER_ID);
         streamService.handleSrsPublish(publish("secret"));
+        streamService.requestStreamStart(STREAM_ID, OWNER_ID);
         streamService.handleSrsUnpublish(new SrsHookRequest("on_unpublish", "live", STREAM_ID.toString(), null,
                 CLIENT_ID, null));
 
@@ -133,8 +139,8 @@ class StreamLifecycleServiceTest {
 
     @Test
     void staleUnpublishDoesNotEndTheCurrentPublisher() {
-        streamService.requestStreamStart(STREAM_ID, OWNER_ID);
         streamService.handleSrsPublish(publish("secret"));
+        streamService.requestStreamStart(STREAM_ID, OWNER_ID);
 
         streamService.handleSrsUnpublish(new SrsHookRequest("on_unpublish", "live", STREAM_ID.toString(), null,
                 "old-client", null));
@@ -144,22 +150,21 @@ class StreamLifecycleServiceTest {
     }
 
     @Test
-    void startBeforePublishStaysScheduledThenStartsOnPublish() {
-        var response = streamService.requestStreamStart(STREAM_ID, OWNER_ID);
-
-        assertThat(response.status()).isEqualTo(StreamStatus.SCHEDULED.getCode());
-        assertThat(response.startRequested()).isTrue();
+    void cannotStartScheduledStreamBeforePublisherPreview() {
+        assertThatThrownBy(() -> streamService.requestStreamStart(STREAM_ID, OWNER_ID))
+                .isInstanceOf(ConflictException.class)
+                .hasMessage("Only preview streams can be started");
         assertThat(stream.getStatus()).isEqualTo(StreamStatus.SCHEDULED);
 
         streamService.handleSrsPublish(publish("secret"));
 
-        assertThat(stream.getStatus()).isEqualTo(StreamStatus.LIVE);
+        assertThat(stream.getStatus()).isEqualTo(StreamStatus.PREVIEW);
     }
 
     @Test
     void duplicateUnpublishDoesNotExtendGracePeriod() {
-        streamService.requestStreamStart(STREAM_ID, OWNER_ID);
         streamService.handleSrsPublish(publish("secret"));
+        streamService.requestStreamStart(STREAM_ID, OWNER_ID);
         streamService.handleSrsUnpublish(new SrsHookRequest("on_unpublish", "live", STREAM_ID.toString(), null,
                 CLIENT_ID, null));
         Instant firstPendingAt = stream.getUnpublishPendingAt();

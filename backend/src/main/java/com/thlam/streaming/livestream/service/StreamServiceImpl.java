@@ -268,8 +268,10 @@ public class StreamServiceImpl implements StreamService {
         if (stream.getStatus() == StreamStatus.ENDED || stream.getStatus() == StreamStatus.CANCELLED) {
             throw new ConflictException("Terminal streams cannot be started");
         }
-        if ((stream.getStatus() == StreamStatus.SCHEDULED || stream.getStatus() == StreamStatus.PREVIEW)
-                && stream.getScheduledExpiresAt() != null && !stream.getScheduledExpiresAt().isAfter(now)) {
+        if (stream.getStatus() != StreamStatus.PREVIEW) {
+            throw new ConflictException("Only preview streams can be started");
+        }
+        if (stream.getScheduledExpiresAt() != null && !stream.getScheduledExpiresAt().isAfter(now)) {
             expireScheduled(stream, now);
             throw new ConflictException("Stream start window has expired");
         }
@@ -454,13 +456,12 @@ public class StreamServiceImpl implements StreamService {
     }
 
     private void reconcileStream(Stream stream, Instant now) {
-        if ((stream.getStatus() == StreamStatus.SCHEDULED || stream.getStatus() == StreamStatus.PREVIEW)
-                && stream.hasActivePublisher()
-                && !stream.hasActiveStartRequest(now)) {
-            stream.markPreview();
+        if (stream.getStatus() == StreamStatus.SCHEDULED && stream.hasActivePublisher()) {
+            stream.clearStartRequest();
+            stream.markPreview(credentialService.playbackUrl(stream.getId()));
             return;
         }
-        if ((stream.getStatus() != StreamStatus.SCHEDULED && stream.getStatus() != StreamStatus.PREVIEW)
+        if (stream.getStatus() != StreamStatus.PREVIEW
                 || !stream.hasActiveStartRequest(now)
                 || !stream.hasActivePublisher()) {
             return;

@@ -26,7 +26,7 @@ export function useStreamConnection(streamId: string | null, enabled: boolean) {
         setStreamStatus(result)
         setConnectionError(null)
 
-        retryTimer = window.setTimeout(checkStatus, result.status === 'preview' ? 15000 : 2000)
+        retryTimer = window.setTimeout(checkStatus, result.status === 'live' ? 5000 : 2000)
       } catch (error) {
         if (isCancelled) return
 

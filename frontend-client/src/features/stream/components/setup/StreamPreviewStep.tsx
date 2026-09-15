@@ -38,6 +38,9 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
   }
 
   const isLivestreamStarted = connection.streamStatus?.status === 'live'
+  const isPreviewReady = connection.streamStatus?.status === 'preview'
+  const isPlaybackAvailable = isPreviewReady || isLivestreamStarted
+  const playbackUrl = isPlaybackAvailable ? connection.playbackUrl : null
 
   if (!credentials) return null
 
@@ -46,7 +49,7 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
       <div className="space-y-6 rounded-3xl border border-border bg-surface p-6 shadow-xl shadow-black/10 sm:p-8">
         <HlsPlayer
           poster={stream.stream.thumbnailUrl}
-          src={connection.playbackUrl}
+          src={playbackUrl}
           title={`${stream.stream.title} preview`}
         />
 
@@ -106,11 +109,13 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
                 ? 'Start confirmed. Waiting for the player to become ready...'
                 : connection.streamStatus?.startRequested
                   ? 'Start request sent. Waiting for your encoder to publish...'
-                  : connection.streamStatus?.publisherObserved
+                  : connection.streamStatus?.publisherObserved && isPreviewReady
                     ? 'Encoder connected. Press Start livestream to confirm.'
-                    : connection.isCheckingConnection
-                      ? 'Waiting for a connection from your encoder...'
-                      : 'Connect your encoder with the credentials above.'}
+                    : connection.streamStatus?.publisherObserved
+                      ? 'Encoder connected. Waiting for the preview to become ready...'
+                      : connection.isCheckingConnection
+                        ? 'Waiting for a connection from your encoder...'
+                        : 'Connect your encoder with the credentials above.'}
           </span>
         </div>
 
@@ -118,13 +123,20 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
           <Button
             disabled={
               isStarting ||
+              !isPreviewReady ||
               isLivestreamStarted ||
               connection.streamStatus?.status === 'ended' ||
               connection.streamStatus?.status === 'cancelled'
             }
             onClick={startLivestream}
           >
-            {isLivestreamStarted ? 'Livestream started' : isStarting ? 'Starting...' : 'Start livestream'}{' '}
+            {isLivestreamStarted
+              ? 'Livestream started'
+              : isStarting
+                ? 'Starting...'
+                : isPreviewReady
+                  ? 'Start livestream'
+                  : 'Waiting for preview...'}{' '}
             <Radio aria-hidden="true" className="size-4" />
           </Button>
           {isLivestreamStarted ? (

@@ -35,6 +35,9 @@ export function HlsPlayer({
     if (!videoElement) return
     const playableVideo = videoElement as HTMLVideoElement
 
+    setPlaybackState(src ? 'loading' : 'unavailable')
+    setErrorMessage(null)
+
     if (!src) {
       return
     }

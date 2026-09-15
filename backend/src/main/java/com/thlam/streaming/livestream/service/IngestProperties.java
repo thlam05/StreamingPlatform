@@ -18,6 +18,6 @@ public class IngestProperties {
     private Duration reconnectGracePeriod = Duration.ofSeconds(15);
     private Duration scheduledStreamTtl = Duration.ofHours(24);
     private Duration startRequestTtl = Duration.ofMinutes(5);
-    private Duration publisherConfirmationTimeout = Duration.ofSeconds(30);
+    private Duration publisherConfirmationTimeout = Duration.ofMinutes(5);
     private long lifecyclePollIntervalMs = 5000;
 }

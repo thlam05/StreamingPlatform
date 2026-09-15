@@ -15,7 +15,6 @@ public class StreamStateMachine {
                 case "cancel_stream", "terminate_stream", "credential_revoked" ->
                         new Transition(StreamStatus.CANCELLED, false);
                 case "publisher_observed" -> new Transition(StreamStatus.PREVIEW, false);
-                case "reconcile_live" -> new Transition(StreamStatus.LIVE, false);
                 default -> invalid(current, normalizedEvent);
             };
             case PREVIEW -> switch (normalizedEvent) {

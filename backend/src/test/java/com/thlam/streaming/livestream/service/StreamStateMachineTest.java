@@ -11,12 +11,25 @@ class StreamStateMachineTest {
     private final StreamStateMachine stateMachine = new StreamStateMachine();
 
     @Test
-    void reconciliationStartsScheduledStream() {
+    void publisherObservationMovesScheduledStreamToPreview() {
         StreamStateMachine.Transition transition = stateMachine.transition(
-                StreamStatus.SCHEDULED, "reconcile_live");
+                StreamStatus.SCHEDULED, "publisher_observed");
+
+        assertThat(transition.nextStatus()).isEqualTo(StreamStatus.PREVIEW);
+        assertThat(transition.duplicate()).isFalse();
+    }
+
+    @Test
+    void onlyPreviewStreamCanBeReconciledToLive() {
+        StreamStateMachine.Transition transition = stateMachine.transition(
+                StreamStatus.PREVIEW, "reconcile_live");
 
         assertThat(transition.nextStatus()).isEqualTo(StreamStatus.LIVE);
         assertThat(transition.duplicate()).isFalse();
+
+        assertThatThrownBy(() -> stateMachine.transition(StreamStatus.SCHEDULED, "reconcile_live"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("not allowed");
     }
 
     @Test

@@ -135,9 +135,9 @@ public class Stream {
         this.unpublishPendingAt = null;
     }
 
-    public void markPreview() {
+    public void markPreview(String playbackUrl) {
         this.status = StreamStatus.PREVIEW;
-        this.playbackUrl = null;
+        this.playbackUrl = playbackUrl;
     }
 
     public void markScheduled() {
