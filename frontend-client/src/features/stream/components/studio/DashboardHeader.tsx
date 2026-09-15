@@ -20,7 +20,13 @@ export function DashboardHeader({ isEnding, isLive, onEndStream }: DashboardHead
         <ArrowLeft aria-hidden="true" className="size-4" />
         Back to Studio
       </Link>
-      <Button disabled={!isLive || isEnding} isLoading={isEnding} onClick={onEndStream} variant="secondary">
+      <Button
+        className="border-danger/40 bg-danger text-white hover:bg-danger/90"
+        disabled={!isLive || isEnding}
+        isLoading={isEnding}
+        onClick={onEndStream}
+        variant="primary"
+      >
         <StopCircle aria-hidden="true" className="size-4" />
         End stream
       </Button>

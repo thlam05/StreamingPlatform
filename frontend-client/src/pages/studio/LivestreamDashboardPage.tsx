@@ -60,19 +60,16 @@ export function LivestreamDashboardPage() {
             statusLabel={dashboard.statusLabel}
           />
 
-          <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
             <HlsPlayer
               poster={dashboard.status.thumbnailUrl}
               src={dashboard.connection.playbackUrl}
               title={`${dashboard.status.title} livestream`}
             />
-            <DashboardMetrics
-              hasPlayback={Boolean(dashboard.connection.playbackUrl)}
-              viewerCount={dashboard.status.viewerCount ?? 0}
-            />
+            <DashboardMetrics playbackUrl={dashboard.connection.playbackUrl} status={dashboard.status} />
           </section>
 
-          <DashboardPanels description={dashboard.status.description} title={dashboard.status.title} />
+          <DashboardPanels status={dashboard.status} />
         </>
       ) : null}
 

@@ -42,6 +42,11 @@ export interface Stream {
   gradientClass: string
   thumbnailUrl?: string | null
   playbackUrl?: string | null
+  playbackUrl720p?: string | null
+  playbackUrl360p?: string | null
+  likeCount?: number
+  following?: boolean
+  liked?: boolean
   status?: StreamStatus
   createdAt?: string
 }
@@ -99,11 +104,16 @@ export interface StreamStatusResponse {
   status: StreamStatus
   thumbnailUrl?: string | null
   playbackUrl?: string | null
+  playbackUrl720p?: string | null
+  playbackUrl360p?: string | null
   createdAt?: string
   startedAt?: string | null
   endedAt?: string | null
   viewerCount?: number
   viewCount?: number
+  likeCount?: number
+  following?: boolean
+  liked?: boolean
   startRequested: boolean
   publisherObserved: boolean
 }
