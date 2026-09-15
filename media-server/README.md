@@ -19,12 +19,19 @@ Endpoints:
 Set `INGEST_CALLBACK_SECRET` in the environment shared with the backend before
 starting the stack. The gateway adds that secret to SRS callbacks and proxies
 them to `/api/v1/internal/srs/hooks`. SRS control API listens on port `1985`
-inside the Docker network and is not published to the host.
+and is published as `http://localhost:1985` for the local backend.
 
 The default `test` stream is transcoded into two additional HLS renditions:
 
 - 720p: `http://localhost:8081/hls/live/<stream-name>_720p.m3u8`
 - 360p: `http://localhost:8081/hls/live/<stream-name>_360p.m3u8`
+
+The backend disconnects a publisher through the SRS control API when a streamer
+ends a broadcast:
+
+```text
+http://localhost:1985/api/v1/clients/<client-id>
+```
 
 ## Publish a test stream
 
