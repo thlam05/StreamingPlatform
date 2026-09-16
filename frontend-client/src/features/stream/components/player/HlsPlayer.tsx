@@ -1,20 +1,9 @@
-import {
-  Check,
-  CircleAlert,
-  LoaderCircle,
-  Maximize,
-  Minimize,
-  Pause,
-  Play,
-  RotateCcw,
-  Settings2,
-  Volume2,
-  VolumeX,
-} from 'lucide-react'
-import { useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { CircleAlert, LoaderCircle, Play, RotateCcw } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import type Hls from 'hls.js'
 
 import { cn } from '../../../../utils/cn'
+import { HlsPlayerControls, type QualityOption } from './HlsPlayerControls'
 
 interface HlsPlayerProps {
   autoPlay?: boolean
@@ -27,23 +16,9 @@ interface HlsPlayerProps {
 
 type PlaybackState = 'error' | 'loading' | 'ready' | 'unavailable'
 
-interface QualityOption {
-  label: string
-  level: number
-}
-
 const HLS_MIME_TYPE = 'application/vnd.apple.mpegurl'
 const AUTO_QUALITY = -1
 const DEFAULT_QUALITY_OPTIONS: QualityOption[] = [{ label: 'Auto', level: AUTO_QUALITY }]
-
-function formatTime(value: number) {
-  if (!Number.isFinite(value) || value < 0) return '0:00'
-
-  const totalSeconds = Math.floor(value)
-  const minutes = Math.floor(totalSeconds / 60)
-  const seconds = totalSeconds % 60
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`
-}
 
 function getQualityOptions(hls: Hls): QualityOption[] {
   const seenLabels = new Set<string>()
@@ -86,6 +61,7 @@ export function HlsPlayer({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [qualityLevel, setQualityLevel] = useState(AUTO_QUALITY)
   const [qualityOptions, setQualityOptions] = useState<QualityOption[]>(DEFAULT_QUALITY_OPTIONS)
+  const [playbackRate, setPlaybackRate] = useState(1)
 
   useEffect(() => {
     const videoElement = videoRef.current
@@ -99,6 +75,7 @@ export function HlsPlayer({
     setDuration(0)
     setQualityLevel(AUTO_QUALITY)
     setQualityOptions(DEFAULT_QUALITY_OPTIONS)
+    setPlaybackRate(1)
 
     function handleReady() {
       if (isCancelled) return
@@ -133,7 +110,12 @@ export function HlsPlayer({
       setIsMuted(playableVideo.muted || playableVideo.volume === 0)
     }
 
+    function handleRateChange() {
+      setPlaybackRate(playableVideo.playbackRate)
+    }
+
     playableVideo.muted = muted
+    playableVideo.playbackRate = 1
     playableVideo.addEventListener('loadedmetadata', handleReady)
     playableVideo.addEventListener('canplay', handleReady)
     playableVideo.addEventListener('error', handleVideoError)
@@ -142,6 +124,7 @@ export function HlsPlayer({
     playableVideo.addEventListener('timeupdate', handleTimeUpdate)
     playableVideo.addEventListener('durationchange', handleDurationChange)
     playableVideo.addEventListener('volumechange', handleVolumeChange)
+    playableVideo.addEventListener('ratechange', handleRateChange)
 
     let hls: Hls | null = null
     let recoveredMediaError = false
@@ -158,6 +141,7 @@ export function HlsPlayer({
         playableVideo.removeEventListener('timeupdate', handleTimeUpdate)
         playableVideo.removeEventListener('durationchange', handleDurationChange)
         playableVideo.removeEventListener('volumechange', handleVolumeChange)
+        playableVideo.removeEventListener('ratechange', handleRateChange)
       }
     }
 
@@ -222,6 +206,7 @@ export function HlsPlayer({
       playableVideo.removeEventListener('timeupdate', handleTimeUpdate)
       playableVideo.removeEventListener('durationchange', handleDurationChange)
       playableVideo.removeEventListener('volumechange', handleVolumeChange)
+      playableVideo.removeEventListener('ratechange', handleRateChange)
       hls?.destroy()
       hlsRef.current = null
       playableVideo.pause()
@@ -250,16 +235,14 @@ export function HlsPlayer({
     }
   }
 
-  function handleSeek(event: ChangeEvent<HTMLInputElement>) {
-    const nextTime = Number(event.target.value)
-    if (!videoRef.current || !Number.isFinite(nextTime)) return
+  function handleSeek(nextTime: number) {
+    if (!videoRef.current) return
     videoRef.current.currentTime = nextTime
     setCurrentTime(nextTime)
   }
 
-  function handleVolumeChange(event: ChangeEvent<HTMLInputElement>) {
-    const nextVolume = Number(event.target.value)
-    if (!videoRef.current || !Number.isFinite(nextVolume)) return
+  function handleVolumeChange(nextVolume: number) {
+    if (!videoRef.current) return
     videoRef.current.volume = nextVolume
     videoRef.current.muted = nextVolume === 0
     setVolume(nextVolume)
@@ -295,14 +278,18 @@ export function HlsPlayer({
   function handleQualityChange(level: number) {
     if (hlsRef.current) hlsRef.current.currentLevel = level
     setQualityLevel(level)
-    setIsSettingsOpen(false)
+  }
+
+  function handleSpeedChange(rate: number) {
+    if (!videoRef.current) return
+    videoRef.current.playbackRate = rate
+    setPlaybackRate(rate)
   }
 
   const effectivePlaybackState = src ? playbackState : 'unavailable'
   const isLoading = effectivePlaybackState === 'loading'
   const isUnavailable = effectivePlaybackState === 'unavailable'
   const hasError = effectivePlaybackState === 'error'
-  const hasDuration = duration > 0
 
   return (
     <div
@@ -323,271 +310,29 @@ export function HlsPlayer({
         ref={videoRef}
       />
 
-      {/* Player controls */}
-      <div
-        className="
-    absolute inset-x-0 bottom-0 z-40
-    bg-gradient-to-t
-    from-black/90
-    via-black/55
-    to-transparent
-    px-4 pb-3 pt-16
-    text-white
-  "
-      >
-        {/* Progress */}
-        <div className="group/progress flex h-4 items-center">
-          <label className="sr-only" htmlFor="hls-player-progress">
-            Playback progress
-          </label>
-
-          <input
-            aria-label="Playback progress"
-            className="
-        h-1 w-full
-        cursor-pointer
-        accent-brand
-        transition-all
-        duration-150
-        group-hover/progress:h-1.5
-        disabled:cursor-not-allowed
-        disabled:opacity-40
-      "
-            disabled={!hasDuration}
-            id="hls-player-progress"
-            max={duration || 1}
-            min="0"
-            onChange={handleSeek}
-            step="0.1"
-            type="range"
-            value={Math.min(currentTime, duration || 1)}
-          />
-        </div>
-
-        {/* Bottom controls */}
-        <div className="flex h-10 items-center gap-1">
-          {/* Play / Pause */}
-          <button
-            aria-label={isPlaying ? 'Pause video' : 'Play video'}
-            className="
-        grid size-10 shrink-0
-        place-items-center
-        rounded-lg
-        text-white
-        transition-colors
-        hover:bg-white/10
-        focus-visible:outline-2
-        focus-visible:outline-offset-2
-        focus-visible:outline-white
-        disabled:cursor-not-allowed
-        disabled:opacity-40
-      "
-            disabled={!src || isLoading || hasError || isUnavailable}
-            onClick={() => void togglePlayback()}
-            type="button"
-          >
-            {isPlaying ? (
-              <Pause className="size-5 fill-current" aria-hidden="true" />
-            ) : (
-              <Play className="size-5 fill-current" aria-hidden="true" />
-            )}
-          </button>
-
-          {/* Time */}
-          <span
-            className="
-        mr-2
-        whitespace-nowrap
-        text-xs
-        font-medium
-        tabular-nums
-        text-white/80
-      "
-          >
-            {formatTime(currentTime)}
-            <span className="mx-1 text-white/40">/</span>
-            {formatTime(duration)}
-          </span>
-
-          {/* Volume */}
-          <div className="group/volume flex items-center">
-            <button
-              aria-label={isMuted ? 'Unmute video' : 'Mute video'}
-              className="
-          grid size-10 shrink-0
-          place-items-center
-          rounded-lg
-          text-white
-          transition-colors
-          hover:bg-white/10
-          focus-visible:outline-2
-          focus-visible:outline-offset-2
-          focus-visible:outline-white
-          disabled:cursor-not-allowed
-          disabled:opacity-40
-        "
-              disabled={!src || isLoading || hasError || isUnavailable}
-              onClick={toggleMute}
-              type="button"
-            >
-              {isMuted ? (
-                <VolumeX className="size-5" aria-hidden="true" />
-              ) : (
-                <Volume2 className="size-5" aria-hidden="true" />
-              )}
-            </button>
-
-            <div
-              className="
-          hidden
-          w-0
-          overflow-hidden
-          opacity-0
-          transition-[width,opacity]
-          duration-200
-
-          sm:block
-          sm:group-hover/volume:w-20
-          sm:group-hover/volume:opacity-100
-          sm:group-focus-within/volume:w-20
-          sm:group-focus-within/volume:opacity-100
-        "
-            >
-              <label className="sr-only" htmlFor="hls-player-volume">
-                Volume
-              </label>
-
-              <input
-                aria-label="Volume"
-                className="
-            h-1 w-16
-            cursor-pointer
-            accent-white
-          "
-                id="hls-player-volume"
-                max="1"
-                min="0"
-                onChange={handleVolumeChange}
-                step="0.05"
-                type="range"
-                value={isMuted ? 0 : volume}
-              />
-            </div>
-          </div>
-
-          {/* Right controls */}
-          <div className="ml-auto flex items-center gap-1">
-            {/* Settings */}
-            <div className="relative">
-              <button
-                aria-expanded={isSettingsOpen}
-                aria-haspopup="menu"
-                aria-label="Player settings"
-                className="
-            grid size-10
-            place-items-center
-            rounded-lg
-            text-white
-            transition-colors
-            hover:bg-white/10
-            focus-visible:outline-2
-            focus-visible:outline-offset-2
-            focus-visible:outline-white
-            disabled:cursor-not-allowed
-            disabled:opacity-40
-          "
-                disabled={!src || isLoading || hasError || isUnavailable}
-                onClick={() => setIsSettingsOpen((open) => !open)}
-                type="button"
-              >
-                <Settings2 className="size-5" aria-hidden="true" />
-              </button>
-
-              {isSettingsOpen ? (
-                <div
-                  aria-label="Video quality"
-                  className="
-              absolute bottom-12 right-0
-              w-40
-              overflow-hidden
-              rounded-xl
-              border border-white/10
-              bg-ink-950/95
-              p-1.5
-              text-white
-              shadow-2xl
-              backdrop-blur-xl
-            "
-                  role="menu"
-                >
-                  <div className="px-2.5 pb-1.5 pt-2">
-                    <p className="text-xs font-semibold text-white">Quality</p>
-                  </div>
-
-                  <div className="h-px bg-white/10" />
-
-                  <div className="mt-1">
-                    {qualityOptions.map((option) => (
-                      <button
-                        className={cn(
-                          `
-                      flex w-full
-                      items-center
-                      justify-between
-                      rounded-lg
-                      px-2.5 py-2
-                      text-left
-                      text-xs
-                      font-medium
-                      transition-colors
-                      hover:bg-white/10
-                      focus-visible:outline-none
-                    `,
-                          qualityLevel === option.level ? 'text-white' : 'text-white/70',
-                        )}
-                        key={option.level}
-                        onClick={() => handleQualityChange(option.level)}
-                        role="menuitemradio"
-                        type="button"
-                      >
-                        <span>{option.label}</span>
-
-                        {qualityLevel === option.level ? (
-                          <Check className="size-4 text-brand" aria-hidden="true" />
-                        ) : null}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-            </div>
-
-            {/* Fullscreen */}
-            <button
-              aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-              className="
-          grid size-10
-          place-items-center
-          rounded-lg
-          text-white
-          transition-colors
-          hover:bg-white/10
-          focus-visible:outline-2
-          focus-visible:outline-offset-2
-          focus-visible:outline-white
-        "
-              onClick={() => void toggleFullscreen()}
-              type="button"
-            >
-              {isFullscreen ? (
-                <Minimize className="size-5" aria-hidden="true" />
-              ) : (
-                <Maximize className="size-5" aria-hidden="true" />
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
+      <HlsPlayerControls
+        currentTime={currentTime}
+        duration={duration}
+        hasError={hasError}
+        isFullscreen={isFullscreen}
+        isLoading={isLoading}
+        isMuted={isMuted}
+        isPlaying={isPlaying}
+        isSettingsOpen={isSettingsOpen}
+        onFullscreen={toggleFullscreen}
+        onQualityChange={handleQualityChange}
+        onSeek={handleSeek}
+        onSpeedChange={handleSpeedChange}
+        onToggleMute={toggleMute}
+        onTogglePlayback={togglePlayback}
+        onToggleSettings={() => setIsSettingsOpen((open) => !open)}
+        onVolumeChange={handleVolumeChange}
+        playbackRate={playbackRate}
+        qualityLevel={qualityLevel}
+        qualityOptions={qualityOptions}
+        src={src}
+        volume={volume}
+      />
 
       {isLoading ? (
         <div
