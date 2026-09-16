@@ -45,7 +45,7 @@ app:
     reconnect-grace-period: ${RECONNECT_GRACE_PERIOD:PT15S}
     scheduled-stream-ttl: ${SCHEDULED_STREAM_TTL:PT24H}
     start-request-ttl: ${START_REQUEST_TTL:PT5M}
-    publisher-confirmation-timeout: ${PUBLISHER_CONFIRMATION_TIMEOUT:PT5M}
+    publisher-confirmation-timeout: ${PUBLISHER_CONFIRMATION_TIMEOUT:PT30S}
     lifecycle-poll-interval-ms: ${STREAM_LIFECYCLE_POLL_INTERVAL_MS:5000}
 
 server:

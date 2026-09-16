@@ -11,16 +11,21 @@ import java.util.List;
 import java.util.UUID;
 import java.time.Instant;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface StreamService {
 
     StreamProvisionResponse create(UUID actorId, CreateStreamRequest request);
 
+    @PreAuthorize("permitAll()")
     List<StreamResponse> findLive(UUID viewerId);
 
     List<StreamResponse> findOwned(UUID ownerId);
 
+    @PreAuthorize("permitAll()")
     StreamResponse get(UUID streamId, UUID viewerId);
+
+    StreamResponse end(UUID streamId, UUID actorId);
 
     StreamResponse update(UUID streamId, UUID actorId, UpdateStreamRequest request);
 
@@ -48,5 +53,6 @@ public interface StreamService {
 
     void expireStartRequest(UUID streamId, Instant now);
 
+    @PreAuthorize("permitAll()")
     PlaybackResponse getPlayback(UUID streamId, UUID viewerId);
 }

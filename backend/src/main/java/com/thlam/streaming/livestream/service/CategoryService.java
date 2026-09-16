@@ -10,7 +10,7 @@ public interface CategoryService {
     @PreAuthorize("hasAuthority('PERM_stream:read')")
     List<CategoryResponse> findActive();
 
-    @PreAuthorize("hasAuthority('PERM_stream:read')")
+    @PreAuthorize("permitAll()")
     CategoryResponse findActiveById(UUID categoryId);
 
     @PreAuthorize("hasAuthority('PERM_stream:read')")

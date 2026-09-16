@@ -26,9 +26,10 @@ public class StreamStateMachine {
             };
             case LIVE -> switch (normalizedEvent) {
                 case "reconcile_live" -> new Transition(StreamStatus.LIVE, true);
-                case "broadcast_stopped", "disconnect_timeout", "credential_rotated" ->
+                case "broadcast_stopped", "disconnect_timeout", "credential_rotated", "end_stream" ->
                         new Transition(StreamStatus.ENDED, false);
-                case "cancel_stream", "terminate_stream", "credential_revoked" ->
+                case "terminate_stream" -> new Transition(StreamStatus.ENDED, false);
+                case "cancel_stream", "credential_revoked" ->
                         new Transition(StreamStatus.CANCELLED, false);
                 default -> invalid(current, normalizedEvent);
             };
@@ -40,7 +41,8 @@ public class StreamStateMachine {
     private Transition alreadyTerminal(StreamStatus status, String event) {
         if ((status == StreamStatus.ENDED
                 && (event.equals("broadcast_stopped") || event.equals("disconnect_timeout")
-                || event.equals("credential_rotated")))
+                || event.equals("end_stream")
+                || event.equals("credential_rotated") || event.equals("terminate_stream")))
                 || (status == StreamStatus.CANCELLED
                 && (event.equals("cancel_stream") || event.equals("terminate_stream")
                 || event.equals("credential_revoked")))) {

@@ -1,4 +1,4 @@
-export type StreamCategory = 'Gaming' | 'Music' | 'Creative'
+export type StreamCategory = string
 export type StreamStatus = 'scheduled' | 'preview' | 'live' | 'ended' | 'cancelled'
 export type StreamSetupStep = 'credentials' | 'thumbnail' | 'preview'
 
@@ -32,6 +32,7 @@ export const STREAM_SETUP_PHASES: Record<StreamSetupStep, StreamSetupPhase> = {
 
 export interface Stream {
   id: string
+  streamerId: string
   title: string
   creator: string
   initials: string
@@ -49,6 +50,13 @@ export interface Stream {
   liked?: boolean
   status?: StreamStatus
   createdAt?: string
+}
+
+export interface StreamerSummary {
+  id: string
+  username: string
+  displayName: string
+  avatarUrl: string | null
 }
 
 export interface CreateStreamFormValues {
@@ -80,27 +88,19 @@ export interface StreamCategoryOption {
   children: StreamCategoryOption[]
 }
 
-export interface ThumbnailUploadResponse {
-  thumbnailUrl: string
-}
-
 export interface StreamProvisionResponse {
-  stream: {
-    id: string
-    title: string
-    status: StreamStatus
-    thumbnailUrl?: string | null
-    playbackUrl?: string | null
-  }
+  stream: StreamStatusResponse
   rtmpUrl: string | null
   streamKey: string | null
 }
 
 export interface StreamStatusResponse {
   id: string
+  streamer?: StreamerSummary
   title: string
   description?: string | null
   categoryId?: string
+  categoryName?: string
   status: StreamStatus
   thumbnailUrl?: string | null
   playbackUrl?: string | null
@@ -114,8 +114,8 @@ export interface StreamStatusResponse {
   likeCount?: number
   following?: boolean
   liked?: boolean
-  startRequested: boolean
-  publisherObserved: boolean
+  startRequested?: boolean
+  publisherObserved?: boolean
 }
 
 export interface StreamStartResponse {
@@ -123,4 +123,20 @@ export interface StreamStartResponse {
   status: StreamStatus
   startRequested: boolean
   publisherObserved: boolean
+}
+
+export interface EngagementResponse {
+  targetId: string
+  action: 'follow' | 'unfollow' | 'like' | 'unlike'
+  active: boolean
+  count: number
+}
+
+export interface ChatMessage {
+  id: string
+  streamId: string
+  sender: StreamerSummary
+  message: string
+  status: string
+  createdAt: string
 }

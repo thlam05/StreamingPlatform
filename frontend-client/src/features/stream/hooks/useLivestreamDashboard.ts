@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { useStreamConnection } from './useStreamConnection'
-import { cancelStream } from '../services/streamService'
+import { endStream } from '../services/streamService'
 import { paths } from '../../../routes/paths'
 import { getApiErrorMessage } from '../../../utils/error'
 
@@ -48,7 +48,7 @@ export function useLivestreamDashboard() {
     setIsEndConfirmationOpen(false)
     setEndError(null)
     try {
-      await cancelStream(streamId)
+      await endStream(streamId)
       navigate(paths.studioStreamSummary(streamId), { replace: true })
     } catch (error) {
       setEndError(getApiErrorMessage(error, 'Unable to end the livestream.'))

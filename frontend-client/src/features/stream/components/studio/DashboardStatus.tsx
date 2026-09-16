@@ -5,11 +5,12 @@ import type { StreamStatusResponse } from '../../types/stream.types'
 interface DashboardStatusProps {
   isLive: boolean
   isTerminal: boolean
+  lastUpdatedAt: Date | null
   status: StreamStatusResponse
   statusLabel: string
 }
 
-export function DashboardStatus({ isLive, isTerminal, status, statusLabel }: DashboardStatusProps) {
+export function DashboardStatus({ isLive, isTerminal, lastUpdatedAt, status, statusLabel }: DashboardStatusProps) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-4">
       <div>
@@ -25,6 +26,9 @@ export function DashboardStatus({ isLive, isTerminal, status, statusLabel }: Das
               ? 'This livestream has ended.'
               : 'Monitor your broadcast from this dashboard.'}
         </p>
+        {lastUpdatedAt ? (
+          <p className="mt-1 text-xs text-copy-muted">Last updated {lastUpdatedAt.toLocaleTimeString()}</p>
+        ) : null}
       </div>
       <span
         className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${isLive ? 'border-success/30 bg-success/10 text-success' : 'border-brand/30 bg-brand/10 text-brand'}`}

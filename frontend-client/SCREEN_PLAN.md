@@ -206,10 +206,10 @@ Mỗi màn hình có asynchronous operation phải xác định rõ:
 
 ## 9. Tài liệu nguồn
 
-- [Requirements](../docs/requirement.md)
-- [System Requirements Document](../docs/srd.md)
-- [System Architecture and Technology Design](../docs/design.md)
-- [Database Design](../docs/database-design.md)
+- [Requirements](../docs/product/requirement.md)
+- [System Requirements Document](../docs/architecture/srd.md)
+- [System Architecture and Technology Design](../docs/architecture/design.md)
+- [Database Design](../docs/architecture/database-design.md)
 - [Livestream Specification](../docs/specs/livestream.md)
 - [Chat Specification](../docs/specs/chat.md)
 - [Communication Specification](../docs/specs/communication.md)

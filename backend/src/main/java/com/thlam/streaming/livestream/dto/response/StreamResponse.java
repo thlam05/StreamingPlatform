@@ -8,6 +8,7 @@ public record StreamResponse(
         UUID id,
         UserSummary streamer,
         UUID categoryId,
+        String categoryName,
         String title,
         String description,
         String thumbnailUrl,

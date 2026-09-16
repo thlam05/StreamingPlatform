@@ -21,11 +21,14 @@ public class StreamMapper {
     public StreamResponse toResponse(
             Stream stream,
             UserSummary streamer,
-            StreamCounts counts) {
+            StreamCounts counts,
+            String categoryName,
+            boolean includeOwnerLifecycleDetails) {
         return new StreamResponse(
                 stream.getId(),
                 streamer,
                 stream.getCategoryId(),
+                categoryName,
                 stream.getTitle(),
                 stream.getDescription(),
                 stream.getThumbnailUrl(),
@@ -41,8 +44,9 @@ public class StreamMapper {
                 counts.likeCount(),
                 counts.following(),
                 counts.liked(),
-                stream.hasActiveStartRequest(java.time.Instant.now()) || stream.getStatus() == StreamStatus.LIVE,
-                stream.hasActivePublisher());
+                includeOwnerLifecycleDetails
+                        && (stream.hasActiveStartRequest(java.time.Instant.now()) || stream.getStatus() == StreamStatus.LIVE),
+                includeOwnerLifecycleDetails && stream.hasActivePublisher());
     }
 
     public ViewSessionResponse toViewResponse(StreamView view) {

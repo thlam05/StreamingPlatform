@@ -28,7 +28,7 @@ public interface UserService {
     @PreAuthorize("hasAuthority('PERM_user:read')")
     UserResponse getProfile(UUID userId);
 
-    @PreAuthorize("hasAuthority('PERM_stream:read')")
+    @PreAuthorize("permitAll()")
     Map<UUID, UserSummary> getPublicProfiles(Collection<UUID> userIds);
 
     @PreAuthorize("hasAuthority('PERM_user:update') or @currentUserProvider.isCurrentUser(#p0)")

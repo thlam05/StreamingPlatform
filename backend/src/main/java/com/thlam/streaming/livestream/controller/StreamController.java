@@ -60,7 +60,7 @@ public class StreamController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<StreamResponse>>> findLive() {
-        List<StreamResponse> response = streamService.findLive(currentUserProvider.getRequiredUserId());
+        List<StreamResponse> response = streamService.findLive(currentUserProvider.getOptionalUserId());
         return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAMS_RETRIEVED.getCode(),
                 "Live streams retrieved successfully"));
     }
@@ -74,7 +74,7 @@ public class StreamController {
 
     @GetMapping("/{streamId}")
     public ResponseEntity<ApiResponse<StreamResponse>> get(@PathVariable UUID streamId) {
-        StreamResponse response = streamService.get(streamId, currentUserProvider.getRequiredUserId());
+        StreamResponse response = streamService.get(streamId, currentUserProvider.getOptionalUserId());
         return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_RETRIEVED.getCode(),
                 "Stream retrieved successfully"));
     }
@@ -114,10 +114,17 @@ public class StreamController {
                 "Stream cancelled successfully"));
     }
 
+    @PostMapping("/{streamId}/end")
+    public ResponseEntity<ApiResponse<StreamResponse>> end(@PathVariable UUID streamId) {
+        StreamResponse response = streamService.end(streamId, currentUserProvider.getRequiredUserId());
+        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_ENDED.getCode(),
+                "Stream ended successfully"));
+    }
+
     @PostMapping("/{streamId}/terminate")
     public ResponseEntity<ApiResponse<StreamResponse>> terminate(@PathVariable UUID streamId) {
         StreamResponse response = streamService.terminate(streamId, currentUserProvider.getRequiredUserId());
-        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_CANCELLED.getCode(),
+        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_TERMINATED.getCode(),
                 "Stream terminated successfully"));
     }
 
@@ -138,7 +145,7 @@ public class StreamController {
     @GetMapping("/{streamId}/playback")
     public ResponseEntity<ApiResponse<PlaybackResponse>> playback(@PathVariable UUID streamId) {
         PlaybackResponse response = streamService.getPlayback(
-                streamId, currentUserProvider.getRequiredUserId());
+                streamId, currentUserProvider.getOptionalUserId());
         return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_PLAYBACK.getCode(),
                 "Stream playback retrieved successfully"));
     }

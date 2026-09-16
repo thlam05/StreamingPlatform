@@ -1,8 +1,10 @@
 import { Coffee, Gift, Heart, Rocket, Send, Star } from 'lucide-react'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { Alert } from '../../../../components/ui/Alert'
 import { Button } from '../../../../components/ui/Button'
+import { paths } from '../../../../routes/paths'
 
 const giftOptions = [
   { icon: Coffee, label: 'Coffee' },
@@ -11,21 +13,35 @@ const giftOptions = [
   { icon: Rocket, label: 'Rocket' },
 ] as const
 
-export function StreamGiftMenu() {
+interface StreamGiftMenuProps {
+  isAuthenticated: boolean
+}
+
+export function StreamGiftMenu({ isAuthenticated }: StreamGiftMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedGift, setSelectedGift] = useState<string | null>(null)
 
   return (
     <div className="relative">
-      <Button
-        aria-expanded={isOpen}
-        aria-haspopup="dialog"
-        onClick={() => setIsOpen((open) => !open)}
-        variant="secondary"
-      >
-        <Gift className="size-4" aria-hidden="true" />
-        Gift
-      </Button>
+      {isAuthenticated ? (
+        <Button
+          aria-expanded={isOpen}
+          aria-haspopup="dialog"
+          onClick={() => setIsOpen((open) => !open)}
+          variant="secondary"
+        >
+          <Gift className="size-4" aria-hidden="true" />
+          Gift
+        </Button>
+      ) : (
+        <Link
+          className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-copy transition-colors hover:border-brand/60 hover:bg-surface-muted"
+          to={paths.login}
+        >
+          <Gift className="size-4" aria-hidden="true" />
+          Sign in to gift
+        </Link>
+      )}
 
       {isOpen ? (
         <div

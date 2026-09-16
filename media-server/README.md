@@ -21,7 +21,8 @@ starting the stack. The gateway adds that secret to SRS callbacks and proxies
 them to `/api/v1/internal/srs/hooks`. SRS control API listens on port `1985`
 and is published as `http://localhost:1985` for the local backend.
 
-The default `test` stream is transcoded into two additional HLS renditions:
+Every original stream in the `live` application is transcoded into two
+additional HLS renditions:
 
 - 720p: `http://localhost:8081/hls/live/<stream-name>_720p.m3u8`
 - 360p: `http://localhost:8081/hls/live/<stream-name>_360p.m3u8`
@@ -54,9 +55,9 @@ http://localhost:8081/hls/live/test_720p.m3u8
 http://localhost:8081/hls/live/test_360p.m3u8
 ```
 
-The transcoding rule currently targets only `live/test`, which prevents the
-generated streams from being transcoded again. If you use another stream name,
-update the `transcode live/test` rule in `config/srs.conf`.
+The app-level `transcode live` rule applies to stream UUIDs created by the
+backend, so every live stream exposes the same original, 720p, and 360p URL
+pattern.
 
 SRS starts FFmpeg from the path bundled in the SRS container. Verify it with:
 

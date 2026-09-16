@@ -47,4 +47,14 @@ class StreamStateMachineTest {
         assertThat(transition.nextStatus()).isEqualTo(StreamStatus.ENDED);
         assertThat(transition.duplicate()).isTrue();
     }
+
+    @Test
+    void moderatorTerminationEndsAnActiveStream() {
+        StreamStateMachine.Transition transition = stateMachine.transition(
+                StreamStatus.LIVE, "terminate_stream");
+
+        assertThat(transition.nextStatus()).isEqualTo(StreamStatus.ENDED);
+        assertThat(transition.duplicate()).isFalse();
+        assertThat(stateMachine.transition(StreamStatus.ENDED, "terminate_stream").duplicate()).isTrue();
+    }
 }

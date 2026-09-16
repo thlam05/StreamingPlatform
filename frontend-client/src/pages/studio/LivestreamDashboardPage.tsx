@@ -56,6 +56,7 @@ export function LivestreamDashboardPage() {
           <DashboardStatus
             isLive={dashboard.isLive}
             isTerminal={dashboard.isTerminal}
+            lastUpdatedAt={dashboard.connection.lastUpdatedAt}
             status={dashboard.status}
             statusLabel={dashboard.statusLabel}
           />

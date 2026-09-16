@@ -68,6 +68,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/internal/srs/hooks").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/streams/mine").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/streams", "/streams/*", "/streams/*/playback")
+                        .permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(apiSecurityExceptionHandler)

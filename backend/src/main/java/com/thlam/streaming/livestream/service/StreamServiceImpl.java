@@ -88,7 +88,7 @@ public class StreamServiceImpl implements StreamService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('PERM_stream:read')")
+    @PreAuthorize("permitAll()")
     public List<StreamResponse> findLive(UUID viewerId) {
         List<Stream> streams = streamRepository.findAllByStatusOrderByCreatedAtDesc(StreamStatus.LIVE);
         Map<UUID, UserSummary> profiles = profilesFor(streams);
@@ -104,9 +104,12 @@ public class StreamServiceImpl implements StreamService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('PERM_stream:read')")
+    @PreAuthorize("permitAll()")
     public StreamResponse get(UUID streamId, UUID viewerId) {
         Stream stream = findStream(streamId);
+        if (viewerId == null && stream.getStatus() != StreamStatus.LIVE) {
+            throw new ResourceNotFoundException("Stream not found");
+        }
         if (stream.getStatus() == StreamStatus.PREVIEW
                 && !stream.getStreamerId().equals(viewerId)) {
             throw new ResourceNotFoundException("Stream not found");
@@ -175,6 +178,9 @@ public class StreamServiceImpl implements StreamService {
         if (stream.getStatus() == StreamStatus.ENDED || stream.getStatus() == StreamStatus.CANCELLED) {
             return toResponse(stream, actorId);
         }
+        if (stream.getStatus() == StreamStatus.LIVE) {
+            throw new ConflictException("Live streams must be ended, not cancelled");
+        }
         StreamStateMachine.Transition transition = stateMachine.transition(stream.getStatus(), "cancel_stream");
         if (transition.duplicate()) {
             return toResponse(stream, actorId);
@@ -183,6 +189,27 @@ public class StreamServiceImpl implements StreamService {
         srsControlService.kickPublisher(stream.getIngestClientId());
         stream.markCancelled(Instant.now());
         streamViewService.closeActiveSessions(stream.getId(), Instant.now());
+        return toResponse(stream, actorId);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('PERM_stream:update') or hasAuthority('PERM_stream:moderate')")
+    @Transactional
+    public StreamResponse end(UUID streamId, UUID actorId) {
+        Stream stream = findStreamForUpdate(streamId);
+        authorizationService.ensureOwnerOrPrivileged(stream, actorId, STREAM_UPDATE, STREAM_MODERATE);
+        if (stream.getStatus() == StreamStatus.ENDED) {
+            return toResponse(stream, actorId);
+        }
+        if (stream.getStatus() != StreamStatus.LIVE) {
+            throw new ConflictException("Only live streams can be ended");
+        }
+        stateMachine.transition(stream.getStatus(), "end_stream");
+        revokeActiveConfig(stream.getId(), false);
+        srsControlService.kickPublisher(stream.getIngestClientId());
+        Instant endedAt = Instant.now();
+        stream.markEnded(endedAt);
+        streamViewService.closeActiveSessions(stream.getId(), endedAt);
         return toResponse(stream, actorId);
     }
 
@@ -203,7 +230,11 @@ public class StreamServiceImpl implements StreamService {
         revokeActiveConfig(stream.getId(), false);
         srsControlService.kickPublisher(stream.getIngestClientId());
         Instant endedAt = Instant.now();
-        stream.markCancelled(endedAt);
+        if (transition.nextStatus() == StreamStatus.ENDED) {
+            stream.markEnded(endedAt);
+        } else {
+            stream.markCancelled(endedAt);
+        }
         streamViewService.closeActiveSessions(stream.getId(), endedAt);
         return toResponse(stream, actorId);
     }
@@ -409,7 +440,7 @@ public class StreamServiceImpl implements StreamService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('PERM_stream:read')")
+    @PreAuthorize("permitAll()")
     public PlaybackResponse getPlayback(UUID streamId, UUID viewerId) {
         Stream stream = findStream(streamId);
         ensureLive(stream);
@@ -435,7 +466,9 @@ public class StreamServiceImpl implements StreamService {
                 streamEngagementService.countLikes(stream.getId()),
                 viewerId != null && streamEngagementService.isFollowing(viewerId, stream.getStreamerId()),
                 viewerId != null && streamEngagementService.isLiked(viewerId, stream.getId()));
-        return streamMapper.toResponse(stream, streamer, counts);
+        String categoryName = categoryService.findActiveById(stream.getCategoryId()).name();
+        boolean ownerView = viewerId != null && viewerId.equals(stream.getStreamerId());
+        return streamMapper.toResponse(stream, streamer, counts, categoryName, ownerView);
     }
 
     private Map<UUID, UserSummary> profilesFor(List<Stream> streams) {

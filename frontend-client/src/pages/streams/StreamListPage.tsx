@@ -8,11 +8,10 @@ import type { StreamCategory } from '../../features/stream/types/stream.types'
 
 type CategoryFilter = 'All' | StreamCategory
 
-const categories: CategoryFilter[] = ['All', 'Gaming', 'Music', 'Creative']
-
 export function StreamListPage() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('All')
   const { error, isLoading, streams } = useStreams()
+  const categories: CategoryFilter[] = ['All', ...new Set(streams.map((stream) => stream.category))]
   const visibleStreams =
     selectedCategory === 'All' ? streams : streams.filter((stream) => stream.category === selectedCategory)
 

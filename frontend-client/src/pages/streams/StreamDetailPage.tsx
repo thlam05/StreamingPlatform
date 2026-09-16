@@ -1,23 +1,36 @@
 import { ArrowLeft } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { Spinner } from '../../components/ui/Spinner'
 import { StreamChatPanel } from '../../features/stream/components/detail/StreamChatPanel'
 import { StreamInfoPanel } from '../../features/stream/components/detail/StreamInfoPanel'
 import { HlsPlayer } from '../../features/stream/components/player/HlsPlayer'
 import { useStreamEngagement } from '../../features/stream/hooks/useStreamEngagement'
-import { useStreams } from '../../features/stream/hooks/useStreams'
+import { useStreamDetail } from '../../features/stream/hooks/useStreamDetail'
 import { paths } from '../../routes/paths'
+import { getAuthSession } from '../../store/authStore'
 
 export function StreamDetailPage() {
   const { streamId } = useParams<{ streamId: string }>()
-  const { error, isLoading, streams } = useStreams()
-  const stream = streams.find((item) => item.id === streamId)
-  const { isFollowing, isLiked, likeCount, toggleFollow, toggleLike } = useStreamEngagement({
-    initialFollowing: stream?.following,
-    initialLiked: stream?.liked,
-    initialLikeCount: stream?.likeCount,
-  })
+  const navigate = useNavigate()
+  const { error, isLoading, stream } = useStreamDetail(streamId)
+  const { engagementError, isFollowing, isLiked, isMutating, likeCount, toggleFollow, toggleLike } =
+    useStreamEngagement({
+      streamId,
+      streamerId: stream?.streamerId,
+      initialFollowing: stream?.following,
+      initialLiked: stream?.liked,
+      initialLikeCount: stream?.likeCount,
+    })
+  const isAuthenticated = Boolean(getAuthSession())
+
+  function requireAuthentication(action: () => Promise<void>) {
+    if (!isAuthenticated) {
+      navigate(paths.login)
+      return
+    }
+    void action()
+  }
 
   if (isLoading) return <Spinner label="Loading stream" />
   if (error)
@@ -44,7 +57,7 @@ export function StreamDetailPage() {
       </Link>
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <section aria-label="Stream content" className="min-w-0 space-y-5">
-          {stream.playbackUrl ? (
+          {stream.status === 'live' && stream.playbackUrl ? (
             <HlsPlayer poster={stream.thumbnailUrl} src={stream.playbackUrl} title={`${stream.title} livestream`} />
           ) : (
             <section
@@ -53,21 +66,28 @@ export function StreamDetailPage() {
               <div className="absolute inset-0 bg-black/20" />
               <div className="absolute inset-0 grid place-items-center">
                 <div className="rounded-full bg-white/20 px-5 py-3 text-sm font-semibold text-white backdrop-blur">
-                  Live preview
+                  {stream.status === 'ended'
+                    ? 'This livestream has ended'
+                    : stream.status === 'cancelled'
+                      ? 'This livestream was cancelled'
+                      : 'Playback is not available'}
                 </div>
               </div>
             </section>
           )}
           <StreamInfoPanel
+            engagementError={engagementError}
+            isAuthenticated={isAuthenticated}
             isFollowing={isFollowing}
             isLiked={isLiked}
+            isMutating={isMutating}
             likeCount={likeCount}
-            onFollow={toggleFollow}
-            onLike={toggleLike}
+            onFollow={() => requireAuthentication(toggleFollow)}
+            onLike={() => requireAuthentication(toggleLike)}
             stream={stream}
           />
         </section>
-        <StreamChatPanel />
+        <StreamChatPanel isAvailable={stream.status === 'live'} streamId={streamId} />
       </div>
     </div>
   )

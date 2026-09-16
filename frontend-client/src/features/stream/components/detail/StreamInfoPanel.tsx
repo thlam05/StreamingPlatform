@@ -5,21 +5,43 @@ import { StreamEngagementActions } from './StreamEngagementActions'
 import { StreamGiftMenu } from './StreamGiftMenu'
 
 interface StreamInfoPanelProps {
+  engagementError?: string | null
+  isAuthenticated: boolean
   isFollowing: boolean
   isLiked: boolean
   likeCount: number
   onFollow: () => void
   onLike: () => void
+  isMutating?: boolean
   stream: Stream
 }
 
-export function StreamInfoPanel({ isFollowing, isLiked, likeCount, onFollow, onLike, stream }: StreamInfoPanelProps) {
+export function StreamInfoPanel({
+  engagementError,
+  isAuthenticated,
+  isFollowing,
+  isLiked,
+  isMutating,
+  likeCount,
+  onFollow,
+  onLike,
+  stream,
+}: StreamInfoPanelProps) {
+  const isLive = stream.status === 'live'
+  const statusLabel = isLive
+    ? 'Live now'
+    : stream.status === 'ended'
+      ? 'Ended'
+      : stream.status === 'cancelled'
+        ? 'Cancelled'
+        : 'Preview'
+
   return (
     <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
       <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand">
         <span className="inline-flex items-center gap-2">
-          <span className="size-2 rounded-full bg-live" aria-hidden="true" />
-          Live now
+          <span className={`size-2 rounded-full ${isLive ? 'bg-live' : 'bg-copy-muted'}`} aria-hidden="true" />
+          {statusLabel}
         </span>
         <span className="text-copy-muted">/</span>
         <span>{stream.category}</span>
@@ -41,7 +63,7 @@ export function StreamInfoPanel({ isFollowing, isLiked, likeCount, onFollow, onL
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <Clock3 className="size-3.5 text-brand" aria-hidden="true" />
-                {stream.duration} live
+                {isLive ? `${stream.duration} live` : statusLabel}
               </span>
             </div>
           </div>
@@ -49,15 +71,18 @@ export function StreamInfoPanel({ isFollowing, isLiked, likeCount, onFollow, onL
 
         <div className="flex flex-wrap items-center gap-2">
           <StreamEngagementActions
+            isAuthenticated={isAuthenticated}
             isFollowing={isFollowing}
             isLiked={isLiked}
             likeCount={likeCount}
             onFollow={onFollow}
             onLike={onLike}
+            isMutating={isMutating}
           />
-          <StreamGiftMenu />
+          <StreamGiftMenu isAuthenticated={isAuthenticated} />
         </div>
       </div>
+      {engagementError ? <p className="mt-3 text-sm text-danger">{engagementError}</p> : null}
     </section>
   )
 }
