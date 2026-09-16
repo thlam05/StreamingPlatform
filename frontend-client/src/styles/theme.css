@@ -28,6 +28,7 @@
   --info-light: #e0f2fe;
   --live: #e11d48;
   --live-light: #fee2e2;
+  --player-control: #ffffff;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
@@ -61,6 +62,7 @@
   --info-light: #0c4a6e;
   --live: #fb7185;
   --live-light: #7f1d1d;
+  --player-control: #ffffff;
 }
 
 /* Aliases retained for the existing sample components. */
@@ -99,6 +101,7 @@
   --color-info-light: var(--info-light);
   --color-live: var(--live);
   --color-live-light: var(--live-light);
+  --color-player-control: var(--player-control);
 
   --color-ink-950: var(--background);
   --color-ink-900: var(--accent);
