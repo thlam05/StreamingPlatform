@@ -1,11 +1,11 @@
 import { Alert } from '../../components/ui/Alert'
 import { AlertDialog } from '../../components/ui/AlertDialog'
 import { Spinner } from '../../components/ui/Spinner'
+import { StreamChatPanel } from '../../features/stream/components/detail/StreamChatPanel'
 import { HlsPlayer } from '../../features/stream/components/player/HlsPlayer'
 import { DashboardHeader } from '../../features/stream/components/studio/DashboardHeader'
-import { DashboardMetrics } from '../../features/stream/components/studio/DashboardMetrics'
 import { DashboardPanels } from '../../features/stream/components/studio/DashboardPanels'
-import { DashboardStatus } from '../../features/stream/components/studio/DashboardStatus'
+import { DashboardMetrics } from '../../features/stream/components/studio/DashboardMetrics'
 import { useLivestreamDashboard } from '../../features/stream/hooks/useLivestreamDashboard'
 
 export function LivestreamDashboardPage() {
@@ -53,24 +53,19 @@ export function LivestreamDashboardPage() {
 
       {dashboard.status ? (
         <>
-          <DashboardStatus
-            isLive={dashboard.isLive}
-            isTerminal={dashboard.isTerminal}
-            lastUpdatedAt={dashboard.connection.lastUpdatedAt}
-            status={dashboard.status}
-            statusLabel={dashboard.statusLabel}
-          />
+          <DashboardMetrics playbackUrl={dashboard.connection.playbackUrl} status={dashboard.status} />
 
           <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-            <HlsPlayer
-              poster={dashboard.status.thumbnailUrl}
-              src={dashboard.connection.playbackUrl}
-              title={`${dashboard.status.title} livestream`}
-            />
-            <DashboardMetrics playbackUrl={dashboard.connection.playbackUrl} status={dashboard.status} />
+            <div className="min-w-0 space-y-6">
+              <HlsPlayer
+                poster={dashboard.status.thumbnailUrl}
+                src={dashboard.connection.playbackUrl}
+                title={`${dashboard.status.title} livestream`}
+              />
+              <DashboardPanels status={dashboard.status} />
+            </div>
+            <StreamChatPanel isAvailable={dashboard.isLive} streamId={dashboard.streamId} />
           </section>
-
-          <DashboardPanels status={dashboard.status} />
         </>
       ) : null}
 
