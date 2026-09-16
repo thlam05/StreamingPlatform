@@ -52,6 +52,7 @@ Current modules include:
 - `user/`: user persistence, profile retrieval/update, and password updates.
 - `rbac/`: roles, permissions, user-role assignment, and database-backed authorities.
 - `livestream/`: stream lifecycle, ingest credentials, playback metadata, view sessions, follows, likes, and statistics.
+- `storage/`: Supabase Storage S3 client configuration and object uploads for shared media buckets.
 
 ## Gotchas
 
@@ -132,4 +133,5 @@ Current modules include:
 4. **Schema changes go through Flyway** — new migration file, never edit an existing one.
 5. **Test after changing** — `.\mvnw.cmd test` minimum, `.\mvnw.cmd clean verify` for anything touching build/persistence/security/wiring.
 6. **No secrets in code** — environment variables or environment-specific config only.
-7. **Keep this guide current** — if a change alters structure, commands, or required services, update the relevant section here in the same change.
+7. **Keep API documentation current** — whenever an API endpoint, request, response, validation rule, authorization rule, or status code changes, update `docs/API.md` in the same change.
+8. **Keep this guide current** — if a change alters structure, commands, or required services, update the relevant section here in the same change.

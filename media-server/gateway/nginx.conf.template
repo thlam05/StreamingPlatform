@@ -1,0 +1,11 @@
+server {
+    listen 8082;
+
+    location = /srs/hooks {
+        proxy_pass ${BACKEND_URL}/api/v1/internal/srs/hooks;
+        proxy_set_header Content-Type application/json;
+        proxy_set_header X-Ingest-Callback-Secret "${INGEST_CALLBACK_SECRET}";
+        proxy_connect_timeout 3s;
+        proxy_read_timeout 5s;
+    }
+}

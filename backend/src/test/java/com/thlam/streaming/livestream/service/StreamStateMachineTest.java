@@ -11,12 +11,25 @@ class StreamStateMachineTest {
     private final StreamStateMachine stateMachine = new StreamStateMachine();
 
     @Test
-    void startsScheduledStreamOnlyFromBroadcastEvent() {
+    void publisherObservationMovesScheduledStreamToPreview() {
         StreamStateMachine.Transition transition = stateMachine.transition(
-                StreamStatus.SCHEDULED, "broadcast_started");
+                StreamStatus.SCHEDULED, "publisher_observed");
+
+        assertThat(transition.nextStatus()).isEqualTo(StreamStatus.PREVIEW);
+        assertThat(transition.duplicate()).isFalse();
+    }
+
+    @Test
+    void onlyPreviewStreamCanBeReconciledToLive() {
+        StreamStateMachine.Transition transition = stateMachine.transition(
+                StreamStatus.PREVIEW, "reconcile_live");
 
         assertThat(transition.nextStatus()).isEqualTo(StreamStatus.LIVE);
         assertThat(transition.duplicate()).isFalse();
+
+        assertThatThrownBy(() -> stateMachine.transition(StreamStatus.SCHEDULED, "reconcile_live"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("not allowed");
     }
 
     @Test
@@ -33,5 +46,15 @@ class StreamStateMachineTest {
 
         assertThat(transition.nextStatus()).isEqualTo(StreamStatus.ENDED);
         assertThat(transition.duplicate()).isTrue();
+    }
+
+    @Test
+    void moderatorTerminationEndsAnActiveStream() {
+        StreamStateMachine.Transition transition = stateMachine.transition(
+                StreamStatus.LIVE, "terminate_stream");
+
+        assertThat(transition.nextStatus()).isEqualTo(StreamStatus.ENDED);
+        assertThat(transition.duplicate()).isFalse();
+        assertThat(stateMachine.transition(StreamStatus.ENDED, "terminate_stream").duplicate()).isTrue();
     }
 }

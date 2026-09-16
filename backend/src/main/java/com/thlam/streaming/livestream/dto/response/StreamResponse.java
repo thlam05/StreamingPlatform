@@ -8,10 +8,13 @@ public record StreamResponse(
         UUID id,
         UserSummary streamer,
         UUID categoryId,
+        String categoryName,
         String title,
         String description,
         String thumbnailUrl,
         String playbackUrl,
+        String playbackUrl720p,
+        String playbackUrl360p,
         String status,
         Instant startedAt,
         Instant endedAt,
@@ -20,5 +23,7 @@ public record StreamResponse(
         long viewCount,
         long likeCount,
         boolean following,
-        boolean liked) {
+        boolean liked,
+        boolean startRequested,
+        boolean publisherObserved) {
 }

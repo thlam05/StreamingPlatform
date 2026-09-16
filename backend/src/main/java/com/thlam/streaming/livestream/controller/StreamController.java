@@ -11,6 +11,7 @@ import com.thlam.streaming.livestream.dto.response.PlaybackResponse;
 import com.thlam.streaming.livestream.dto.response.StreamProvisionResponse;
 import com.thlam.streaming.livestream.dto.response.StreamResponse;
 import com.thlam.streaming.livestream.dto.response.StreamStatisticsResponse;
+import com.thlam.streaming.livestream.dto.response.StreamStartResponse;
 import com.thlam.streaming.livestream.dto.response.ViewSessionResponse;
 import com.thlam.streaming.livestream.service.StreamEngagementService;
 import com.thlam.streaming.livestream.service.StreamService;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +34,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/streams")
@@ -56,14 +60,21 @@ public class StreamController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<StreamResponse>>> findLive() {
-        List<StreamResponse> response = streamService.findLive(currentUserProvider.getRequiredUserId());
+        List<StreamResponse> response = streamService.findLive(currentUserProvider.getOptionalUserId());
         return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAMS_RETRIEVED.getCode(),
                 "Live streams retrieved successfully"));
     }
 
+    @GetMapping("/mine")
+    public ResponseEntity<ApiResponse<List<StreamResponse>>> findOwned() {
+        List<StreamResponse> response = streamService.findOwned(currentUserProvider.getRequiredUserId());
+        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAMS_RETRIEVED.getCode(),
+                "Owned streams retrieved successfully"));
+    }
+
     @GetMapping("/{streamId}")
     public ResponseEntity<ApiResponse<StreamResponse>> get(@PathVariable UUID streamId) {
-        StreamResponse response = streamService.get(streamId, currentUserProvider.getRequiredUserId());
+        StreamResponse response = streamService.get(streamId, currentUserProvider.getOptionalUserId());
         return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_RETRIEVED.getCode(),
                 "Stream retrieved successfully"));
     }
@@ -78,6 +89,24 @@ public class StreamController {
                 "Stream updated successfully"));
     }
 
+    @PostMapping("/{streamId}/start")
+    public ResponseEntity<ApiResponse<StreamStartResponse>> start(@PathVariable UUID streamId) {
+        StreamStartResponse response = streamService.requestStreamStart(
+                streamId, currentUserProvider.getRequiredUserId());
+        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_START_REQUESTED.getCode(),
+                "Stream start request accepted"));
+    }
+
+    @PostMapping(value = "/{streamId}/thumbnail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<StreamResponse>> uploadThumbnail(
+            @PathVariable UUID streamId,
+            @RequestPart("file") MultipartFile file) {
+        StreamResponse response = streamService.uploadThumbnail(
+                streamId, currentUserProvider.getRequiredUserId(), file);
+        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_UPDATED.getCode(),
+                "Stream thumbnail uploaded successfully"));
+    }
+
     @PostMapping("/{streamId}/cancel")
     public ResponseEntity<ApiResponse<StreamResponse>> cancel(@PathVariable UUID streamId) {
         StreamResponse response = streamService.cancel(streamId, currentUserProvider.getRequiredUserId());
@@ -85,10 +114,17 @@ public class StreamController {
                 "Stream cancelled successfully"));
     }
 
+    @PostMapping("/{streamId}/end")
+    public ResponseEntity<ApiResponse<StreamResponse>> end(@PathVariable UUID streamId) {
+        StreamResponse response = streamService.end(streamId, currentUserProvider.getRequiredUserId());
+        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_ENDED.getCode(),
+                "Stream ended successfully"));
+    }
+
     @PostMapping("/{streamId}/terminate")
     public ResponseEntity<ApiResponse<StreamResponse>> terminate(@PathVariable UUID streamId) {
         StreamResponse response = streamService.terminate(streamId, currentUserProvider.getRequiredUserId());
-        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_CANCELLED.getCode(),
+        return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_TERMINATED.getCode(),
                 "Stream terminated successfully"));
     }
 
@@ -109,7 +145,7 @@ public class StreamController {
     @GetMapping("/{streamId}/playback")
     public ResponseEntity<ApiResponse<PlaybackResponse>> playback(@PathVariable UUID streamId) {
         PlaybackResponse response = streamService.getPlayback(
-                streamId, currentUserProvider.getRequiredUserId());
+                streamId, currentUserProvider.getOptionalUserId());
         return ResponseEntity.ok(new ApiResponse<>(response, ApiResponseCode.STREAM_PLAYBACK.getCode(),
                 "Stream playback retrieved successfully"));
     }

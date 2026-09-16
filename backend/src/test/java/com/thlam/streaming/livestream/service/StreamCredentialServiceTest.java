@@ -28,5 +28,19 @@ class StreamCredentialServiceTest {
         assertThat(service.matches(generated.plaintextKey(), config)).isTrue();
         assertThat(service.matches("invalid-key", config)).isFalse();
         assertThat(new String(generated.encryptedKey())).doesNotContain(generated.plaintextKey());
+        assertThat(generated.playbackUrl())
+                .isEqualTo("http://localhost:8081/hls/live/" + generated.plaintextKey() + ".m3u8");
+    }
+
+    @Test
+    void variantPlaybackUrlsUseTheSourcePlaylistName() {
+        PlaybackUrlService service = new PlaybackUrlService();
+
+        assertThat(service.variantUrl(
+                "http://localhost:8081/hls/live/key.m3u8", PlaybackUrlService.QUALITY_720P))
+                .isEqualTo("http://localhost:8081/hls/live/key_720p.m3u8");
+        assertThat(service.variantUrl(
+                "http://localhost:8081/hls/live/key.m3u8", PlaybackUrlService.QUALITY_360P))
+                .isEqualTo("http://localhost:8081/hls/live/key_360p.m3u8");
     }
 }

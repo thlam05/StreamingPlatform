@@ -6,4 +6,5 @@ if (apiBaseUrl && !/^https?:\/\//.test(apiBaseUrl)) {
 
 export const env = {
   apiBaseUrl,
+  wsBaseUrl: apiBaseUrl.replace(/^http/, 'ws'),
 } as const

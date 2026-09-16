@@ -10,17 +10,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class CurrentUserProvider {
 
-    public UUID getRequiredUserId() {
+    public UUID getOptionalUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof Jwt jwt)) {
-            throw new UnauthorizedException("Authentication is required");
+            return null;
         }
 
         try {
             return UUID.fromString(jwt.getSubject());
         } catch (IllegalArgumentException exception) {
-            throw new UnauthorizedException("Authentication is invalid");
+            return null;
         }
+    }
+
+    public UUID getRequiredUserId() {
+        UUID userId = getOptionalUserId();
+        if (userId == null) {
+            throw new UnauthorizedException("Authentication is required");
+        }
+        return userId;
     }
 
     public boolean isCurrentUser(UUID userId) {

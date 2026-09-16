@@ -2,6 +2,7 @@ package com.thlam.streaming.livestream.repository;
 
 import com.thlam.streaming.livestream.entity.Stream;
 import com.thlam.streaming.livestream.entity.StreamStatus;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,7 +16,23 @@ public interface StreamRepository extends JpaRepository<Stream, UUID> {
 
     List<Stream> findAllByStatusOrderByCreatedAtDesc(StreamStatus status);
 
+    List<Stream> findAllByStreamerIdOrderByCreatedAtDesc(UUID streamerId);
+
     Optional<Stream> findByIdAndStreamerId(UUID id, UUID streamerId);
+
+    boolean existsByStreamerIdAndStatusInAndIdNot(
+            UUID streamerId, List<StreamStatus> statuses, UUID streamId);
+
+    List<Stream> findAllByStatusInAndScheduledExpiresAtBefore(
+            List<StreamStatus> statuses, Instant before);
+
+    List<Stream> findAllByStatusAndUnpublishPendingAtBefore(StreamStatus status, Instant before);
+
+    List<Stream> findAllByStatusAndPublishObservedAtBefore(
+            StreamStatus status, Instant before);
+
+    List<Stream> findAllByStatusInAndStartRequestExpiresAtBefore(
+            List<StreamStatus> statuses, Instant before);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select stream from Stream stream where stream.id = :id")

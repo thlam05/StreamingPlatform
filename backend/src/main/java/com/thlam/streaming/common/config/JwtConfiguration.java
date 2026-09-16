@@ -1,6 +1,7 @@
 package com.thlam.streaming.common.config;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import com.thlam.streaming.common.utils.ConfigurationUtils;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -19,14 +20,15 @@ public class JwtConfiguration {
 
     @Bean
     SecretKey jwtSecretKey(JwtProperties properties) {
-        if (properties.getSecret() == null || properties.getSecret().length() < 32) {
+        String secret = ConfigurationUtils.requireProperty(properties.getSecret(), "JWT_SECRET");
+        if (secret.length() < 32) {
             throw new IllegalStateException("JWT_SECRET must contain at least 32 characters");
         }
         if (properties.getExpiration() == null || properties.getExpiration().isNegative()
                 || properties.getExpiration().isZero()) {
             throw new IllegalStateException("JWT_EXPIRATION must be a positive duration");
         }
-        return new SecretKeySpec(properties.getSecret().getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        return new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
     }
 
     @Bean

@@ -6,7 +6,9 @@ export function SettingsPage() {
       <div>
         <p className="text-sm font-semibold text-brand">Workspace</p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight text-copy">Settings</h1>
-        <p className="mt-2 text-sm leading-6 text-copy-muted">A simple page boundary ready for feature-specific settings.</p>
+        <p className="mt-2 text-sm leading-6 text-copy-muted">
+          A simple page boundary ready for feature-specific settings.
+        </p>
       </div>
       <div className="grid gap-4 md:grid-cols-3">
         {[
