@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 
-import { getApiErrorMessage } from '../../../utils/error'
-import { getApiErrorResponse } from '../../../services/apiClient'
-import { getStreamStatus } from '../services/streamService'
-import type { StreamStatusResponse } from '../types/stream.types'
+import { getApiErrorMessage } from '../../../../utils/error'
+import { getApiErrorResponse } from '../../../../services/apiClient'
+import { getStreamStatus } from '../../services/streamService'
+import type { StreamStatusResponse } from '../../types/stream.types'
 
 export function useStreamConnection(streamId: string | null, enabled: boolean) {
   const [streamStatus, setStreamStatus] = useState<StreamStatusResponse | null>(null)

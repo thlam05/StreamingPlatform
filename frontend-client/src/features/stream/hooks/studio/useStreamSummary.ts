@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useStreamConnection } from './useStreamConnection'
+import { useStreamConnection } from '../shared/useStreamConnection'
 
 export function useStreamSummary() {
   const { streamId } = useParams<{ streamId: string }>()

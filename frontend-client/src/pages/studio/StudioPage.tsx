@@ -6,7 +6,7 @@ import { Spinner } from '../../components/ui/Spinner'
 import { StudioEmptyState } from '../../features/stream/components/studio/StudioEmptyState'
 import { StudioHeader } from '../../features/stream/components/studio/StudioHeader'
 import { StudioStreamList } from '../../features/stream/components/studio/StudioStreamList'
-import { useStudioPage } from '../../features/stream/hooks/useStudioPage'
+import { useStudioPage } from '../../features/stream/hooks/studio/useStudioPage'
 
 export function StudioPage() {
   const { createStream, error, isLoading, reload, streams } = useStudioPage()

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '../../../../components/ui/Button'
 import { Spinner } from '../../../../components/ui/Spinner'
 import { paths } from '../../../../routes/paths'
-import { useStreamChat } from '../../hooks/useStreamChat'
+import { useStreamChat } from '../../hooks/detail/useStreamChat'
 
 interface StreamChatPanelProps {
   isAvailable: boolean

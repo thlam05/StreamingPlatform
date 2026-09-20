@@ -1,6 +1,6 @@
 import { Eye, Heart, Radio, Timer, Users, Wifi } from 'lucide-react'
 
-import { useStreamDuration } from '../../hooks/useStreamDuration'
+import { useStreamDuration } from '../../hooks/studio/useStreamDuration'
 import type { StreamStatusResponse } from '../../types/stream.types'
 
 interface DashboardMetricsProps {

@@ -1,8 +1,8 @@
 import { ImagePlus, UploadCloud } from 'lucide-react'
 
 import { Button } from '../../../../components/ui/Button'
-import { useThumbnailSelection } from '../../hooks/useThumbnailSelection'
-import { useThumbnailUpload } from '../../hooks/useThumbnailUpload'
+import { useThumbnailSelection } from '../../hooks/setup/useThumbnailSelection'
+import { useThumbnailUpload } from '../../hooks/setup/useThumbnailUpload'
 
 interface UploadThumbnailStepProps {
   onSkipped: () => void

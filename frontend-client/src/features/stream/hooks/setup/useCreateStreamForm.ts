@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FocusEvent } from 'react'
 
-import type { CreateStreamFormValues } from '../types/stream.types'
+import type { CreateStreamFormValues } from '../../types/stream.types'
 
 export type CreateStreamField = keyof CreateStreamFormValues
 export type CreateStreamErrors = Partial<Record<CreateStreamField, string>>

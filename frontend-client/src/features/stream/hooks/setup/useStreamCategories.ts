@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 
-import { getApiErrorMessage } from '../../../utils/error'
-import { getCategories } from '../services/streamService'
-import type { StreamCategoryOption } from '../types/stream.types'
+import { getApiErrorMessage } from '../../../../utils/error'
+import { getCategories } from '../../services/streamService'
+import type { StreamCategoryOption } from '../../types/stream.types'
 
 export function useStreamCategories(selectedParentId: string) {
   const [categories, setCategories] = useState<StreamCategoryOption[]>([])

@@ -18,6 +18,7 @@ export interface HlsPlayerControlsProps {
   duration: number
   hasError: boolean
   isFullscreen: boolean
+  isControlsVisible: boolean
   isLoading: boolean
   isMuted: boolean
   isPlaying: boolean
@@ -60,6 +61,7 @@ export function HlsPlayerControls({
   duration,
   hasError,
   isFullscreen,
+  isControlsVisible,
   isLoading,
   isMuted,
   isPlaying,
@@ -94,7 +96,15 @@ export function HlsPlayerControls({
 
   return (
     <div
-      className="absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-4 pb-3 pt-16 text-white"
+      className={cn(
+        'absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-4 pb-3 pt-16 text-white transition-opacity duration-200',
+        isFullscreen
+          ? cn(
+              'pointer-events-none opacity-0 group-focus-within/player:pointer-events-auto group-focus-within/player:opacity-100',
+              isControlsVisible && 'pointer-events-auto opacity-100',
+            )
+          : 'pointer-events-none opacity-0 group-hover/player:pointer-events-auto group-hover/player:opacity-100 group-focus-within/player:pointer-events-auto group-focus-within/player:opacity-100',
+      )}
       onMouseLeave={() => setIsVolumeControlVisible(false)}
     >
       <div className="group/progress flex h-4 items-center">

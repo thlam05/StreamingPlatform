@@ -6,7 +6,7 @@ import { HlsPlayer } from '../../features/stream/components/player/HlsPlayer'
 import { DashboardHeader } from '../../features/stream/components/studio/DashboardHeader'
 import { DashboardPanels } from '../../features/stream/components/studio/DashboardPanels'
 import { DashboardMetrics } from '../../features/stream/components/studio/DashboardMetrics'
-import { useLivestreamDashboard } from '../../features/stream/hooks/useLivestreamDashboard'
+import { useLivestreamDashboard } from '../../features/stream/hooks/studio/useLivestreamDashboard'
 
 export function LivestreamDashboardPage() {
   const dashboard = useLivestreamDashboard()

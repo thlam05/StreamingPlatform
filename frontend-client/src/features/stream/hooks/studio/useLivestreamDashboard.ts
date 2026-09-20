@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { useStreamConnection } from './useStreamConnection'
-import { endStream } from '../services/streamService'
-import { paths } from '../../../routes/paths'
-import { getApiErrorMessage } from '../../../utils/error'
+import { useStreamConnection } from '../shared/useStreamConnection'
+import { endStream } from '../../services/streamService'
+import { paths } from '../../../../routes/paths'
+import { getApiErrorMessage } from '../../../../utils/error'
 
 function getStatusLabel(status: string | undefined, startRequested: boolean) {
   if (status === 'live') return 'Live'

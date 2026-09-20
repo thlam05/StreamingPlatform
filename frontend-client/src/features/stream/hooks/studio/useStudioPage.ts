@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 
 import { useOwnedStreams } from './useOwnedStreams'
-import { paths } from '../../../routes/paths'
+import { paths } from '../../../../routes/paths'
 
 export function useStudioPage() {
   const navigate = useNavigate()

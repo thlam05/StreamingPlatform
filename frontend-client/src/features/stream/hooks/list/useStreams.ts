@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
-import { getStreams } from '../services/streamService'
-import type { Stream } from '../types/stream.types'
+import { getStreams } from '../../services/streamService'
+import type { Stream } from '../../types/stream.types'
 
 interface UseStreamsResult {
   error: string | null

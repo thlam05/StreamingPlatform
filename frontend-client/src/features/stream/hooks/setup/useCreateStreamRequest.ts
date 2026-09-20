@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-import { createStream } from '../services/streamService'
-import type { CreateStreamFormValues, StreamProvisionResponse } from '../types/stream.types'
+import { createStream } from '../../services/streamService'
+import type { CreateStreamFormValues, StreamProvisionResponse } from '../../types/stream.types'
 
 export function useCreateStreamRequest() {
   const [isSubmitting, setIsSubmitting] = useState(false)

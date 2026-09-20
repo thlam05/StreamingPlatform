@@ -7,7 +7,7 @@ import { paths } from '../../../../routes/paths'
 import { getApiErrorMessage } from '../../../../utils/error'
 import { getStreamStatus } from '../../services/streamService'
 import type { StreamProvisionResponse, StreamSetupStep } from '../../types/stream.types'
-import { useStreamSetup } from '../../hooks/useStreamSetup'
+import { useStreamSetup } from '../../hooks/setup/useStreamSetup'
 import { StreamSetupContent } from './StreamSetupContent'
 import { StreamSetupSteps } from './StreamSetupSteps'
 

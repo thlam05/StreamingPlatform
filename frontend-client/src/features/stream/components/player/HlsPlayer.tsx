@@ -1,5 +1,5 @@
 import { CircleAlert, LoaderCircle, Play, RotateCcw } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type Hls from 'hls.js'
 
 import { cn } from '../../../../utils/cn'
@@ -18,6 +18,7 @@ type PlaybackState = 'error' | 'loading' | 'ready' | 'unavailable'
 
 const HLS_MIME_TYPE = 'application/vnd.apple.mpegurl'
 const AUTO_QUALITY = -1
+const CONTROLS_HIDE_DELAY = 2500
 const DEFAULT_QUALITY_OPTIONS: QualityOption[] = [{ label: 'Auto', level: AUTO_QUALITY }]
 
 function getQualityOptions(hls: Hls): QualityOption[] {
@@ -58,10 +59,39 @@ export function HlsPlayer({
   const [volume, setVolume] = useState(1)
   const [isMuted, setIsMuted] = useState(muted)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isControlsVisible, setIsControlsVisible] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [qualityLevel, setQualityLevel] = useState(AUTO_QUALITY)
   const [qualityOptions, setQualityOptions] = useState<QualityOption[]>(DEFAULT_QUALITY_OPTIONS)
   const [playbackRate, setPlaybackRate] = useState(1)
+  const controlsHideTimeoutRef = useRef<number | null>(null)
+
+  const clearControlsHideTimeout = useCallback(() => {
+    if (controlsHideTimeoutRef.current === null) return
+
+    window.clearTimeout(controlsHideTimeoutRef.current)
+    controlsHideTimeoutRef.current = null
+  }, [])
+
+  const hideControls = useCallback(() => {
+    clearControlsHideTimeout()
+    setIsControlsVisible(false)
+    setIsSettingsOpen(false)
+  }, [clearControlsHideTimeout])
+
+  function handlePlayerMouseMove() {
+    setIsControlsVisible(true)
+
+    if (!isFullscreen) return
+
+    clearControlsHideTimeout()
+    controlsHideTimeoutRef.current = window.setTimeout(hideControls, CONTROLS_HIDE_DELAY)
+  }
+
+  function handlePlayerMouseLeave() {
+    if (!isFullscreen) return
+    hideControls()
+  }
 
   useEffect(() => {
     const videoElement = videoRef.current
@@ -217,12 +247,26 @@ export function HlsPlayer({
 
   useEffect(() => {
     function handleFullscreenChange() {
-      setIsFullscreen(document.fullscreenElement === playerRef.current)
+      const nextIsFullscreen = document.fullscreenElement === playerRef.current
+      setIsFullscreen(nextIsFullscreen)
+      setIsControlsVisible(nextIsFullscreen)
     }
 
     document.addEventListener('fullscreenchange', handleFullscreenChange)
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
   }, [])
+
+  useEffect(() => {
+    if (!isFullscreen) {
+      clearControlsHideTimeout()
+      return
+    }
+
+    clearControlsHideTimeout()
+    controlsHideTimeoutRef.current = window.setTimeout(hideControls, CONTROLS_HIDE_DELAY)
+
+    return clearControlsHideTimeout
+  }, [clearControlsHideTimeout, hideControls, isFullscreen])
 
   async function togglePlayback() {
     const videoElement = videoRef.current
@@ -272,6 +316,7 @@ export function HlsPlayer({
       return
     }
 
+    setIsControlsVisible(true)
     await playerRef.current.requestFullscreen().catch(() => undefined)
   }
 
@@ -295,7 +340,13 @@ export function HlsPlayer({
     <div
       aria-busy={isLoading}
       aria-label={title}
-      className={cn('relative aspect-video overflow-hidden rounded-3xl border border-border bg-ink-900', className)}
+      className={cn(
+        'group/player relative aspect-video overflow-hidden rounded-3xl border border-border bg-ink-900',
+        className,
+      )}
+      onMouseEnter={handlePlayerMouseMove}
+      onMouseLeave={handlePlayerMouseLeave}
+      onMouseMove={handlePlayerMouseMove}
       ref={playerRef}
       role="region"
     >
@@ -315,6 +366,7 @@ export function HlsPlayer({
         duration={duration}
         hasError={hasError}
         isFullscreen={isFullscreen}
+        isControlsVisible={isControlsVisible}
         isLoading={isLoading}
         isMuted={isMuted}
         isPlaying={isPlaying}

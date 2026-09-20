@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from 'react'
 
-import { getAuthSession } from '../../../store/authStore'
-import { getApiErrorMessage } from '../../../utils/error'
-import { followStreamer, likeStream, unfollowStreamer, unlikeStream } from '../services/streamService'
+import { getAuthSession } from '../../../../store/authStore'
+import { getApiErrorMessage } from '../../../../utils/error'
+import { followStreamer, likeStream, unfollowStreamer, unlikeStream } from '../../services/streamService'
 
 interface UseStreamEngagementOptions {
   initialFollowing?: boolean
