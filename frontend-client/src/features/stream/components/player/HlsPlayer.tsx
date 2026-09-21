@@ -3,7 +3,14 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type Hls from 'hls.js'
 
 import { cn } from '../../../../utils/cn'
-import { HlsPlayerControls, type QualityOption } from './HlsPlayerControls'
+import {
+  AUTO_QUALITY,
+  CONTROLS_HIDE_DELAY,
+  DEFAULT_QUALITY_OPTIONS,
+  HLS_MIME_TYPE,
+} from '../../constants/player.constants'
+import type { QualityOption } from '../../types/player.types'
+import { HlsPlayerControls } from './HlsPlayerControls'
 
 interface HlsPlayerProps {
   autoPlay?: boolean
@@ -15,11 +22,6 @@ interface HlsPlayerProps {
 }
 
 type PlaybackState = 'error' | 'loading' | 'ready' | 'unavailable'
-
-const HLS_MIME_TYPE = 'application/vnd.apple.mpegurl'
-const AUTO_QUALITY = -1
-const CONTROLS_HIDE_DELAY = 2500
-const DEFAULT_QUALITY_OPTIONS: QualityOption[] = [{ label: 'Auto', level: AUTO_QUALITY }]
 
 function getQualityOptions(hls: Hls): QualityOption[] {
   const seenLabels = new Set<string>()

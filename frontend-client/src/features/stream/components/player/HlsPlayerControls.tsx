@@ -2,16 +2,8 @@ import { Check, Maximize, Minimize, Pause, Play, Settings2, Volume2, VolumeX } f
 import { useState, type ChangeEvent } from 'react'
 
 import { cn } from '../../../../utils/cn'
-
-export interface QualityOption {
-  label: string
-  level: number
-}
-
-interface SpeedOption {
-  label: string
-  value: number
-}
+import { SPEED_OPTIONS } from '../../constants/player.constants'
+import type { QualityOption } from '../../types/player.types'
 
 export interface HlsPlayerControlsProps {
   currentTime: number
@@ -37,15 +29,6 @@ export interface HlsPlayerControlsProps {
   onToggleSettings: () => void
   onVolumeChange: (nextVolume: number) => void
 }
-
-const SPEED_OPTIONS: SpeedOption[] = [
-  { label: '0.5x', value: 0.5 },
-  { label: '0.75x', value: 0.75 },
-  { label: '1x', value: 1 },
-  { label: '1.25x', value: 1.25 },
-  { label: '1.5x', value: 1.5 },
-  { label: '2x', value: 2 },
-]
 
 function formatTime(value: number) {
   if (!Number.isFinite(value) || value < 0) return '0:00'

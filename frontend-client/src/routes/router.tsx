@@ -17,6 +17,7 @@ import { StreamSetupPage } from '../pages/streams/StreamSetupPage'
 import { PublicOnlyRoute } from './PublicOnlyRoute'
 import { ProtectedRoute } from './ProtectedRoute'
 import { paths, routeSegments } from './paths'
+import { HlsPlayer } from '../features/stream/components/player/HlsPlayer'
 
 export const router = createBrowserRouter([
   {
@@ -86,4 +87,13 @@ export const router = createBrowserRouter([
     ],
   },
   { element: <ForbiddenPage />, path: routeSegments.forbidden },
+  {
+    element: <MainLayout></MainLayout>,
+    children: [
+      {
+        element: <HlsPlayer />,
+        path: '/test',
+      },
+    ],
+  },
 ])

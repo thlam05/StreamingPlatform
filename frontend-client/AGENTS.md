@@ -118,11 +118,13 @@ frontend-client/
 10. Functions in `src/utils/` must be pure and must not call APIs, access router state, or use React hooks.
 11. Keep `src/assets/` limited to static assets. Do not place components, services, or other application code there.
 12. Read and validate environment variables through `src/config/env.ts`. Do not access `import.meta.env` throughout the application.
-13. Keep app-wide constants in `src/config/constants.ts`. Route paths must be defined in `src/routes/paths.ts`.
+13. Keep app-wide constants in `src/config/constants.ts`. Keep feature-specific constants in `src/features/<feature>/constants/`, split into focused files such as `player.constants.ts` when a feature has multiple domains. Do not place constants shared by multiple components inside one component file. Route paths must be defined in `src/routes/paths.ts`.
 14. Keep the `auth` domain responsible for authentication concerns. Reuse the global auth state from `src/store/authStore.ts` where both routing and layouts need it.
 15. Keep stream listing, stream setup, and stream detail code under the single `src/features/stream/` domain to avoid duplicated services and types.
 16. For multi-step feature flows, the parent setup component may own only the shared flow state and transitions, such as `phase` and `stream`. Each step component must call the hooks required by its own step and expose typed success or completion callbacks to the parent. Do not aggregate all step-specific hooks in one setup hook.
 17. Conditional rendering of separate step components is allowed, but never call hooks conditionally inside the same component. Preserve cross-step data by lifting only the data needed by later steps into the parent and passing it through typed props.
+
+18. Keep feature-specific shared types in `src/features/<feature>/types/`. Constants may import those types, but constants files must not contain component logic, hooks, API calls, or mutable state.
 
 ## Layout component rules
 
