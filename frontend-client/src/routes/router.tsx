@@ -94,11 +94,11 @@ export const router = createBrowserRouter([
         element: (
           <MediaPlayer
             source={{
-              isLive: true,
-              kind: 'stream',
-              type: 'hls',
-              url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+              kind: 'video',
+              type: 'video',
+              url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
             }}
+            title="Video player test"
           />
         ),
         path: '/test',

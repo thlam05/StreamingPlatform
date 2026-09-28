@@ -57,14 +57,18 @@ export function MediaPlayer({ autoPlay = true, className, muted = true, poster, 
     >
       {player}
       <MediaPlayerControls
+        currentTime={playback.currentTime}
         disabled={!source}
+        duration={playback.duration}
         isFullscreen={playback.isFullscreen}
         isMuted={playback.isMuted}
         isPlaying={playback.isPlaying}
         onFullscreen={playback.toggleFullscreen}
+        onSeek={playback.seek}
         onToggleMute={playback.toggleMute}
         onTogglePlayback={playback.togglePlayback}
         onVolumeChange={playback.changeVolume}
+        showTimeline={source?.kind === 'video'}
         volume={playback.volume}
       />
     </div>

@@ -9,6 +9,8 @@ interface UseMediaPlaybackOptions {
 
 export function useMediaPlayback({ containerRef, muted = true, sourceKind, videoRef }: UseMediaPlaybackOptions) {
   const lastVolumeRef = useRef(1)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isMuted, setIsMuted] = useState(muted)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -25,6 +27,8 @@ export function useMediaPlayback({ containerRef, muted = true, sourceKind, video
     player.muted = muted
     setIsMuted(muted)
     setIsPlaying(false)
+    setCurrentTime(0)
+    setDuration(0)
 
     function handlePlay() {
       setIsPlaying(true)
@@ -40,14 +44,26 @@ export function useMediaPlayback({ containerRef, muted = true, sourceKind, video
       if (player.volume > 0) lastVolumeRef.current = player.volume
     }
 
+    function handleTimeUpdate() {
+      setCurrentTime(player.currentTime)
+    }
+
+    function handleDurationChange() {
+      setDuration(Number.isFinite(player.duration) ? player.duration : 0)
+    }
+
     player.addEventListener('play', handlePlay)
     player.addEventListener('pause', handlePause)
     player.addEventListener('volumechange', handleVolumeChange)
+    player.addEventListener('timeupdate', handleTimeUpdate)
+    player.addEventListener('durationchange', handleDurationChange)
 
     return () => {
       player.removeEventListener('play', handlePlay)
       player.removeEventListener('pause', handlePause)
       player.removeEventListener('volumechange', handleVolumeChange)
+      player.removeEventListener('timeupdate', handleTimeUpdate)
+      player.removeEventListener('durationchange', handleDurationChange)
     }
   }, [muted, sourceKind, videoRef])
 
@@ -100,6 +116,15 @@ export function useMediaPlayback({ containerRef, muted = true, sourceKind, video
     if (clampedVolume > 0) lastVolumeRef.current = clampedVolume
   }
 
+  function seek(nextTime: number) {
+    const video = videoRef.current
+    if (!video || sourceKind !== 'video' || !Number.isFinite(nextTime) || !Number.isFinite(video.duration)) return
+
+    const clampedTime = Math.min(video.duration, Math.max(0, nextTime))
+    video.currentTime = clampedTime
+    setCurrentTime(clampedTime)
+  }
+
   async function toggleFullscreen() {
     const container = containerRef.current
     if (!container) return
@@ -113,9 +138,12 @@ export function useMediaPlayback({ containerRef, muted = true, sourceKind, video
 
   return {
     changeVolume,
+    currentTime,
+    duration,
     isFullscreen,
     isMuted,
     isPlaying,
+    seek,
     toggleFullscreen,
     toggleMute,
     togglePlayback,
