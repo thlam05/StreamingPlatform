@@ -55,7 +55,7 @@ export function MediaPlayerControls({
             max={duration || 1}
             min="0"
             onChange={(event) => onSeek(Number(event.target.value))}
-            step="0.1"
+            step="any"
             type="range"
             value={Math.min(currentTime, duration || 1)}
           />

@@ -52,11 +52,20 @@ export function useMediaPlayback({ containerRef, muted = true, sourceKind, video
       setDuration(Number.isFinite(player.duration) ? player.duration : 0)
     }
 
+    function handleEnded() {
+      const finalDuration = Number.isFinite(player.duration) ? player.duration : player.currentTime
+      setIsPlaying(false)
+      setDuration(finalDuration)
+      setCurrentTime(finalDuration)
+    }
+
     player.addEventListener('play', handlePlay)
     player.addEventListener('pause', handlePause)
     player.addEventListener('volumechange', handleVolumeChange)
     player.addEventListener('timeupdate', handleTimeUpdate)
     player.addEventListener('durationchange', handleDurationChange)
+    player.addEventListener('loadedmetadata', handleDurationChange)
+    player.addEventListener('ended', handleEnded)
 
     return () => {
       player.removeEventListener('play', handlePlay)
@@ -64,8 +73,28 @@ export function useMediaPlayback({ containerRef, muted = true, sourceKind, video
       player.removeEventListener('volumechange', handleVolumeChange)
       player.removeEventListener('timeupdate', handleTimeUpdate)
       player.removeEventListener('durationchange', handleDurationChange)
+      player.removeEventListener('loadedmetadata', handleDurationChange)
+      player.removeEventListener('ended', handleEnded)
     }
   }, [muted, sourceKind, videoRef])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || sourceKind !== 'video' || !isPlaying) return
+    const player = video
+
+    let animationFrame = 0
+
+    function updateTimeline() {
+      setCurrentTime(player.currentTime)
+      if (!player.paused && !player.ended) {
+        animationFrame = requestAnimationFrame(updateTimeline)
+      }
+    }
+
+    animationFrame = requestAnimationFrame(updateTimeline)
+    return () => cancelAnimationFrame(animationFrame)
+  }, [isPlaying, sourceKind, videoRef])
 
   useEffect(() => {
     function handleFullscreenChange() {
