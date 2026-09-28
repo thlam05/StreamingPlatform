@@ -1,15 +1,7 @@
-import { CircleAlert, LoaderCircle, Play, RotateCcw } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import type Hls from 'hls.js'
+import Hls from 'hls.js'
+import { useEffect, useRef, useState } from 'react'
 
 import { cn } from '../../../../utils/cn'
-import {
-  AUTO_QUALITY,
-  CONTROLS_HIDE_DELAY,
-  DEFAULT_QUALITY_OPTIONS,
-  HLS_MIME_TYPE,
-} from '../../constants/player.constants'
-import type { QualityOption } from '../../types/player.types'
 import { HlsPlayerControls } from './HlsPlayerControls'
 
 interface HlsPlayerProps {
@@ -21,105 +13,24 @@ interface HlsPlayerProps {
   title?: string
 }
 
-type PlaybackState = 'error' | 'loading' | 'ready' | 'unavailable'
-
-function getQualityOptions(hls: Hls): QualityOption[] {
-  const seenLabels = new Set<string>()
-  const levels = hls.levels
-    .map((level, index) => ({
-      height: level.height,
-      label: level.height ? `${level.height}p` : `Level ${index + 1}`,
-      level: index,
-    }))
-    .sort((first, second) => second.height - first.height)
-    .filter((option) => {
-      if (seenLabels.has(option.label)) return false
-      seenLabels.add(option.label)
-      return true
-    })
-
-  return [DEFAULT_QUALITY_OPTIONS[0], ...levels]
+function isHlsSource(src: string) {
+  return /\.m3u8(?:$|[?#])/i.test(src)
 }
 
-export function HlsPlayer({
-  autoPlay = true,
-  className,
-  muted = true,
-  poster,
-  src,
-  title = 'Live stream',
-}: HlsPlayerProps) {
+export function HlsPlayer({ autoPlay = true, className, muted = true, poster, src, title }: HlsPlayerProps) {
   const playerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const hlsRef = useRef<Hls | null>(null)
-  const [playbackState, setPlaybackState] = useState<PlaybackState>(src ? 'loading' : 'unavailable')
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [retryCount, setRetryCount] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [volume, setVolume] = useState(1)
-  const [isMuted, setIsMuted] = useState(muted)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [isControlsVisible, setIsControlsVisible] = useState(false)
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const [qualityLevel, setQualityLevel] = useState(AUTO_QUALITY)
-  const [qualityOptions, setQualityOptions] = useState<QualityOption[]>(DEFAULT_QUALITY_OPTIONS)
-  const [playbackRate, setPlaybackRate] = useState(1)
-  const controlsHideTimeoutRef = useRef<number | null>(null)
-
-  const clearControlsHideTimeout = useCallback(() => {
-    if (controlsHideTimeoutRef.current === null) return
-
-    window.clearTimeout(controlsHideTimeoutRef.current)
-    controlsHideTimeoutRef.current = null
-  }, [])
-
-  const hideControls = useCallback(() => {
-    clearControlsHideTimeout()
-    setIsControlsVisible(false)
-    setIsSettingsOpen(false)
-  }, [clearControlsHideTimeout])
-
-  function handlePlayerMouseMove() {
-    setIsControlsVisible(true)
-
-    if (!isFullscreen) return
-
-    clearControlsHideTimeout()
-    controlsHideTimeoutRef.current = window.setTimeout(hideControls, CONTROLS_HIDE_DELAY)
-  }
-
-  function handlePlayerMouseLeave() {
-    if (!isFullscreen) return
-    hideControls()
-  }
+  const [isMuted, setIsMuted] = useState(muted)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [volume, setVolume] = useState(1)
 
   useEffect(() => {
-    const videoElement = videoRef.current
-    if (!videoElement) return
-    const playableVideo = videoElement as HTMLVideoElement
+    const video = videoRef.current
+    if (!video) return
+    const player = video
 
-    setPlaybackState(src ? 'loading' : 'unavailable')
-    setErrorMessage(null)
-    setIsPlaying(false)
-    setCurrentTime(0)
-    setDuration(0)
-    setQualityLevel(AUTO_QUALITY)
-    setQualityOptions(DEFAULT_QUALITY_OPTIONS)
-    setPlaybackRate(1)
-
-    function handleReady() {
-      if (isCancelled) return
-      setPlaybackState('ready')
-      if (autoPlay) void playableVideo.play().catch(() => undefined)
-    }
-
-    function handleVideoError() {
-      if (isCancelled) return
-      setPlaybackState('error')
-      setErrorMessage('The video could not be loaded. Check the stream and try again.')
-    }
+    player.muted = muted
 
     function handlePlay() {
       setIsPlaying(true)
@@ -129,129 +40,25 @@ export function HlsPlayer({
       setIsPlaying(false)
     }
 
-    function handleTimeUpdate() {
-      setCurrentTime(playableVideo.currentTime)
-    }
-
-    function handleDurationChange() {
-      setDuration(Number.isFinite(playableVideo.duration) ? playableVideo.duration : 0)
-    }
-
     function handleVolumeChange() {
-      setVolume(playableVideo.volume)
-      setIsMuted(playableVideo.muted || playableVideo.volume === 0)
+      setIsMuted(player.muted || player.volume === 0)
+      setVolume(player.volume)
     }
 
-    function handleRateChange() {
-      setPlaybackRate(playableVideo.playbackRate)
-    }
-
-    playableVideo.muted = muted
-    playableVideo.playbackRate = 1
-    playableVideo.addEventListener('loadedmetadata', handleReady)
-    playableVideo.addEventListener('canplay', handleReady)
-    playableVideo.addEventListener('error', handleVideoError)
-    playableVideo.addEventListener('play', handlePlay)
-    playableVideo.addEventListener('pause', handlePause)
-    playableVideo.addEventListener('timeupdate', handleTimeUpdate)
-    playableVideo.addEventListener('durationchange', handleDurationChange)
-    playableVideo.addEventListener('volumechange', handleVolumeChange)
-    playableVideo.addEventListener('ratechange', handleRateChange)
-
-    let hls: Hls | null = null
-    let recoveredMediaError = false
-    let isCancelled = false
-    let unsupportedTimer: number | undefined
-
-    if (!src) {
-      return () => {
-        playableVideo.removeEventListener('loadedmetadata', handleReady)
-        playableVideo.removeEventListener('canplay', handleReady)
-        playableVideo.removeEventListener('error', handleVideoError)
-        playableVideo.removeEventListener('play', handlePlay)
-        playableVideo.removeEventListener('pause', handlePause)
-        playableVideo.removeEventListener('timeupdate', handleTimeUpdate)
-        playableVideo.removeEventListener('durationchange', handleDurationChange)
-        playableVideo.removeEventListener('volumechange', handleVolumeChange)
-        playableVideo.removeEventListener('ratechange', handleRateChange)
-      }
-    }
-
-    if (playableVideo.canPlayType(HLS_MIME_TYPE)) {
-      playableVideo.src = src
-      playableVideo.load()
-    } else {
-      void import('hls.js')
-        .then(({ default: HlsLibrary }) => {
-          if (isCancelled) return
-
-          if (!HlsLibrary.isSupported()) {
-            unsupportedTimer = window.setTimeout(() => {
-              if (isCancelled) return
-              setPlaybackState('error')
-              setErrorMessage('This browser does not support HLS playback.')
-            }, 0)
-            return
-          }
-
-          hls = new HlsLibrary({
-            backBufferLength: 90,
-            enableWorker: true,
-            lowLatencyMode: true,
-          })
-          hlsRef.current = hls
-          hls.loadSource(src)
-          hls.attachMedia(playableVideo)
-          hls.on(HlsLibrary.Events.MANIFEST_PARSED, () => {
-            if (!hls || isCancelled) return
-            setQualityOptions(getQualityOptions(hls))
-            handleReady()
-          })
-          hls.on(HlsLibrary.Events.ERROR, (_event, data) => {
-            if (isCancelled || !data.fatal) return
-
-            if (data.type === HlsLibrary.ErrorTypes.MEDIA_ERROR && !recoveredMediaError) {
-              recoveredMediaError = true
-              hls?.recoverMediaError()
-              return
-            }
-
-            setPlaybackState('error')
-            setErrorMessage('The livestream is unavailable right now. Check the stream and try again.')
-          })
-        })
-        .catch(() => {
-          if (isCancelled) return
-          setPlaybackState('error')
-          setErrorMessage('The HLS player could not be loaded. Try again.')
-        })
-    }
+    player.addEventListener('play', handlePlay)
+    player.addEventListener('pause', handlePause)
+    player.addEventListener('volumechange', handleVolumeChange)
 
     return () => {
-      isCancelled = true
-      if (unsupportedTimer !== undefined) window.clearTimeout(unsupportedTimer)
-      playableVideo.removeEventListener('loadedmetadata', handleReady)
-      playableVideo.removeEventListener('canplay', handleReady)
-      playableVideo.removeEventListener('error', handleVideoError)
-      playableVideo.removeEventListener('play', handlePlay)
-      playableVideo.removeEventListener('pause', handlePause)
-      playableVideo.removeEventListener('timeupdate', handleTimeUpdate)
-      playableVideo.removeEventListener('durationchange', handleDurationChange)
-      playableVideo.removeEventListener('volumechange', handleVolumeChange)
-      playableVideo.removeEventListener('ratechange', handleRateChange)
-      hls?.destroy()
-      hlsRef.current = null
-      playableVideo.pause()
-      playableVideo.removeAttribute('src')
-      playableVideo.load()
+      player.removeEventListener('play', handlePlay)
+      player.removeEventListener('pause', handlePause)
+      player.removeEventListener('volumechange', handleVolumeChange)
     }
-  }, [autoPlay, muted, retryCount, src])
+  }, [muted])
 
   useEffect(() => {
     function handleFullscreenChange() {
-      const nextIsFullscreen = document.fullscreenElement === playerRef.current
-      setIsFullscreen(nextIsFullscreen)
-      setIsControlsVisible(nextIsFullscreen)
+      setIsFullscreen(document.fullscreenElement === playerRef.current)
     }
 
     document.addEventListener('fullscreenchange', handleFullscreenChange)
@@ -259,176 +66,103 @@ export function HlsPlayer({
   }, [])
 
   useEffect(() => {
-    if (!isFullscreen) {
-      clearControlsHideTimeout()
-      return
+    const video = videoRef.current
+    if (!video || !src) return
+
+    if (!isHlsSource(src) || video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = src
+      video.load()
+
+      return () => {
+        video.pause()
+        video.removeAttribute('src')
+        video.load()
+      }
     }
 
-    clearControlsHideTimeout()
-    controlsHideTimeoutRef.current = window.setTimeout(hideControls, CONTROLS_HIDE_DELAY)
+    if (!Hls.isSupported()) return
 
-    return clearControlsHideTimeout
-  }, [clearControlsHideTimeout, hideControls, isFullscreen])
+    const hls = new Hls()
+    hls.loadSource(src)
+    hls.attachMedia(video)
+
+    return () => {
+      hls.destroy()
+      video.pause()
+      video.removeAttribute('src')
+      video.load()
+    }
+  }, [src])
 
   async function togglePlayback() {
-    const videoElement = videoRef.current
-    if (!videoElement) return
+    const video = videoRef.current
+    if (!video || !src) return
 
-    if (videoElement.paused) {
-      await videoElement.play().catch(() => undefined)
+    if (video.paused) {
+      await video.play().catch(() => undefined)
     } else {
-      videoElement.pause()
+      video.pause()
     }
-  }
-
-  function handleSeek(nextTime: number) {
-    if (!videoRef.current) return
-    videoRef.current.currentTime = nextTime
-    setCurrentTime(nextTime)
-  }
-
-  function handleVolumeChange(nextVolume: number) {
-    if (!videoRef.current) return
-    videoRef.current.volume = nextVolume
-    videoRef.current.muted = nextVolume === 0
-    setVolume(nextVolume)
-    setIsMuted(nextVolume === 0)
   }
 
   function toggleMute() {
-    const videoElement = videoRef.current
-    if (!videoElement) return
+    const video = videoRef.current
+    if (!video) return
 
-    if (videoElement.muted || videoElement.volume === 0) {
-      videoElement.muted = false
-      videoElement.volume = volume || 0.7
-      setIsMuted(false)
-      return
-    }
+    video.muted = !video.muted
+    setIsMuted(video.muted)
+  }
 
-    videoElement.muted = true
-    setIsMuted(true)
+  function handleVolumeChange(nextVolume: number) {
+    const video = videoRef.current
+    if (!video || !Number.isFinite(nextVolume)) return
+
+    const clampedVolume = Math.min(1, Math.max(0, nextVolume))
+    video.volume = clampedVolume
+    video.muted = clampedVolume === 0
+    setVolume(clampedVolume)
+    setIsMuted(video.muted)
   }
 
   async function toggleFullscreen() {
-    if (!playerRef.current) return
+    const player = playerRef.current
+    if (!player) return
 
-    if (document.fullscreenElement) {
+    if (document.fullscreenElement === player) {
       await document.exitFullscreen().catch(() => undefined)
-      return
+    } else {
+      await player.requestFullscreen().catch(() => undefined)
     }
-
-    setIsControlsVisible(true)
-    await playerRef.current.requestFullscreen().catch(() => undefined)
   }
-
-  function handleQualityChange(level: number) {
-    if (hlsRef.current) hlsRef.current.currentLevel = level
-    setQualityLevel(level)
-  }
-
-  function handleSpeedChange(rate: number) {
-    if (!videoRef.current) return
-    videoRef.current.playbackRate = rate
-    setPlaybackRate(rate)
-  }
-
-  const effectivePlaybackState = src ? playbackState : 'unavailable'
-  const isLoading = effectivePlaybackState === 'loading'
-  const isUnavailable = effectivePlaybackState === 'unavailable'
-  const hasError = effectivePlaybackState === 'error'
 
   return (
     <div
-      aria-busy={isLoading}
-      aria-label={title}
       className={cn(
         'group/player relative aspect-video overflow-hidden rounded-3xl border border-border bg-ink-900',
         className,
       )}
-      onMouseEnter={handlePlayerMouseMove}
-      onMouseLeave={handlePlayerMouseLeave}
-      onMouseMove={handlePlayerMouseMove}
       ref={playerRef}
-      role="region"
     >
       <video
+        aria-label={title}
         autoPlay={autoPlay}
-        className="h-full w-full cursor-pointer object-contain"
-        muted={isMuted}
-        onClick={() => void togglePlayback()}
-        onDoubleClick={() => void toggleFullscreen()}
+        className="h-full w-full object-contain"
+        muted={muted}
         playsInline
         poster={poster ?? undefined}
         ref={videoRef}
       />
-
       <HlsPlayerControls
-        currentTime={currentTime}
-        duration={duration}
-        hasError={hasError}
+        disabled={!src}
         isFullscreen={isFullscreen}
-        isControlsVisible={isControlsVisible}
-        isLoading={isLoading}
         isMuted={isMuted}
         isPlaying={isPlaying}
-        isSettingsOpen={isSettingsOpen}
         onFullscreen={toggleFullscreen}
-        onQualityChange={handleQualityChange}
-        onSeek={handleSeek}
-        onSpeedChange={handleSpeedChange}
         onToggleMute={toggleMute}
         onTogglePlayback={togglePlayback}
-        onToggleSettings={() => setIsSettingsOpen((open) => !open)}
         onVolumeChange={handleVolumeChange}
-        playbackRate={playbackRate}
-        qualityLevel={qualityLevel}
-        qualityOptions={qualityOptions}
-        src={src}
         volume={volume}
       />
-
-      {isLoading ? (
-        <div
-          className="absolute inset-x-0 bottom-20 top-0 z-30 grid place-items-center bg-ink-900/85 p-6 text-center"
-          role="status"
-        >
-          <div className="grid justify-items-center gap-3 text-sm text-copy-muted">
-            <LoaderCircle className="size-6 animate-spin text-brand" aria-hidden="true" />
-            <span>Connecting to the livestream...</span>
-          </div>
-        </div>
-      ) : null}
-
-      {isUnavailable || hasError ? (
-        <div className="absolute inset-0 z-30 grid place-items-center bg-ink-900/90 p-6 text-center">
-          <div className="grid max-w-sm justify-items-center gap-3">
-            {isUnavailable ? (
-              <Play className="size-7 text-copy-muted" aria-hidden="true" />
-            ) : (
-              <CircleAlert className="size-7 text-warning" aria-hidden="true" />
-            )}
-            <p className="font-semibold text-copy">{isUnavailable ? 'Playback is not available' : 'Playback failed'}</p>
-            <p className="text-sm leading-6 text-copy-muted">
-              {isUnavailable ? 'This stream does not have an active HLS playback URL yet.' : errorMessage}
-            </p>
-            {hasError ? (
-              <button
-                className="mt-1 inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm font-semibold text-copy transition-colors hover:border-brand/60 hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:scale-[0.98]"
-                onClick={() => {
-                  setPlaybackState('loading')
-                  setErrorMessage(null)
-                  setRetryCount((count) => count + 1)
-                }}
-                type="button"
-              >
-                <RotateCcw className="size-4" aria-hidden="true" />
-                Retry playback
-              </button>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
     </div>
   )
 }

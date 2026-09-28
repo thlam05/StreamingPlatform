@@ -91,7 +91,7 @@ export const router = createBrowserRouter([
     element: <MainLayout></MainLayout>,
     children: [
       {
-        element: <HlsPlayer />,
+        element: <HlsPlayer src={'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'} />,
         path: '/test',
       },
     ],
