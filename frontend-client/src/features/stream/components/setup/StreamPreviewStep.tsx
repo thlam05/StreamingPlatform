@@ -10,7 +10,7 @@ import { useCredentialClipboard } from '../../hooks/setup/useCredentialClipboard
 import { useStreamCredentials } from '../../hooks/setup/useStreamCredentials'
 import { useStreamConnection } from '../../hooks/shared/useStreamConnection'
 import type { StreamProvisionResponse } from '../../types/stream.types'
-import { HlsPlayer } from '../player/HlsPlayer'
+import { MediaPlayer } from '../player/MediaPlayer'
 import { CredentialField } from './CredentialField'
 
 interface StreamPreviewStepProps {
@@ -47,7 +47,11 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
   return (
     <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="space-y-6 rounded-3xl border border-border bg-surface p-6 shadow-xl shadow-black/10 sm:p-8">
-        <HlsPlayer poster={stream.stream.thumbnailUrl} src={playbackUrl} title={`${stream.stream.title} preview`} />
+        <MediaPlayer
+          poster={stream.stream.thumbnailUrl}
+          source={playbackUrl ? { isLive: true, kind: 'stream', type: 'hls', url: playbackUrl } : null}
+          title={`${stream.stream.title} preview`}
+        />
 
         {credentials ? (
           <div className="grid gap-4 sm:grid-cols-2">

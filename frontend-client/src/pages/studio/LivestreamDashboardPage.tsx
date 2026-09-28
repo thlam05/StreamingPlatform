@@ -2,7 +2,7 @@ import { Alert } from '../../components/ui/Alert'
 import { AlertDialog } from '../../components/ui/AlertDialog'
 import { Spinner } from '../../components/ui/Spinner'
 import { StreamChatPanel } from '../../features/stream/components/detail/StreamChatPanel'
-import { HlsPlayer } from '../../features/stream/components/player/HlsPlayer'
+import { MediaPlayer } from '../../features/stream/components/player/MediaPlayer'
 import { DashboardHeader } from '../../features/stream/components/studio/DashboardHeader'
 import { DashboardPanels } from '../../features/stream/components/studio/DashboardPanels'
 import { DashboardMetrics } from '../../features/stream/components/studio/DashboardMetrics'
@@ -57,9 +57,13 @@ export function LivestreamDashboardPage() {
 
           <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
             <div className="min-w-0 space-y-6">
-              <HlsPlayer
+              <MediaPlayer
                 poster={dashboard.status.thumbnailUrl}
-                src={dashboard.connection.playbackUrl}
+                source={
+                  dashboard.connection.playbackUrl
+                    ? { isLive: true, kind: 'stream', type: 'hls', url: dashboard.connection.playbackUrl }
+                    : null
+                }
                 title={`${dashboard.status.title} livestream`}
               />
               <DashboardPanels status={dashboard.status} />

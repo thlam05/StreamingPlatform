@@ -17,7 +17,7 @@ import { StreamSetupPage } from '../pages/streams/StreamSetupPage'
 import { PublicOnlyRoute } from './PublicOnlyRoute'
 import { ProtectedRoute } from './ProtectedRoute'
 import { paths, routeSegments } from './paths'
-import { HlsPlayer } from '../features/stream/components/player/HlsPlayer'
+import { MediaPlayer } from '../features/stream/components/player/MediaPlayer'
 
 export const router = createBrowserRouter([
   {
@@ -91,7 +91,16 @@ export const router = createBrowserRouter([
     element: <MainLayout></MainLayout>,
     children: [
       {
-        element: <HlsPlayer src={'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'} />,
+        element: (
+          <MediaPlayer
+            source={{
+              isLive: true,
+              kind: 'stream',
+              type: 'hls',
+              url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+            }}
+          />
+        ),
         path: '/test',
       },
     ],

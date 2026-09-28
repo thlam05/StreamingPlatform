@@ -2,7 +2,7 @@ import { Maximize, Minimize, Pause, Play, Volume2, VolumeX } from 'lucide-react'
 
 import { cn } from '../../../../utils/cn'
 
-export interface HlsPlayerControlsProps {
+export interface MediaPlayerControlsProps {
   disabled?: boolean
   isFullscreen: boolean
   isMuted: boolean
@@ -10,11 +10,11 @@ export interface HlsPlayerControlsProps {
   onFullscreen: () => void | Promise<void>
   onToggleMute: () => void
   onTogglePlayback: () => void | Promise<void>
-  onVolumeChange: (nextVolume: number) => void
+  onVolumeChange: (volume: number) => void
   volume: number
 }
 
-export function HlsPlayerControls({
+export function MediaPlayerControls({
   disabled = false,
   isFullscreen,
   isMuted,
@@ -24,11 +24,11 @@ export function HlsPlayerControls({
   onTogglePlayback,
   onVolumeChange,
   volume,
-}: HlsPlayerControlsProps) {
+}: MediaPlayerControlsProps) {
   return (
     <div className="absolute inset-x-0 bottom-0 z-10 flex items-center gap-1 bg-gradient-to-t from-black/90 to-transparent px-3 pb-3 pt-8 text-white">
       <button
-        aria-label={isPlaying ? 'Pause video' : 'Play video'}
+        aria-label={isPlaying ? 'Pause playback' : 'Play playback'}
         className="grid size-10 shrink-0 place-items-center rounded-lg text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-40"
         disabled={disabled}
         onClick={() => void onTogglePlayback()}
@@ -38,7 +38,7 @@ export function HlsPlayerControls({
       </button>
 
       <button
-        aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+        aria-label={isMuted ? 'Unmute playback' : 'Mute playback'}
         className="grid size-10 shrink-0 place-items-center rounded-lg text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-40"
         disabled={disabled}
         onClick={onToggleMute}
