@@ -23,6 +23,7 @@ export function MediaPlayer({ autoPlay = true, className, muted = true, poster, 
     containerRef: playerRef,
     muted,
     sourceKind: source?.kind,
+    sourceUrl: source?.url,
     videoRef,
   })
 
@@ -64,10 +65,12 @@ export function MediaPlayer({ autoPlay = true, className, muted = true, poster, 
         isMuted={playback.isMuted}
         isPlaying={playback.isPlaying}
         onFullscreen={playback.toggleFullscreen}
+        onPlaybackRateChange={playback.changePlaybackRate}
         onSeek={playback.seek}
         onToggleMute={playback.toggleMute}
         onTogglePlayback={playback.togglePlayback}
         onVolumeChange={playback.changeVolume}
+        playbackRate={playback.playbackRate}
         showTimeline={source?.kind === 'video'}
         volume={playback.volume}
       />

@@ -1,5 +1,7 @@
-import { Maximize, Minimize, Pause, Play, Volume2, VolumeX } from 'lucide-react'
+import { useState } from 'react'
+import { ChevronLeft, ChevronRight, Maximize, Minimize, Pause, Play, Settings, Volume2, VolumeX } from 'lucide-react'
 
+import { SPEED_OPTIONS } from '../../constants/player.constants'
 import { cn } from '../../../../utils/cn'
 
 export interface MediaPlayerControlsProps {
@@ -11,9 +13,11 @@ export interface MediaPlayerControlsProps {
   isPlaying: boolean
   onSeek: (time: number) => void
   onFullscreen: () => void | Promise<void>
+  onPlaybackRateChange: (rate: number) => void
   onToggleMute: () => void
   onTogglePlayback: () => void | Promise<void>
   onVolumeChange: (volume: number) => void
+  playbackRate: number
   showTimeline: boolean
   volume: number
 }
@@ -36,13 +40,29 @@ export function MediaPlayerControls({
   isPlaying,
   onSeek,
   onFullscreen,
+  onPlaybackRateChange,
   onToggleMute,
   onTogglePlayback,
   onVolumeChange,
+  playbackRate,
   showTimeline,
   volume,
 }: MediaPlayerControlsProps) {
   const hasDuration = duration > 0
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [settingsSection, setSettingsSection] = useState<'root' | 'playbackRate'>('root')
+  const currentSpeedLabel = SPEED_OPTIONS.find((option) => option.value === playbackRate)?.label ?? `${playbackRate}x`
+
+  function toggleSettings() {
+    setIsSettingsOpen((isOpen) => !isOpen)
+    setSettingsSection('root')
+  }
+
+  function selectPlaybackRate(rate: number) {
+    onPlaybackRateChange(rate)
+    setIsSettingsOpen(false)
+    setSettingsSection('root')
+  }
 
   return (
     <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/90 to-transparent px-3 pb-3 pt-8 text-white">
@@ -102,10 +122,87 @@ export function MediaPlayerControls({
           value={isMuted ? 0 : volume}
         />
 
+        <div className="relative ml-auto">
+          <button
+            aria-expanded={isSettingsOpen}
+            aria-haspopup="menu"
+            aria-label="Player settings"
+            className="grid size-10 shrink-0 place-items-center rounded-lg text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-40"
+            disabled={disabled}
+            onClick={toggleSettings}
+            type="button"
+          >
+            <Settings aria-hidden="true" className="size-5" />
+          </button>
+
+          {isSettingsOpen ? (
+            <div
+              aria-label="Player settings menu"
+              className="absolute bottom-12 right-0 z-20 min-w-56 overflow-hidden rounded-xl border border-white/25 bg-black/95 p-1 text-sm text-white shadow-2xl backdrop-blur"
+              role="menu"
+            >
+              {settingsSection === 'root' ? (
+                <>
+                  <button
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-white"
+                    onClick={() => setSettingsSection('playbackRate')}
+                    role="menuitem"
+                    type="button"
+                  >
+                    <span className="flex-1">Playback speed</span>
+                    <span className="text-white/60">{currentSpeedLabel}</span>
+                    <ChevronRight aria-hidden="true" className="size-4 text-white/60" />
+                  </button>
+
+                  <button
+                    className="flex w-full cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-left text-white/50"
+                    disabled
+                    role="menuitem"
+                    type="button"
+                  >
+                    <span className="flex-1">Resolution</span>
+                    <span className="text-white/40">Auto</span>
+                    <ChevronRight aria-hidden="true" className="size-4 text-white/30" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-white"
+                    onClick={() => setSettingsSection('root')}
+                    role="menuitem"
+                    type="button"
+                  >
+                    <ChevronLeft aria-hidden="true" className="size-4" />
+                    <span>Playback speed</span>
+                  </button>
+
+                  {SPEED_OPTIONS.map((option) => (
+                    <button
+                      aria-checked={option.value === playbackRate}
+                      className={cn(
+                        'flex w-full items-center rounded-lg px-3 py-2 text-left transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white',
+                        option.value === playbackRate ? 'bg-white/15 text-white' : 'text-white/80',
+                      )}
+                      key={option.value}
+                      onClick={() => selectPlaybackRate(option.value)}
+                      role="menuitemradio"
+                      type="button"
+                    >
+                      <span className="flex-1">{option.label}</span>
+                      {option.value === playbackRate ? <span aria-hidden="true">✓</span> : null}
+                    </button>
+                  ))}
+                </>
+              )}
+            </div>
+          ) : null}
+        </div>
+
         <button
           aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
           className={cn(
-            'ml-auto grid size-10 shrink-0 place-items-center rounded-lg text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
+            'grid size-10 shrink-0 place-items-center rounded-lg text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
             disabled && 'cursor-not-allowed opacity-40',
           )}
           disabled={disabled}

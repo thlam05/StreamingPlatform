@@ -4,16 +4,24 @@ interface UseMediaPlaybackOptions {
   containerRef: RefObject<HTMLDivElement | null>
   muted?: boolean
   sourceKind?: 'stream' | 'video'
+  sourceUrl?: string
   videoRef: RefObject<HTMLVideoElement | null>
 }
 
-export function useMediaPlayback({ containerRef, muted = true, sourceKind, videoRef }: UseMediaPlaybackOptions) {
+export function useMediaPlayback({
+  containerRef,
+  muted = true,
+  sourceKind,
+  sourceUrl,
+  videoRef,
+}: UseMediaPlaybackOptions) {
   const lastVolumeRef = useRef(1)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isMuted, setIsMuted] = useState(muted)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [playbackRate, setPlaybackRate] = useState(1)
   const [volume, setVolume] = useState(1)
 
   useEffect(() => {
@@ -25,8 +33,10 @@ export function useMediaPlayback({ containerRef, muted = true, sourceKind, video
 
     const player = video
     player.muted = muted
+    player.playbackRate = 1
     setIsMuted(muted)
     setIsPlaying(false)
+    setPlaybackRate(1)
     setCurrentTime(0)
     setDuration(0)
 
@@ -52,6 +62,10 @@ export function useMediaPlayback({ containerRef, muted = true, sourceKind, video
       setDuration(Number.isFinite(player.duration) ? player.duration : 0)
     }
 
+    function handleRateChange() {
+      setPlaybackRate(player.playbackRate)
+    }
+
     function handleEnded() {
       const finalDuration = Number.isFinite(player.duration) ? player.duration : player.currentTime
       setIsPlaying(false)
@@ -65,6 +79,7 @@ export function useMediaPlayback({ containerRef, muted = true, sourceKind, video
     player.addEventListener('timeupdate', handleTimeUpdate)
     player.addEventListener('durationchange', handleDurationChange)
     player.addEventListener('loadedmetadata', handleDurationChange)
+    player.addEventListener('ratechange', handleRateChange)
     player.addEventListener('ended', handleEnded)
 
     return () => {
@@ -74,9 +89,10 @@ export function useMediaPlayback({ containerRef, muted = true, sourceKind, video
       player.removeEventListener('timeupdate', handleTimeUpdate)
       player.removeEventListener('durationchange', handleDurationChange)
       player.removeEventListener('loadedmetadata', handleDurationChange)
+      player.removeEventListener('ratechange', handleRateChange)
       player.removeEventListener('ended', handleEnded)
     }
-  }, [muted, sourceKind, videoRef])
+  }, [muted, sourceKind, sourceUrl, videoRef])
 
   useEffect(() => {
     const video = videoRef.current
@@ -145,6 +161,14 @@ export function useMediaPlayback({ containerRef, muted = true, sourceKind, video
     if (clampedVolume > 0) lastVolumeRef.current = clampedVolume
   }
 
+  function changePlaybackRate(nextRate: number) {
+    const video = videoRef.current
+    if (!video || !Number.isFinite(nextRate) || nextRate <= 0) return
+
+    video.playbackRate = nextRate
+    setPlaybackRate(nextRate)
+  }
+
   function seek(nextTime: number) {
     const video = videoRef.current
     if (!video || sourceKind !== 'video' || !Number.isFinite(nextTime) || !Number.isFinite(video.duration)) return
@@ -172,7 +196,9 @@ export function useMediaPlayback({ containerRef, muted = true, sourceKind, video
     isFullscreen,
     isMuted,
     isPlaying,
+    playbackRate,
     seek,
+    changePlaybackRate,
     toggleFullscreen,
     toggleMute,
     togglePlayback,
