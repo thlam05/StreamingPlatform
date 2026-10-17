@@ -4,9 +4,10 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Spinner } from '../../components/ui/Spinner'
 import { StreamChatPanel } from '../../features/stream/components/detail/StreamChatPanel'
 import { StreamInfoPanel } from '../../features/stream/components/detail/StreamInfoPanel'
-import { HlsPlayer } from '../../features/stream/components/player/HlsPlayer'
-import { useStreamEngagement } from '../../features/stream/hooks/useStreamEngagement'
-import { useStreamDetail } from '../../features/stream/hooks/useStreamDetail'
+import { MediaPlayer } from '../../features/stream/components/player/MediaPlayer'
+import { useStreamDetail } from '../../features/stream/hooks/detail/useStreamDetail'
+import { useStreamEngagement } from '../../features/stream/hooks/detail/useStreamEngagement'
+import { createLiveHlsSource } from '../../features/stream/utils/createLiveHlsSource'
 import { paths } from '../../routes/paths'
 import { getAuthSession } from '../../store/authStore'
 
@@ -58,7 +59,15 @@ export function StreamDetailPage() {
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <section aria-label="Stream content" className="min-w-0 space-y-5">
           {stream.status === 'live' && stream.playbackUrl ? (
-            <HlsPlayer poster={stream.thumbnailUrl} src={stream.playbackUrl} title={`${stream.title} livestream`} />
+            <MediaPlayer
+              poster={stream.thumbnailUrl}
+              source={createLiveHlsSource({
+                playbackUrl: stream.playbackUrl,
+                playbackUrl360p: stream.playbackUrl360p,
+                playbackUrl720p: stream.playbackUrl720p,
+              })}
+              title={`${stream.title} livestream`}
+            />
           ) : (
             <section
               className={`relative aspect-video overflow-hidden rounded-3xl bg-gradient-to-br ${stream.gradientClass}`}

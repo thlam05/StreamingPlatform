@@ -1,6 +1,7 @@
 import { Bell, LogOut, Search } from 'lucide-react'
 
 import type { AuthUser } from '../../features/auth/types/auth.types'
+import { AppLogo } from './AppLogo'
 
 interface HeaderProps {
   isProfileLoading: boolean
@@ -19,10 +20,9 @@ export function Header({ isProfileLoading, onLogout, profile, profileError }: He
       .toUpperCase() || 'JD'
 
   return (
-    <header className="flex items-center justify-between border-b border-border px-5 py-4 lg:px-8">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand">Creator workspace</p>
-        <p className="mt-1 text-sm text-copy-muted">Good evening, welcome back.</p>
+    <header className="flex w-full items-center justify-between gap-6 border-b border-border px-5 py-4 lg:px-8">
+      <div className="flex min-w-0 items-center gap-5">
+        <AppLogo />
       </div>
       <div className="flex items-center gap-2">
         <button

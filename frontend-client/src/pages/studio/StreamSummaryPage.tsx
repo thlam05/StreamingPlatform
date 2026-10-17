@@ -1,7 +1,7 @@
 import { Alert } from '../../components/ui/Alert'
 import { Spinner } from '../../components/ui/Spinner'
 import { StreamSummaryCard } from '../../features/stream/components/studio/StreamSummaryCard'
-import { useStreamSummary } from '../../features/stream/hooks/useStreamSummary'
+import { useStreamSummary } from '../../features/stream/hooks/studio/useStreamSummary'
 
 export function StreamSummaryPage() {
   const summary = useStreamSummary()

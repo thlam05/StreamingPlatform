@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { Spinner } from '../../components/ui/Spinner'
 import { StreamCard } from '../../features/stream/components/list/StreamCard'
-import { useStreams } from '../../features/stream/hooks/useStreams'
+import { useStreams } from '../../features/stream/hooks/list/useStreams'
 import type { StreamCategory } from '../../features/stream/types/stream.types'
 
 type CategoryFilter = 'All' | StreamCategory

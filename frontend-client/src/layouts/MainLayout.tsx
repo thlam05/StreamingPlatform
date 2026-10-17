@@ -10,19 +10,17 @@ export function MainLayout() {
   const logout = useLogout()
 
   return (
-    <div className="min-h-screen bg-ink-950 text-copy lg:flex">
+    <div className="min-h-screen bg-ink-950 text-copy">
+      <Header
+        isProfileLoading={profileState.isLoading}
+        onLogout={logout}
+        profile={profileState.profile}
+        profileError={profileState.error}
+      />
       <Sidebar />
-      <div className="min-w-0 flex-1">
-        <Header
-          isProfileLoading={profileState.isLoading}
-          onLogout={logout}
-          profile={profileState.profile}
-          profileError={profileState.error}
-        />
-        <main className="mx-auto w-full max-w-7xl px-5 py-8 lg:px-8 lg:py-10">
-          <Outlet />
-        </main>
-      </div>
+      <main className="mx-auto w-full max-w-7xl px-5 pb-24 pt-8 sm:pl-24 sm:pr-8 sm:pt-10 sm:pb-10 lg:pr-8 lg:pt-10">
+        <Outlet />
+      </main>
     </div>
   )
 }

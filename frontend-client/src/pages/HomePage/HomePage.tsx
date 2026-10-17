@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
 import { Spinner } from '../../components/ui/Spinner'
 import { StreamCard } from '../../features/stream/components/list/StreamCard'
-import { useStreams } from '../../features/stream/hooks/useStreams'
+import { useStreams } from '../../features/stream/hooks/list/useStreams'
 import { paths } from '../../routes/paths'
 import { getAuthSession } from '../../store/authStore'
 

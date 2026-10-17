@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-import { getApiErrorMessage } from '../../../utils/error'
-import { uploadThumbnail } from '../services/streamService'
+import { getApiErrorMessage } from '../../../../utils/error'
+import { uploadThumbnail } from '../../services/streamService'
 
 interface ThumbnailUploadInput {
   file: File

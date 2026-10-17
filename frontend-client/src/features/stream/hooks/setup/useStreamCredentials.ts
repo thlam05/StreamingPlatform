@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import type { StreamProvisionResponse } from '../types/stream.types'
+import type { StreamProvisionResponse } from '../../types/stream.types'
 
 export function useStreamCredentials(stream: StreamProvisionResponse | null) {
   return useMemo(() => {

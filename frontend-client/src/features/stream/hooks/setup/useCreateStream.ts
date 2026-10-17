@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent } from 'react'
 
-import { getApiErrorMessage, getApiFieldErrors } from '../../../utils/error'
+import { getApiErrorMessage, getApiFieldErrors } from '../../../../utils/error'
 import { useCreateStreamForm, validateCreateStream, type CreateStreamErrors } from './useCreateStreamForm'
 import { useCreateStreamRequest } from './useCreateStreamRequest'
 

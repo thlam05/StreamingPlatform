@@ -6,11 +6,12 @@ import { Button } from '../../../../components/ui/Button'
 import { paths } from '../../../../routes/paths'
 import { getApiErrorMessage } from '../../../../utils/error'
 import { requestStreamStart } from '../../services/streamService'
-import { useCredentialClipboard } from '../../hooks/useCredentialClipboard'
-import { useStreamConnection } from '../../hooks/useStreamConnection'
-import { useStreamCredentials } from '../../hooks/useStreamCredentials'
+import { useCredentialClipboard } from '../../hooks/setup/useCredentialClipboard'
+import { useStreamCredentials } from '../../hooks/setup/useStreamCredentials'
+import { useStreamConnection } from '../../hooks/shared/useStreamConnection'
 import type { StreamProvisionResponse } from '../../types/stream.types'
-import { HlsPlayer } from '../player/HlsPlayer'
+import { createLiveHlsSource } from '../../utils/createLiveHlsSource'
+import { MediaPlayer } from '../player/MediaPlayer'
 import { CredentialField } from './CredentialField'
 
 interface StreamPreviewStepProps {
@@ -47,7 +48,15 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
   return (
     <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="space-y-6 rounded-3xl border border-border bg-surface p-6 shadow-xl shadow-black/10 sm:p-8">
-        <HlsPlayer poster={stream.stream.thumbnailUrl} src={playbackUrl} title={`${stream.stream.title} preview`} />
+        <MediaPlayer
+          poster={stream.stream.thumbnailUrl}
+          source={createLiveHlsSource({
+            playbackUrl,
+            playbackUrl360p: connection.playbackUrl360p,
+            playbackUrl720p: connection.playbackUrl720p,
+          })}
+          title={`${stream.stream.title} preview`}
+        />
 
         {credentials ? (
           <div className="grid gap-4 sm:grid-cols-2">

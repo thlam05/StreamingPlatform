@@ -1,6 +1,6 @@
 import { Check, Copy, Eye, EyeOff, KeyRound, Server } from 'lucide-react'
 
-import type { CredentialName } from '../../hooks/useCredentialClipboard'
+import type { CredentialName } from '../../hooks/setup/useCredentialClipboard'
 
 interface CredentialFieldProps {
   copied: boolean

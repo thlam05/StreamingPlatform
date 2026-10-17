@@ -17,6 +17,7 @@ import { StreamSetupPage } from '../pages/streams/StreamSetupPage'
 import { PublicOnlyRoute } from './PublicOnlyRoute'
 import { ProtectedRoute } from './ProtectedRoute'
 import { paths, routeSegments } from './paths'
+import { MediaPlayer } from '../features/stream/components/player/MediaPlayer'
 
 export const router = createBrowserRouter([
   {
@@ -86,4 +87,22 @@ export const router = createBrowserRouter([
     ],
   },
   { element: <ForbiddenPage />, path: routeSegments.forbidden },
+  {
+    element: <MainLayout></MainLayout>,
+    children: [
+      {
+        element: (
+          <MediaPlayer
+            source={{
+              kind: 'video',
+              type: 'video',
+              url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+            }}
+            title="Video player test"
+          />
+        ),
+        path: '/test',
+      },
+    ],
+  },
 ])

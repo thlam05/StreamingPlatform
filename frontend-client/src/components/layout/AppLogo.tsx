@@ -21,7 +21,6 @@ export function AppLogo({ className, iconClassName = 'size-5', showName = true }
       <span className="grid size-9 place-items-center rounded-xl bg-brand text-primary-foreground">
         <Radio className={iconClassName} aria-hidden="true" />
       </span>
-      {showName ? APP_NAME : null}
     </Link>
   )
 }

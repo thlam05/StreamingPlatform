@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom'
 import { Button } from '../../../../components/ui/Button'
 import { Input } from '../../../../components/ui/Input'
 import { paths } from '../../../../routes/paths'
-import { useCreateStream } from '../../hooks/useCreateStream'
-import { useStreamCategories } from '../../hooks/useStreamCategories'
+import { useCreateStream } from '../../hooks/setup/useCreateStream'
+import { useStreamCategories } from '../../hooks/setup/useStreamCategories'
 import type { StreamProvisionResponse } from '../../types/stream.types'
 
 interface CreateCredentialsStepProps {

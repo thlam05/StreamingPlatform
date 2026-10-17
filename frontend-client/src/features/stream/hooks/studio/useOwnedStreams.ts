@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 
-import { getApiErrorMessage } from '../../../utils/error'
-import { getOwnedStreams } from '../services/streamService'
-import type { StreamStatusResponse } from '../types/stream.types'
+import { getApiErrorMessage } from '../../../../utils/error'
+import { getOwnedStreams } from '../../services/streamService'
+import type { StreamStatusResponse } from '../../types/stream.types'
 
 export function useOwnedStreams() {
   const [streams, setStreams] = useState<StreamStatusResponse[]>([])

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { env } from '../../../config/env'
-import { getAccessToken, getAuthSession } from '../../../store/authStore'
-import { getApiErrorMessage } from '../../../utils/error'
-import { getChatMessages, sendChatMessage as sendChatMessageRequest } from '../services/chatService'
-import type { ChatMessage } from '../types/stream.types'
+import { env } from '../../../../config/env'
+import { getAccessToken, getAuthSession } from '../../../../store/authStore'
+import { getApiErrorMessage } from '../../../../utils/error'
+import { getChatMessages, sendChatMessage as sendChatMessageRequest } from '../../services/chatService'
+import type { ChatMessage } from '../../types/stream.types'
 
 type ChatConnectionStatus = 'idle' | 'connecting' | 'connected' | 'disconnected'
 

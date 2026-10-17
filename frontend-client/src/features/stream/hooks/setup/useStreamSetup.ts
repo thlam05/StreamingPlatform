@@ -5,7 +5,7 @@ import {
   type StreamProvisionResponse,
   type StreamSetupPhase,
   type StreamSetupStep,
-} from '../types/stream.types'
+} from '../../types/stream.types'
 
 export function useStreamSetup() {
   const [phaseKey, setPhaseKey] = useState<StreamSetupStep>('credentials')

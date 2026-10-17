@@ -1,12 +1,13 @@
 import { Alert } from '../../components/ui/Alert'
 import { AlertDialog } from '../../components/ui/AlertDialog'
 import { Spinner } from '../../components/ui/Spinner'
-import { HlsPlayer } from '../../features/stream/components/player/HlsPlayer'
+import { StreamChatPanel } from '../../features/stream/components/detail/StreamChatPanel'
+import { MediaPlayer } from '../../features/stream/components/player/MediaPlayer'
 import { DashboardHeader } from '../../features/stream/components/studio/DashboardHeader'
-import { DashboardMetrics } from '../../features/stream/components/studio/DashboardMetrics'
 import { DashboardPanels } from '../../features/stream/components/studio/DashboardPanels'
-import { DashboardStatus } from '../../features/stream/components/studio/DashboardStatus'
-import { useLivestreamDashboard } from '../../features/stream/hooks/useLivestreamDashboard'
+import { DashboardMetrics } from '../../features/stream/components/studio/DashboardMetrics'
+import { useLivestreamDashboard } from '../../features/stream/hooks/studio/useLivestreamDashboard'
+import { createLiveHlsSource } from '../../features/stream/utils/createLiveHlsSource'
 
 export function LivestreamDashboardPage() {
   const dashboard = useLivestreamDashboard()
@@ -53,24 +54,23 @@ export function LivestreamDashboardPage() {
 
       {dashboard.status ? (
         <>
-          <DashboardStatus
-            isLive={dashboard.isLive}
-            isTerminal={dashboard.isTerminal}
-            lastUpdatedAt={dashboard.connection.lastUpdatedAt}
-            status={dashboard.status}
-            statusLabel={dashboard.statusLabel}
-          />
+          <DashboardMetrics playbackUrl={dashboard.connection.playbackUrl} status={dashboard.status} />
 
           <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-            <HlsPlayer
-              poster={dashboard.status.thumbnailUrl}
-              src={dashboard.connection.playbackUrl}
-              title={`${dashboard.status.title} livestream`}
-            />
-            <DashboardMetrics playbackUrl={dashboard.connection.playbackUrl} status={dashboard.status} />
+            <div className="min-w-0 space-y-6">
+              <MediaPlayer
+                poster={dashboard.status.thumbnailUrl}
+                source={createLiveHlsSource({
+                  playbackUrl: dashboard.connection.playbackUrl,
+                  playbackUrl360p: dashboard.connection.playbackUrl360p,
+                  playbackUrl720p: dashboard.connection.playbackUrl720p,
+                })}
+                title={`${dashboard.status.title} livestream`}
+              />
+              <DashboardPanels status={dashboard.status} />
+            </div>
+            <StreamChatPanel isAvailable={dashboard.isLive} streamId={dashboard.streamId} />
           </section>
-
-          <DashboardPanels status={dashboard.status} />
         </>
       ) : null}
 
