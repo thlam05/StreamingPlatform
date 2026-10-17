@@ -7,6 +7,7 @@ import { StreamInfoPanel } from '../../features/stream/components/detail/StreamI
 import { MediaPlayer } from '../../features/stream/components/player/MediaPlayer'
 import { useStreamDetail } from '../../features/stream/hooks/detail/useStreamDetail'
 import { useStreamEngagement } from '../../features/stream/hooks/detail/useStreamEngagement'
+import { createLiveHlsSource } from '../../features/stream/utils/createLiveHlsSource'
 import { paths } from '../../routes/paths'
 import { getAuthSession } from '../../store/authStore'
 
@@ -60,7 +61,11 @@ export function StreamDetailPage() {
           {stream.status === 'live' && stream.playbackUrl ? (
             <MediaPlayer
               poster={stream.thumbnailUrl}
-              source={{ isLive: true, kind: 'stream', type: 'hls', url: stream.playbackUrl }}
+              source={createLiveHlsSource({
+                playbackUrl: stream.playbackUrl,
+                playbackUrl360p: stream.playbackUrl360p,
+                playbackUrl720p: stream.playbackUrl720p,
+              })}
               title={`${stream.title} livestream`}
             />
           ) : (

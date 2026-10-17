@@ -3,6 +3,7 @@ import type { QualityOption, SpeedOption } from '../types/player.types'
 export const HLS_MIME_TYPE = 'application/vnd.apple.mpegurl'
 export const AUTO_QUALITY = -1
 export const CONTROLS_HIDE_DELAY = 2500
+export const LIVE_EDGE_TOLERANCE_SECONDS = 0.5
 
 export const DEFAULT_QUALITY_OPTIONS: QualityOption[] = [{ label: 'Auto', level: AUTO_QUALITY }]
 

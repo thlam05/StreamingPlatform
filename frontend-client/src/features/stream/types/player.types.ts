@@ -3,6 +3,15 @@ export interface HlsMediaSource {
   kind: 'stream'
   type: 'hls'
   url: string
+  variants?: MediaVariant[]
+}
+
+export type PlaybackQuality = 'source' | '360p' | '480p' | '720p' | '1080p'
+
+export interface MediaVariant {
+  label: string
+  quality: Exclude<PlaybackQuality, 'source'>
+  url: string
 }
 
 export interface VideoMediaSource {

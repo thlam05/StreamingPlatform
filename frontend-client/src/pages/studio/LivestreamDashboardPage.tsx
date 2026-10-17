@@ -7,6 +7,7 @@ import { DashboardHeader } from '../../features/stream/components/studio/Dashboa
 import { DashboardPanels } from '../../features/stream/components/studio/DashboardPanels'
 import { DashboardMetrics } from '../../features/stream/components/studio/DashboardMetrics'
 import { useLivestreamDashboard } from '../../features/stream/hooks/studio/useLivestreamDashboard'
+import { createLiveHlsSource } from '../../features/stream/utils/createLiveHlsSource'
 
 export function LivestreamDashboardPage() {
   const dashboard = useLivestreamDashboard()
@@ -59,11 +60,11 @@ export function LivestreamDashboardPage() {
             <div className="min-w-0 space-y-6">
               <MediaPlayer
                 poster={dashboard.status.thumbnailUrl}
-                source={
-                  dashboard.connection.playbackUrl
-                    ? { isLive: true, kind: 'stream', type: 'hls', url: dashboard.connection.playbackUrl }
-                    : null
-                }
+                source={createLiveHlsSource({
+                  playbackUrl: dashboard.connection.playbackUrl,
+                  playbackUrl360p: dashboard.connection.playbackUrl360p,
+                  playbackUrl720p: dashboard.connection.playbackUrl720p,
+                })}
                 title={`${dashboard.status.title} livestream`}
               />
               <DashboardPanels status={dashboard.status} />

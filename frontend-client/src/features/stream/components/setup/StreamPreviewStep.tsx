@@ -10,6 +10,7 @@ import { useCredentialClipboard } from '../../hooks/setup/useCredentialClipboard
 import { useStreamCredentials } from '../../hooks/setup/useStreamCredentials'
 import { useStreamConnection } from '../../hooks/shared/useStreamConnection'
 import type { StreamProvisionResponse } from '../../types/stream.types'
+import { createLiveHlsSource } from '../../utils/createLiveHlsSource'
 import { MediaPlayer } from '../player/MediaPlayer'
 import { CredentialField } from './CredentialField'
 
@@ -49,7 +50,11 @@ export function StreamPreviewStep({ onReset, stream }: StreamPreviewStepProps) {
       <div className="space-y-6 rounded-3xl border border-border bg-surface p-6 shadow-xl shadow-black/10 sm:p-8">
         <MediaPlayer
           poster={stream.stream.thumbnailUrl}
-          source={playbackUrl ? { isLive: true, kind: 'stream', type: 'hls', url: playbackUrl } : null}
+          source={createLiveHlsSource({
+            playbackUrl,
+            playbackUrl360p: connection.playbackUrl360p,
+            playbackUrl720p: connection.playbackUrl720p,
+          })}
           title={`${stream.stream.title} preview`}
         />
 

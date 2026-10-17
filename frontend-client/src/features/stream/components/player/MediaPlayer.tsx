@@ -1,8 +1,8 @@
-import { useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 
 import { cn } from '../../../../utils/cn'
 import { useMediaPlayback } from '../../hooks/player/useMediaPlayback'
-import type { MediaSource } from '../../types/player.types'
+import type { MediaSource, PlaybackQuality } from '../../types/player.types'
 import { HlsPlayer } from './HlsPlayer'
 import { MediaPlayerControls } from './MediaPlayerControls'
 import { VideoPlayer } from './VideoPlayer'
@@ -19,30 +19,54 @@ export interface MediaPlayerProps {
 export function MediaPlayer({ autoPlay = true, className, muted = true, poster, source, title }: MediaPlayerProps) {
   const playerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [qualityState, setQualityState] = useState<{ quality: PlaybackQuality; sourceUrl?: string }>({
+    quality: 'source',
+    sourceUrl: source?.url,
+  })
+  const quality = qualityState.sourceUrl === source?.url ? qualityState.quality : 'source'
+
+  const activeSource = useMemo<MediaSource | null | undefined>(() => {
+    if (source?.kind !== 'stream' || quality === 'source') return source
+
+    const selectedVariant = source.variants?.find((variant) => variant.quality === quality)
+    return selectedVariant ? { ...source, url: selectedVariant.url } : source
+  }, [quality, source])
+
+  const qualityOptions = useMemo(
+    () => [
+      { label: 'Original', quality: 'source' as const },
+      ...(source?.kind === 'stream'
+        ? (source.variants?.map((variant) => ({ label: variant.label, quality: variant.quality })) ?? [])
+        : []),
+    ],
+    [source],
+  )
+
   const playback = useMediaPlayback({
     containerRef: playerRef,
+    isLive: activeSource?.kind === 'stream' && activeSource.isLive === true,
     muted,
-    sourceKind: source?.kind,
-    sourceUrl: source?.url,
+    sourceKind: activeSource?.kind,
+    sourceUrl: activeSource?.url,
     videoRef,
   })
 
   const player =
-    source?.kind === 'stream' ? (
+    activeSource?.kind === 'stream' ? (
       <HlsPlayer
         autoPlay={autoPlay}
         muted={playback.isMuted}
         poster={poster}
-        source={source}
+        source={activeSource}
         title={title}
         videoRef={videoRef}
       />
-    ) : source?.kind === 'video' ? (
+    ) : activeSource?.kind === 'video' ? (
       <VideoPlayer
         autoPlay={autoPlay}
         muted={playback.isMuted}
         poster={poster}
-        source={source}
+        source={activeSource}
         title={title}
         videoRef={videoRef}
       />
@@ -59,7 +83,7 @@ export function MediaPlayer({ autoPlay = true, className, muted = true, poster, 
       {player}
       <MediaPlayerControls
         currentTime={playback.currentTime}
-        disabled={!source}
+        disabled={!activeSource}
         duration={playback.duration}
         isFullscreen={playback.isFullscreen}
         isMuted={playback.isMuted}
@@ -71,7 +95,10 @@ export function MediaPlayer({ autoPlay = true, className, muted = true, poster, 
         onTogglePlayback={playback.togglePlayback}
         onVolumeChange={playback.changeVolume}
         playbackRate={playback.playbackRate}
-        showTimeline={source?.kind === 'video'}
+        quality={quality}
+        qualityOptions={qualityOptions}
+        onQualityChange={(nextQuality) => setQualityState({ quality: nextQuality, sourceUrl: source?.url })}
+        showTimeline={activeSource?.kind === 'video'}
         volume={playback.volume}
       />
     </div>

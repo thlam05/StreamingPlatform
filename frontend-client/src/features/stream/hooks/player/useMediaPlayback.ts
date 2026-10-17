@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 
+import { LIVE_EDGE_TOLERANCE_SECONDS } from '../../constants/player.constants'
+
 interface UseMediaPlaybackOptions {
   containerRef: RefObject<HTMLDivElement | null>
+  isLive?: boolean
   muted?: boolean
   sourceKind?: 'stream' | 'video'
   sourceUrl?: string
@@ -10,6 +13,7 @@ interface UseMediaPlaybackOptions {
 
 export function useMediaPlayback({
   containerRef,
+  isLive = false,
   muted = true,
   sourceKind,
   sourceUrl,
@@ -56,17 +60,40 @@ export function useMediaPlayback({
 
     function handleTimeUpdate() {
       setCurrentTime(player.currentTime)
+      resumeLivePlaybackAtEdge()
     }
 
     function handleDurationChange() {
       setDuration(Number.isFinite(player.duration) ? player.duration : 0)
+      resumeLivePlaybackAtEdge()
     }
 
     function handleRateChange() {
       setPlaybackRate(player.playbackRate)
     }
 
+    function handleWaiting() {
+      resumeLivePlaybackAtEdge()
+    }
+
+    function resumeLivePlaybackAtEdge() {
+      if (!isLive || player.playbackRate <= 1) return false
+
+      const lastSeekableIndex = player.seekable.length - 1
+      const liveEdge = lastSeekableIndex >= 0 ? player.seekable.end(lastSeekableIndex) : player.duration
+      if (!Number.isFinite(liveEdge) || player.currentTime < liveEdge - LIVE_EDGE_TOLERANCE_SECONDS) {
+        return false
+      }
+
+      player.playbackRate = 1
+      setPlaybackRate(1)
+      void player.play().catch(() => undefined)
+      return true
+    }
+
     function handleEnded() {
+      if (resumeLivePlaybackAtEdge()) return
+
       const finalDuration = Number.isFinite(player.duration) ? player.duration : player.currentTime
       setIsPlaying(false)
       setDuration(finalDuration)
@@ -80,6 +107,7 @@ export function useMediaPlayback({
     player.addEventListener('durationchange', handleDurationChange)
     player.addEventListener('loadedmetadata', handleDurationChange)
     player.addEventListener('ratechange', handleRateChange)
+    player.addEventListener('waiting', handleWaiting)
     player.addEventListener('ended', handleEnded)
 
     return () => {
@@ -90,9 +118,10 @@ export function useMediaPlayback({
       player.removeEventListener('durationchange', handleDurationChange)
       player.removeEventListener('loadedmetadata', handleDurationChange)
       player.removeEventListener('ratechange', handleRateChange)
+      player.removeEventListener('waiting', handleWaiting)
       player.removeEventListener('ended', handleEnded)
     }
-  }, [muted, sourceKind, sourceUrl, videoRef])
+  }, [isLive, muted, sourceKind, sourceUrl, videoRef])
 
   useEffect(() => {
     const video = videoRef.current

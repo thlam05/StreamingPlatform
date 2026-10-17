@@ -76,6 +76,8 @@ export function useStreamConnection(streamId: string | null, enabled: boolean) {
     isCheckingConnection: Boolean(streamId && enabled) && isCheckingConnection,
     lastUpdatedAt: lastUpdatedStreamId === streamId ? lastUpdatedAt : null,
     playbackUrl: connectionStreamId === streamId ? (streamStatus?.playbackUrl ?? null) : null,
+    playbackUrl360p: connectionStreamId === streamId ? (streamStatus?.playbackUrl360p ?? null) : null,
+    playbackUrl720p: connectionStreamId === streamId ? (streamStatus?.playbackUrl720p ?? null) : null,
     retry: () => setRetryKey((current) => current + 1),
     streamStatus: connectionStreamId === streamId ? streamStatus : null,
   }

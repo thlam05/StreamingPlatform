@@ -2,7 +2,13 @@ import { useState } from 'react'
 import { ChevronLeft, ChevronRight, Maximize, Minimize, Pause, Play, Settings, Volume2, VolumeX } from 'lucide-react'
 
 import { SPEED_OPTIONS } from '../../constants/player.constants'
+import type { PlaybackQuality } from '../../types/player.types'
 import { cn } from '../../../../utils/cn'
+
+export interface ResolutionOption {
+  label: string
+  quality: PlaybackQuality
+}
 
 export interface MediaPlayerControlsProps {
   currentTime: number
@@ -18,6 +24,9 @@ export interface MediaPlayerControlsProps {
   onTogglePlayback: () => void | Promise<void>
   onVolumeChange: (volume: number) => void
   playbackRate: number
+  quality: PlaybackQuality
+  qualityOptions: ResolutionOption[]
+  onQualityChange: (quality: PlaybackQuality) => void
   showTimeline: boolean
   volume: number
 }
@@ -45,13 +54,17 @@ export function MediaPlayerControls({
   onTogglePlayback,
   onVolumeChange,
   playbackRate,
+  quality,
+  qualityOptions,
+  onQualityChange,
   showTimeline,
   volume,
 }: MediaPlayerControlsProps) {
   const hasDuration = duration > 0
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const [settingsSection, setSettingsSection] = useState<'root' | 'playbackRate'>('root')
+  const [settingsSection, setSettingsSection] = useState<'root' | 'playbackRate' | 'quality'>('root')
   const currentSpeedLabel = SPEED_OPTIONS.find((option) => option.value === playbackRate)?.label ?? `${playbackRate}x`
+  const currentQualityLabel = qualityOptions.find((option) => option.quality === quality)?.label ?? 'Original'
 
   function toggleSettings() {
     setIsSettingsOpen((isOpen) => !isOpen)
@@ -60,6 +73,12 @@ export function MediaPlayerControls({
 
   function selectPlaybackRate(rate: number) {
     onPlaybackRateChange(rate)
+    setIsSettingsOpen(false)
+    setSettingsSection('root')
+  }
+
+  function selectQuality(nextQuality: PlaybackQuality) {
+    onQualityChange(nextQuality)
     setIsSettingsOpen(false)
     setSettingsSection('root')
   }
@@ -155,17 +174,21 @@ export function MediaPlayerControls({
                   </button>
 
                   <button
-                    className="flex w-full cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-left text-white/50"
-                    disabled
+                    className={cn(
+                      'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors focus-visible:outline-2 focus-visible:outline-white',
+                      qualityOptions.length > 1 ? 'text-white hover:bg-white/15' : 'cursor-not-allowed text-white/45',
+                    )}
+                    disabled={qualityOptions.length <= 1}
+                    onClick={() => setSettingsSection('quality')}
                     role="menuitem"
                     type="button"
                   >
                     <span className="flex-1">Resolution</span>
-                    <span className="text-white/40">Auto</span>
-                    <ChevronRight aria-hidden="true" className="size-4 text-white/30" />
+                    <span className="text-white/60">{currentQualityLabel}</span>
+                    <ChevronRight aria-hidden="true" className="size-4 text-white/60" />
                   </button>
                 </>
-              ) : (
+              ) : settingsSection === 'playbackRate' ? (
                 <>
                   <button
                     className="mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-white"
@@ -191,6 +214,35 @@ export function MediaPlayerControls({
                     >
                       <span className="flex-1">{option.label}</span>
                       {option.value === playbackRate ? <span aria-hidden="true">✓</span> : null}
+                    </button>
+                  ))}
+                </>
+              ) : (
+                <>
+                  <button
+                    className="mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-white transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white"
+                    onClick={() => setSettingsSection('root')}
+                    role="menuitem"
+                    type="button"
+                  >
+                    <ChevronLeft aria-hidden="true" className="size-4" />
+                    <span>Resolution</span>
+                  </button>
+
+                  {qualityOptions.map((option) => (
+                    <button
+                      aria-checked={option.quality === quality}
+                      className={cn(
+                        'flex w-full items-center rounded-lg px-3 py-2 text-left transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white',
+                        option.quality === quality ? 'bg-white/15 text-white' : 'text-white/80',
+                      )}
+                      key={option.quality}
+                      onClick={() => selectQuality(option.quality)}
+                      role="menuitemradio"
+                      type="button"
+                    >
+                      <span className="flex-1">{option.label}</span>
+                      {option.quality === quality ? <span aria-hidden="true">✓</span> : null}
                     </button>
                   ))}
                 </>
